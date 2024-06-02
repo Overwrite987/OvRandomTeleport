@@ -1,0 +1,191 @@
+package ru.overwrite.rtp;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
+
+import ru.overwrite.rtp.channels.Channel;
+import ru.overwrite.rtp.utils.Config;
+import ru.overwrite.rtp.utils.Utils;
+
+public class RtpCommand implements CommandExecutor, TabCompleter {
+	
+	private final Main plugin;
+	private final Config pluginConfig;
+	private final RtpManager rtpManager;
+	
+	public RtpCommand(Main plugin) {
+		this.plugin = plugin;
+		this.pluginConfig = plugin.getPluginConfig();
+		this.rtpManager = plugin.getRtpManager();
+	}
+	
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		if (!(sender instanceof Player) && (args.length == 0 || !args[0].equals("admin"))) {
+			plugin.loggerInfo("Вы должны быть игроком!");
+			return true;
+		}
+		if (args.length == 0) {
+			Player p = (Player) sender;
+			if (rtpManager.perPlayerActiveRtpTask.containsKey(p.getName())) {
+				return false;
+			}
+			Channel channel = rtpManager.getDefaultChannel();
+			if (!p.hasPermission("rtp.channel." + channel.getId())) {
+				p.sendMessage(pluginConfig.messages_no_perms);
+				return false;
+			}
+			if (channel.getPlayerCooldowns().containsKey(p.getName())) {
+				p.sendMessage(pluginConfig.messages_cooldown
+						.replace("%time%", Utils.getTime((int) (channel.getCooldown() - (System.currentTimeMillis() - channel.getPlayerCooldowns().get(p.getName())) / 1000))));
+				return false;
+			}
+			if (channel.isTeleportToFirstAllowedWorld()) {
+				rtpManager.preTeleport(p, channel, channel.getActiveWorlds().get(0));
+				return true;
+			}
+			rtpManager.preTeleport(p, rtpManager.getDefaultChannel(), p.getWorld());
+			return true;
+		}
+		if (args[0].equals("admin")) {
+			if (!sender.hasPermission("rtp.admin")) {
+				sender.sendMessage(pluginConfig.messages_incorrect_channel);
+				return false;
+			}
+			switch (args[1].toLowerCase()) {
+				case "reload": {
+					plugin.reloadConfig();
+					FileConfiguration config = plugin.getConfig();
+					pluginConfig.setupMessages(config);
+					rtpManager.getNamedChannels().clear();
+					rtpManager.setupChannels(config, Bukkit.getPluginManager());
+					sender.sendMessage(pluginConfig.messages_reload);
+					return true;
+				}
+				case "forceteleport":
+				case "forcertp": {
+					if (args.length < 4) {
+						sender.sendMessage(pluginConfig.messages_unknown_argument);
+						return false;
+					}
+					Player targetPlayer = Bukkit.getPlayerExact(args[2]);
+					if (targetPlayer == null) {
+						sender.sendMessage(pluginConfig.messages_player_not_found);
+						return false;
+					}
+					if (!rtpManager.getNamedChannels().containsKey(args[3])) {
+						sender.sendMessage(pluginConfig.messages_incorrect_channel);
+						return false;
+					}
+					Channel channel = rtpManager.getChannelByName(args[3]);
+					if (!channel.getActiveWorlds().contains(targetPlayer.getWorld())) {
+						if (channel.isTeleportToFirstAllowedWorld()) {
+							rtpManager.preTeleport(targetPlayer, channel, channel.getActiveWorlds().get(0));
+							return true;
+						}
+						sender.sendMessage(pluginConfig.messages_invalid_world);
+						return false;
+					}
+					rtpManager.preTeleport(targetPlayer, channel, targetPlayer.getWorld());
+					return true;
+				}
+				case "help": {
+					sender.sendMessage(pluginConfig.messages_admin_help);
+					return true;
+				}
+			}
+			sender.sendMessage(pluginConfig.messages_unknown_argument);
+			return false;
+		}
+		if (args.length == 1) {
+			Player p = (Player) sender;
+			if (rtpManager.perPlayerActiveRtpTask.containsKey(p.getName())) {
+				return false;
+			}
+			if (!rtpManager.getNamedChannels().containsKey(args[0])) {
+				p.sendMessage(pluginConfig.messages_incorrect_channel);
+				return false;
+			}
+			if (!p.hasPermission("rtp.channel." + args[0])) {
+				p.sendMessage(pluginConfig.messages_no_perms);
+				return false;
+			}
+			Channel channel = rtpManager.getChannelByName(args[0]);
+			if (channel.getPlayerCooldowns().containsKey(p.getName())) {
+				p.sendMessage(pluginConfig.messages_cooldown
+						.replace("%time%", Utils.getTime((int) (channel.getCooldown() - (System.currentTimeMillis() - channel.getPlayerCooldowns().get(p.getName())) / 1000))));
+				return false;
+			}
+			if (!channel.getActiveWorlds().contains(p.getWorld())) {
+				if (channel.isTeleportToFirstAllowedWorld()) {
+					rtpManager.preTeleport(p, channel, channel.getActiveWorlds().get(0));
+					return true;
+				}
+				p.sendMessage(pluginConfig.messages_invalid_world);
+				return false;
+			}
+			if (plugin.getEconomy() != null) {
+				if (plugin.getEconomy().getBalance(p) < channel.getTeleportCost()) {
+					p.sendMessage(pluginConfig.messages_not_enough_money);
+					return false;
+				}
+				plugin.getEconomy().withdrawPlayer(p, channel.getTeleportCost());
+			}
+			rtpManager.preTeleport(p, channel, p.getWorld());
+			return true;
+		} else {
+			sender.sendMessage(pluginConfig.messages_incorrect_channel);
+			return false;
+		}
+	}
+	
+	@Override
+	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+		List<String> completions = new ArrayList<>();
+		if (args.length == 1) {
+			for (String channelName : rtpManager.getNamedChannels().keySet()) {
+				if (sender.hasPermission("rtp.channel." + channelName)) {
+					completions.add(channelName);
+					 
+				}
+			}
+		}
+		if (sender.hasPermission("rtp.admin")) {
+			if (args.length == 1) {
+				completions.add("admin");
+			}
+			if (args[0].toLowerCase().equals("admin")) {
+				if (args.length == 2) {
+					completions.add("help");
+					completions.add("reload");
+					completions.add("forceteleport");
+					completions.add("forcertp");
+				}
+				if (args[1].toLowerCase().equals("forceteleport")) {
+					if (args.length == 3) {
+						for (Player p : Bukkit.getOnlinePlayers()) {
+							completions.add(p.getName());
+						}
+					}
+					if (args.length == 4) {
+						completions.addAll(rtpManager.getNamedChannels().keySet());
+					}
+				}
+			}
+		}
+		List<String> result = new ArrayList<>();
+		for (String c : completions) {
+			if (c.toLowerCase().startsWith(args[args.length - 1].toLowerCase())) {
+				result.add(c);
+			}
+		}
+		return result;
+	}
+}
