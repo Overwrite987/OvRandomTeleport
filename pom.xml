@@ -35,7 +35,7 @@
               <relocations>
                   <relocation>
                       <pattern>org.bstats</pattern>
-                      <shadedPattern>ru.overwrite.protect.bukkit.utils.metrics</shadedPattern>
+                      <shadedPattern>ru.overwrite.rtp.utils.metrics</shadedPattern>
                   </relocation>
               </relocations>
               <filters>
