@@ -47,12 +47,12 @@ public class RtpManager {
 	private Channel defaultChannel;
 	
 	@Getter
-	private Map<String, Channel> namedChannels = new HashMap<>();
+	private final Map<String, Channel> namedChannels = new HashMap<>();
 	
 	@Getter
-	public Map<Channel, String> voidChannels = new HashMap<>();
+	public final Map<Channel, String> voidChannels = new HashMap<>();
 	
-	private Random random = new Random();
+	private final Random random = new Random();
 	
 	public RtpManager(Main plugin) {
 		this.plugin = plugin;
@@ -490,8 +490,10 @@ public class RtpManager {
 			public void run() {
 				perPlayerPreTeleportCooldown.compute(p.getName(), (k, currentTimeRemaining) -> currentTimeRemaining - 1);
 				if (perPlayerPreTeleportCooldown.get(playerName) <= 0) {
-					perPlayerBossBar.get(playerName).removeAll();
-					perPlayerBossBar.remove(playerName);
+					if (perPlayerBossBar.containsKey(playerName)) {
+						perPlayerBossBar.get(playerName).removeAll();
+						perPlayerBossBar.remove(playerName);
+					}
 					perPlayerPreTeleportCooldown.remove(playerName);
 					perPlayerActiveRtpTask.remove(playerName);
 					perPlayerActiveRtpChannel.remove(playerName);

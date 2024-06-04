@@ -1,6 +1,5 @@
 package ru.overwrite.rtp;
 
-import org.bstats.bukkit.Metrics;
 import org.bukkit.Server;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.PluginCommand;
@@ -15,6 +14,7 @@ import net.milkbowl.vault.economy.Economy;
 
 import lombok.Getter;
 import ru.overwrite.rtp.utils.Config;
+import ru.overwrite.rtp.utils.Metrics;
 import ru.overwrite.rtp.utils.Utils;
 import ru.overwrite.rtp.utils.logging.BukkitLogger;
 import ru.overwrite.rtp.utils.logging.PaperLogger;
@@ -31,7 +31,7 @@ public class Main extends JavaPlugin {
 	private final Config pluginConfig = new Config();
 	
 	@Getter 
-	private final RtpManager rtpManager = new RtpManager(this);
+	private RtpManager rtpManager = new RtpManager(this);
 	
 	@Getter
 	private Economy economy;
