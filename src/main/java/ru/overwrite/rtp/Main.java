@@ -1,5 +1,7 @@
 package ru.overwrite.rtp;
 
+import org.bstats.bukkit.Metrics;
+
 import org.bukkit.Server;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.PluginCommand;
@@ -14,7 +16,6 @@ import net.milkbowl.vault.economy.Economy;
 
 import lombok.Getter;
 import ru.overwrite.rtp.utils.Config;
-import ru.overwrite.rtp.utils.Metrics;
 import ru.overwrite.rtp.utils.Utils;
 import ru.overwrite.rtp.utils.logging.BukkitLogger;
 import ru.overwrite.rtp.utils.logging.PaperLogger;
