@@ -83,21 +83,5 @@ public class Utils {
 
 	    return result.toString();
 	}
-	
-	public static int findSafeNetherLocation(World world, int x, int z) {
-        for (int y = 16; y < 112; y++) {
-            Location location = new Location(world, x, y, z);
-            Location above1 = location.clone().add(0, 1, 0);
-            Location above2 = location.clone().add(0, 2, 0);
-
-            if (location.getBlock().getType().isSolid() && !location.getBlock().getType().isAir() &&
-            	above1.getBlock().getType().isAir() &&
-            	above2.getBlock().getType().isAir()) {
-                return location.getBlockY();
-            }
-        }
-
-        return -1;
-    }
 
 }

@@ -67,10 +67,10 @@ public class WGUtils {
 
 	    switch (shape) {
 	        case "SQUARE":
-	            location = generateRandomSquareLocationNearPoint(world, centerX, centerZ, channel);
+	            location = LocationUtils.generateRandomSquareLocationNearPoint(world, centerX, centerZ, channel);
 	            break;
 	        case "ROUND":
-	            location = generateRandomRoundLocationNearPoint(world, centerX, centerZ, channel);
+	            location = LocationUtils.generateRandomRoundLocationNearPoint(world, centerX, centerZ, channel);
 	            break;
 	        default:
 	            location = null;
@@ -84,87 +84,6 @@ public class WGUtils {
 	    	iterationsPerPlayer.remove(p.getName());
 	        return location;
 	    }
-	}
-
-	private static Location generateRandomSquareLocationNearPoint(World world, int centerX, int centerZ, Channel channel) {
-	    int minX = channel.getMinX();
-	    int maxX = channel.getMaxX();
-	    int minZ = channel.getMinZ();
-	    int maxZ = channel.getMaxZ();
-
-	    int x, z;
-	    do {
-	        x = centerX + random.nextInt(61) - 30;
-	        z = centerZ + random.nextInt(61) - 30;
-	    } while (x < minX || x > maxX || z < minZ || z > maxZ);
-
-	    int y = world.getEnvironment() != Environment.NETHER ? world.getHighestBlockYAt(x, z) : Utils.findSafeNetherLocation(world, x, z);
-	    if (y < 0) {
-	    	return null;
-	    }
-
-	    Location location = new Location(world, x + 0.5, y, z + 0.5);
-	    if (isDisallowedBlock(location, channel) || isDisallowedBiome(location, channel) || isInsideRegion(location, channel) || isInsideTown(location, channel)) {
-	        return null;
-	    } else {
-	        location.setY(y + 1);
-	        return location;
-	    }
-	}
-
-	private static Location generateRandomRoundLocationNearPoint(World world, int centerX, int centerZ, Channel channel) {
-	    int minX = channel.getMinX();
-	    int maxX = channel.getMaxX();
-	    int minZ = channel.getMinZ();
-	    int maxZ = channel.getMaxZ();
-
-	    int radiusMin = 30;
-	    int radiusMax = 60;
-
-	    int x, z;
-	    do {
-	        double theta = random.nextDouble() * 2 * Math.PI;
-	        double r = radiusMin + (radiusMax - radiusMin) * Math.sqrt(random.nextDouble());
-	        x = (int) (centerX + r * Math.cos(theta));
-	        z = (int) (centerZ + r * Math.sin(theta));
-	    } while (x < minX || x > maxX || z < minZ || z > maxZ);
-
-	    int y = world.getEnvironment() != Environment.NETHER ? world.getHighestBlockYAt(x, z) : Utils.findSafeNetherLocation(world, x, z);
-	    if (y < 0) {
-	    	return null;
-	    }
-
-	    Location location = new Location(world, x + 0.5, y, z + 0.5);
-	    if (isDisallowedBlock(location, channel) || isDisallowedBiome(location, channel) || isInsideRegion(location, channel) || isInsideTown(location, channel)) {
-	        return null;
-	    } else {
-	        location.setY(y + 1);
-	        return location;
-	    }
-	}
-	
-	private static boolean isDisallowedBlock(Location loc, Channel channel) {
-		if (channel.isAvoidBlocksBlacklist()) {
-			return !channel.getAvoidBlocks().isEmpty() && channel.getAvoidBlocks().contains(loc.getBlock().getType());
-		} else {
-			return !channel.getAvoidBlocks().isEmpty() && !channel.getAvoidBlocks().contains(loc.getBlock().getType());
-		}
-	}
-
-	private static boolean isDisallowedBiome(Location loc, Channel channel) {
-		if (channel.isAvoidBiomesBlacklist()) {
-			return !channel.getAvoidBiomes().isEmpty() && channel.getAvoidBiomes().contains(loc.getBlock().getBiome());
-		} else {
-			return !channel.getAvoidBiomes().isEmpty() && !channel.getAvoidBiomes().contains(loc.getBlock().getBiome());
-		}
-	}
-
-	private static boolean isInsideRegion(Location loc, Channel channel) {
-		return channel.isAvoidRegions() && !getApplicableRegions(loc).getRegions().isEmpty();
-	}
-
-	private static boolean isInsideTown(Location loc, Channel channel) {
-		return channel.isAvoidTowns() && TownyUtils.getTownByLocation(loc) != null;
 	}
 
 	public static ApplicableRegionSet getApplicableRegions(Location location) {

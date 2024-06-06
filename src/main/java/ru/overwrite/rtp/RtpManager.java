@@ -33,10 +33,7 @@ import lombok.Getter;
 import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.channels.ChannelType;
-import ru.overwrite.rtp.utils.Config;
-import ru.overwrite.rtp.utils.TownyUtils;
-import ru.overwrite.rtp.utils.Utils;
-import ru.overwrite.rtp.utils.WGUtils;
+import ru.overwrite.rtp.utils.*;
 
 public class RtpManager {
 	
@@ -285,11 +282,11 @@ public class RtpManager {
 	    
 	    switch (shape) {
 	    	case "SQUARE":	{
-	    		location = generateRandomSquareLocation(p, channel, world);
+	    		location = LocationUtils.generateRandomSquareLocation(p, channel, world);
 	    		break;
 	    	}
 	    	case "ROUND":	{
-	    		location = generateRandomRoundLocation(p, channel, world);
+	    		location = LocationUtils.generateRandomRoundLocation(p, channel, world);
 	    		break;
 	    	}
 	    	default: {
@@ -303,60 +300,6 @@ public class RtpManager {
 	        return generateRandomLocation(p, channel, world);
 	    } else {
 	        iterationsPerPlayer.remove(p.getName());
-	        return location;
-	    }
-	}
-
-	private Location generateRandomSquareLocation(Player p, Channel channel, World world) {
-	    int minX = channel.getMinX();
-	    int maxX = channel.getMaxX();
-	    int minZ = channel.getMinZ();
-	    int maxZ = channel.getMaxZ();
-
-	    int x = random.nextInt((maxX - minX) + 1) + minX;
-	    int z = random.nextInt((maxZ - minZ) + 1) + minZ;
-	    
-	    int y = world.getEnvironment() != Environment.NETHER ? world.getHighestBlockYAt(x, z) : Utils.findSafeNetherLocation(world, x, z);
-	    if (y < 0) {
-	    	return null;
-	    }
-
-	    Location location = new Location(world, x + 0.5, y, z + 0.5, p.getLocation().getYaw(), p.getLocation().getPitch());
-	    if (isDisallowedBlock(location, channel) || isDisallowedBiome(location, channel) || isInsideRegion(location, channel) || isInsideTown(location, channel)) {
-	        return null;
-	    } else {
-	        location.setY(y + 1);
-	        return location;
-	    }
-	}
-
-	private Location generateRandomRoundLocation(Player p, Channel channel, World world) {
-	    int minX = channel.getMinX();
-	    int maxX = channel.getMaxX();
-	    int minZ = channel.getMinZ();
-	    int maxZ = channel.getMaxZ();
-
-	    int centerX = (minX + maxX) / 2;
-	    int centerZ = (minZ + maxZ) / 2;
-	    int radiusX = (maxX - minX) / 2;
-	    int radiusZ = (maxZ - minZ) / 2;
-	    
-	    double theta = random.nextDouble() * 2 * Math.PI;
-	    double r = Math.sqrt(random.nextDouble());
-
-	    int x = (int) (centerX + r * radiusX * Math.cos(theta));
-	    int z = (int) (centerZ + r * radiusZ * Math.sin(theta));
-	    
-	    int y = world.getEnvironment() != Environment.NETHER ? world.getHighestBlockYAt(x, z) : Utils.findSafeNetherLocation(world, x, z);
-	    if (y < 0) {
-	    	return null;
-	    }
-
-	    Location location = new Location(world, x + 0.5, y, z + 0.5, p.getLocation().getYaw(), p.getLocation().getPitch());
-	    if (isDisallowedBlock(location, channel) || isDisallowedBiome(location, channel) || isInsideRegion(location, channel) || isInsideTown(location, channel)) {
-	        return null;
-	    } else {
-	        location.setY(y + 1);
 	        return location;
 	    }
 	}
@@ -383,11 +326,11 @@ public class RtpManager {
 
 	    switch (shape) {
     		case "SQUARE":	{
-    			location = generateRandomSquareLocationNearPlayer(p, targetPlayer, channel, world);
+    			location = LocationUtils.generateRandomSquareLocationNearPlayer(p, targetPlayer, channel, world);
     			break;
     		}
     		case "ROUND":	{
-    			location = generateRandomRoundLocationNearPlayer(p, targetPlayer, channel, world);
+    			location = LocationUtils.generateRandomRoundLocationNearPlayer(p, targetPlayer, channel, world);
     			break;
     		}
     		default: {
@@ -398,7 +341,7 @@ public class RtpManager {
 
 	    if (location == null) {
 	        iterationsPerPlayer.put(p.getName(), iterationsPerPlayer.getOrDefault(p.getName(), 0)+1);
-	        return generateRandomLocation(p, channel, world);
+	        return generateRandomLocationNearPlayer(p, channel, world);
 	    } else {
 	        iterationsPerPlayer.remove(p.getName());
 	        return location;
@@ -422,68 +365,6 @@ public class RtpManager {
 	        }
 	    }
 	    return nearbyPlayers;
-	}
-
-	private Location generateRandomSquareLocationNearPlayer(Player sourcePlayer, Player targetPlayer, Channel channel, World world) {
-	    int minX = channel.getMinX();
-	    int maxX = channel.getMaxX();
-	    int minZ = channel.getMinZ();
-	    int maxZ = channel.getMaxZ();
-
-	    int centerX = targetPlayer.getLocation().getBlockX();
-	    int centerZ = targetPlayer.getLocation().getBlockZ();
-
-	    int x, z;
-	    do {
-	        x = centerX + random.nextInt(61) - 30;
-	        z = centerZ + random.nextInt(61) - 30;
-	    } while (x < minX || x > maxX || z < minZ || z > maxZ);
-
-	    int y = world.getEnvironment() != Environment.NETHER ? world.getHighestBlockYAt(x, z) : Utils.findSafeNetherLocation(world, x, z);
-	    if (y < 0) {
-	    	return null;
-	    }
-
-	    Location location = new Location(world, x + 0.5, y, z + 0.5, sourcePlayer.getLocation().getYaw(), sourcePlayer.getLocation().getPitch());
-	    if (isDisallowedBlock(location, channel) || isDisallowedBiome(location, channel) || isInsideRegion(location, channel) || isInsideTown(location, channel)) {
-	        return null;
-	    } else {
-	        location.setY(y + 1);
-	        return location;
-	    }
-	}
-
-	private Location generateRandomRoundLocationNearPlayer(Player sourcePlayer, Player targetPlayer, Channel channel, World world) {
-	    int minX = channel.getMinX();
-	    int maxX = channel.getMaxX();
-	    int minZ = channel.getMinZ();
-	    int maxZ = channel.getMaxZ();
-
-	    int centerX = targetPlayer.getLocation().getBlockX();
-	    int centerZ = targetPlayer.getLocation().getBlockZ();
-	    int radiusMin = 30;
-	    int radiusMax = 60;
-
-	    int x, z;
-	    do {
-	        double theta = random.nextDouble() * 2 * Math.PI;
-	        double r = radiusMin + (radiusMax - radiusMin) * Math.sqrt(random.nextDouble());
-	        x = (int) (centerX + r * Math.cos(theta));
-	        z = (int) (centerZ + r * Math.sin(theta));
-	    } while (x < minX || x > maxX || z < minZ || z > maxZ);
-
-	    int y = world.getEnvironment() != Environment.NETHER ? world.getHighestBlockYAt(x, z) : Utils.findSafeNetherLocation(world, x, z);
-	    if (y < 0) {
-	    	return null;
-	    }
-
-	    Location location = new Location(world, x + 0.5, y, z + 0.5, sourcePlayer.getLocation().getYaw(), sourcePlayer.getLocation().getPitch());
-	    if (isDisallowedBlock(location, channel) || isDisallowedBiome(location, channel) || isInsideRegion(location, channel) || isInsideTown(location, channel)) {
-	        return null;
-	    } else {
-	        location.setY(y + 1);
-	        return location;
-	    }
 	}
 	
 	// ............................?
@@ -555,30 +436,6 @@ public class RtpManager {
 			}
 			this.executeActions(p, channel, channel.getAfterTeleportActions(), loc);
 		});
-	}
-	
-	private boolean isDisallowedBlock(Location loc, Channel channel) {
-		if (channel.isAvoidBlocksBlacklist()) {
-			return !channel.getAvoidBlocks().isEmpty() && channel.getAvoidBlocks().contains(loc.getBlock().getType());
-		} else {
-			return !channel.getAvoidBlocks().isEmpty() && !channel.getAvoidBlocks().contains(loc.getBlock().getType());
-		}
-	}
-
-	private boolean isDisallowedBiome(Location loc, Channel channel) {
-		if (channel.isAvoidBiomesBlacklist()) {
-			return !channel.getAvoidBiomes().isEmpty() && channel.getAvoidBiomes().contains(loc.getBlock().getBiome());
-		} else {
-			return !channel.getAvoidBiomes().isEmpty() && !channel.getAvoidBiomes().contains(loc.getBlock().getBiome());
-		}
-	}
-
-	private boolean isInsideRegion(Location loc, Channel channel) {
-		return channel.isAvoidRegions() && (WGUtils.getApplicableRegions(loc) != null && !WGUtils.getApplicableRegions(loc).getRegions().isEmpty());
-	}
-
-	private boolean isInsideTown(Location loc, Channel channel) {
-		return channel.isAvoidTowns() && TownyUtils.getTownByLocation(loc) != null;
 	}
 	
 	private void executeActions(Player p, Channel channel, List<Action> actions, Location loc) {
