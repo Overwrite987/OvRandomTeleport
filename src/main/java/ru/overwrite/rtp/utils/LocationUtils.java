@@ -5,7 +5,6 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import ru.overwrite.rtp.channels.Channel;
 
-import java.util.Objects;
 import java.util.Random;
 
 public class LocationUtils {
