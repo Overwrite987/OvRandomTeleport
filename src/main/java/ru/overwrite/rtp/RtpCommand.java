@@ -30,7 +30,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 	
 	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
 		if (!(sender instanceof Player) && (args.length == 0 || !args[0].equals("admin"))) {
-			plugin.loggerInfo("Вы должны быть игроком!");
+			plugin.getLogger().info("Вы должны быть игроком!");
 			return true;
 		}
 		if (args.length == 0) {
