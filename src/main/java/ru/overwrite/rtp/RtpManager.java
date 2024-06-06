@@ -203,7 +203,6 @@ public class RtpManager {
 		return namedChannels.get(channelName);
 	}
 	
-	// ...
 	public final List<String> teleportingNow = new ArrayList<>();
 	
 	public void preTeleport(Player p, Channel channel, World world) {
@@ -366,9 +365,7 @@ public class RtpManager {
 	    }
 	    return nearbyPlayers;
 	}
-	
-	// ............................?
-	// TODO: Replace all this with abstract RTPTask
+
 	public final Map<String, BossBar> perPlayerBossBar = new ConcurrentHashMap<>();
 	public final Map<String, Integer> perPlayerPreTeleportCooldown = new ConcurrentHashMap<>();
 	public final Map<String, BukkitTask> perPlayerActiveRtpTask = new ConcurrentHashMap<>();
