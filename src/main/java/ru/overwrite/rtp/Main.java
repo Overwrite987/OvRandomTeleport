@@ -26,7 +26,8 @@ public class Main extends JavaPlugin {
 
 	private final Server server = getServer();
 
-	private final Logger logger = Utils.FOLIA ? new PaperLogger(this) : new BukkitLogger(this);
+	@Getter
+	private final Logger pluginLogger = Utils.FOLIA ? new PaperLogger(this) : new BukkitLogger(this);
 	
 	@Getter
 	private final Config pluginConfig = new Config();
@@ -58,13 +59,13 @@ public class Main extends JavaPlugin {
 	
 	public boolean isPaper() {
 		if (server.getName().equals("CraftBukkit")) {
-			loggerInfo(" ");
-			loggerInfo("§6============= §6! WARNING ! §c=============");
-			loggerInfo("§eЭтот плагин работает только на Paper и его форках!");
-			loggerInfo("§eАвтор плагина §cкатегорически §eвыступает за отказ от использования устаревшего и уязвимого софта!");
-			loggerInfo("§eСкачать Paper: §ahttps://papermc.io/downloads/all");
-			loggerInfo("§6============= §6! WARNING ! §c=============");
-			loggerInfo(" ");
+			pluginLogger.info(" ");
+			pluginLogger.info("§6============= §6! WARNING ! §c=============");
+			pluginLogger.info("§eЭтот плагин работает только на Paper и его форках!");
+			pluginLogger.info("§eАвтор плагина §cкатегорически §eвыступает за отказ от использования устаревшего и уязвимого софта!");
+			pluginLogger.info("§eСкачать Paper: §ahttps://papermc.io/downloads/all");
+			pluginLogger.info("§6============= §6! WARNING ! §c=============");
+			pluginLogger.info(" ");
 			this.setEnabled(false);
 			return false;
 		}
@@ -93,14 +94,10 @@ public class Main extends JavaPlugin {
 			command.setTabCompleter(new RtpCommand(this));
 			commandMap.register(getDescription().getName(), command);
 		} catch (Exception ex) {
-			logger.info("Unable to register password command!");
+			pluginLogger.info("Unable to register password command!");
 			ex.printStackTrace();
 			pluginManager.disablePlugin(this);
 		}
-	}
-
-	public void loggerInfo(String logMessage) {
-		logger.info(logMessage);
 	}
 
 }
