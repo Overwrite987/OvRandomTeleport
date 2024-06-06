@@ -15,7 +15,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
-import org.bukkit.World.Environment;
 import org.bukkit.block.Biome;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
@@ -202,7 +201,7 @@ public class RtpManager {
 	public Channel getChannelByName(String channelName) {
 		return namedChannels.get(channelName);
 	}
-	
+
 	public final List<String> teleportingNow = new ArrayList<>();
 	
 	public void preTeleport(Player p, Channel channel, World world) {
