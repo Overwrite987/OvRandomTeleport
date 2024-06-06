@@ -487,6 +487,7 @@ public class RtpManager {
 	}
 	
 	// ............................?
+	// TODO: Replace all this with abstract RTPTask
 	public final Map<String, BossBar> perPlayerBossBar = new ConcurrentHashMap<>();
 	public final Map<String, Integer> perPlayerPreTeleportCooldown = new ConcurrentHashMap<>();
 	public final Map<String, BukkitTask> perPlayerActiveRtpTask = new ConcurrentHashMap<>();
