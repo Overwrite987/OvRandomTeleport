@@ -135,6 +135,16 @@ public class RtpManager {
 			for (String a : actions.getStringList("after_teleport")) {
 				afterTeleportActions.add(Action.fromString(a));
 			}
+			ConfigurationSection messages = channelSection.getConfigurationSection("messages");
+			String prefix = messages == null ? pluginConfig.messages_prefix : messages.getString("prefix");
+			String noPermsMessage = messages == null ? pluginConfig.messages_no_perms : pluginConfig.getPrefixed(messages.getString("no_perms"), prefix);
+			String invalidWorldMessage = messages == null ? pluginConfig.messages_invalid_world : pluginConfig.getPrefixed(messages.getString("invalid_world"), prefix);
+			String notEnoughMoneyMessage = messages == null ? pluginConfig.messages_not_enough_money : pluginConfig.getPrefixed(messages.getString("not_enough_money"), prefix);
+			String cooldownMessage = messages == null ? pluginConfig.messages_cooldown : pluginConfig.getPrefixed(messages.getString("cooldown"), prefix);
+			String movedOnTeleportMessage = messages == null ? pluginConfig.messages_moved_on_teleport : pluginConfig.getPrefixed(messages.getString("moved_on_teleport"), prefix);
+			String damagedOnTeleportMessage = messages == null ? pluginConfig.messages_damaged_on_teleport : pluginConfig.getPrefixed(messages.getString("damaged_on_teleport"), prefix);
+			String failToFindLocationMessage = messages == null ? pluginConfig.messages_fail_to_find_location : pluginConfig.getPrefixed(messages.getString("fail_to_find_location"), prefix);
+			String alreadyTeleportingMessage = messages == null ? pluginConfig.messages_already_teleporting: pluginConfig.getPrefixed(messages.getString("already_teleporting"), prefix);
 			Channel newChannel = new Channel(channelId,
 					name,
 					type,
@@ -163,7 +173,15 @@ public class RtpManager {
 					avoidTowns,
 					preTeleportActions,
 					onCooldownActions,
-					afterTeleportActions);
+					afterTeleportActions,
+					noPermsMessage,
+					invalidWorldMessage,
+					notEnoughMoneyMessage,
+					cooldownMessage,
+					movedOnTeleportMessage,
+					damagedOnTeleportMessage,
+					failToFindLocationMessage,
+					alreadyTeleportingMessage);
 			namedChannels.put(channelId, newChannel);
 			if (teleportOnVoid) {
 				voidChannels.put(newChannel, channelId);

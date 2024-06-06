@@ -16,12 +16,10 @@ import ru.overwrite.rtp.utils.Utils;
 public class RtpListener implements Listener {
 	
 	private final Main plugin;
-	private final Config pluginConfig;
 	private final RtpManager rtpManager;
 	
 	public RtpListener(Main plugin) {
 		this.plugin = plugin;
-		this.pluginConfig = plugin.getPluginConfig();
 		this.rtpManager = plugin.getRtpManager();
 	}
 	
@@ -49,7 +47,7 @@ public class RtpListener implements Listener {
 		}
 		String playerName = p.getName();
 		if (hasActiveTasks(playerName) && rtpManager.perPlayerActiveRtpChannel.get(playerName).isRestrictMove()) {
-			p.sendMessage(pluginConfig.messages_moved_on_teleport);
+			p.sendMessage(rtpManager.perPlayerActiveRtpChannel.get(playerName).getMovedOnTeleportMessage());
 			rtpManager.teleportingNow.remove(playerName);
 			rtpManager.perPlayerActiveRtpTask.get(playerName).cancel();
 			rtpManager.perPlayerActiveRtpTask.remove(playerName);
@@ -70,7 +68,7 @@ public class RtpListener implements Listener {
 		Player p = (Player) e.getEntity();
 		String playerName = p.getName();
 		if (hasActiveTasks(playerName) && rtpManager.perPlayerActiveRtpChannel.get(playerName).isRestrictDamage()) {
-			p.sendMessage(pluginConfig.messages_damaged_on_teleport);
+			p.sendMessage(rtpManager.perPlayerActiveRtpChannel.get(playerName).getDamagedOnTeleportMessage());
 			rtpManager.teleportingNow.remove(playerName);
 			rtpManager.perPlayerActiveRtpTask.get(playerName).cancel();
 			rtpManager.perPlayerActiveRtpTask.remove(playerName);

@@ -40,11 +40,11 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 			}
 			Channel channel = rtpManager.getDefaultChannel();
 			if (!p.hasPermission("rtp.channel." + channel.getId())) {
-				p.sendMessage(pluginConfig.messages_no_perms);
+				p.sendMessage(channel.getNoPermsMessage());
 				return false;
 			}
 			if (channel.getPlayerCooldowns().containsKey(p.getName())) {
-				p.sendMessage(pluginConfig.messages_cooldown
+				p.sendMessage(channel.getCooldownMessage()
 						.replace("%time%", Utils.getTime((int) (channel.getCooldown() - (System.currentTimeMillis() - channel.getPlayerCooldowns().get(p.getName())) / 1000))));
 				return false;
 			}
@@ -91,7 +91,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 							rtpManager.preTeleport(targetPlayer, channel, channel.getActiveWorlds().get(0));
 							return true;
 						}
-						sender.sendMessage(pluginConfig.messages_invalid_world);
+						sender.sendMessage(channel.getInvalidWorldMessage());
 						return false;
 					}
 					rtpManager.preTeleport(targetPlayer, channel, targetPlayer.getWorld());
@@ -114,13 +114,13 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 				p.sendMessage(pluginConfig.messages_incorrect_channel);
 				return false;
 			}
-			if (!p.hasPermission("rtp.channel." + args[0])) {
-				p.sendMessage(pluginConfig.messages_no_perms);
+			Channel channel = rtpManager.getChannelByName(args[0]);
+			if (!p.hasPermission("rtp.channel." + channel.getId())) {
+				p.sendMessage(channel.getNoPermsMessage());
 				return false;
 			}
-			Channel channel = rtpManager.getChannelByName(args[0]);
 			if (channel.getPlayerCooldowns().containsKey(p.getName())) {
-				p.sendMessage(pluginConfig.messages_cooldown
+				p.sendMessage(channel.getCooldownMessage()
 						.replace("%time%", Utils.getTime((int) (channel.getCooldown() - (System.currentTimeMillis() - channel.getPlayerCooldowns().get(p.getName())) / 1000))));
 				return false;
 			}
@@ -129,12 +129,12 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 					rtpManager.preTeleport(p, channel, channel.getActiveWorlds().get(0));
 					return true;
 				}
-				p.sendMessage(pluginConfig.messages_invalid_world);
+				p.sendMessage(channel.getInvalidWorldMessage());
 				return false;
 			}
 			if (plugin.getEconomy() != null) {
 				if (plugin.getEconomy().getBalance(p) < channel.getTeleportCost()) {
-					p.sendMessage(pluginConfig.messages_not_enough_money);
+					p.sendMessage(channel.getNotEnoughMoneyMessage());
 					return false;
 				}
 				plugin.getEconomy().withdrawPlayer(p, channel.getTeleportCost());

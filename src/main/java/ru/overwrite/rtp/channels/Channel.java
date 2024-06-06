@@ -77,6 +77,15 @@ public class Channel {
 	private final Map<Integer, List<Action>> onCooldownActions;
 	
 	private final List<Action> afterTeleportActions;
+
+	private final String noPermsMessage,
+			invalidWorldMessage,
+			notEnoughMoneyMessage,
+			cooldownMessage,
+			movedOnTeleportMessage,
+			damagedOnTeleportMessage,
+			failToFindLocationMessage,
+			alreadyTeleportingMessage;
 	
 	public Channel(String id,
 			String name,
@@ -106,7 +115,15 @@ public class Channel {
 			boolean avoidTowns,
 			List<Action> preTeleportActions,
 			Map<Integer, List<Action>> onCooldownActions,
-			List<Action> afterTeleportActions) {
+			List<Action> afterTeleportActions,
+			String noPermsMessage,
+			String invalidWorldMessage,
+			String notEnoughMoneyMessage,
+			String cooldownMessage,
+			String movedOnTeleportMessage,
+			String damagedOnTeleportMessage,
+			String failToFindLocationMessage,
+			String alreadyTeleportingMessage) {
 		this.id = id;
 		 this.name = name;
 		 this.type = type;
@@ -139,6 +156,14 @@ public class Channel {
 		 this.onCooldownActions = onCooldownActions;
 		 this.afterTeleportActions = afterTeleportActions;
 		 this.playerCooldowns = new ExpiringMap<>(cooldown, TimeUnit.SECONDS);
+		 this.noPermsMessage = noPermsMessage;
+		 this.invalidWorldMessage = invalidWorldMessage;
+		 this.notEnoughMoneyMessage = notEnoughMoneyMessage;
+		 this.cooldownMessage = cooldownMessage;
+		 this.movedOnTeleportMessage = movedOnTeleportMessage;
+		 this.damagedOnTeleportMessage = damagedOnTeleportMessage;
+		 this.failToFindLocationMessage = failToFindLocationMessage;
+		 this.alreadyTeleportingMessage = alreadyTeleportingMessage;
 	}
 
 }
