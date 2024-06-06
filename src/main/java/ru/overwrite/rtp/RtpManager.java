@@ -80,18 +80,18 @@ public class RtpManager {
 			int maxX = locationGenOptions.getInt("max_x");
 			int minZ = locationGenOptions.getInt("min_z"); 
 			int maxZ = locationGenOptions.getInt("max_z");
-			int maxLocationAttempts = channelSection.getInt("max_location_attemps", 25);
+			int maxLocationAttempts = channelSection.getInt("max_location_attemps", 50);
 			int invulnerableTicks = channelSection.getInt("invulnerable_after_teleport", 1);
 			int cooldown = channelSection.getInt("cooldown", 60);
 			int teleportCooldown = channelSection.getInt("teleport_cooldown", -1);
 			ConfigurationSection bossbar = channelSection.getConfigurationSection("bossbar");
-			boolean bossbarEnabled = bossbar == null ? false : bossbar.getBoolean("enabled", false);
+			boolean bossbarEnabled = bossbar != null && bossbar.getBoolean("enabled", false);
 			String bossbarTitle = bossbar == null ? "" : Utils.colorize(bossbar.getString("title"));
 			BarColor bossbarColor = bossbar == null ? BarColor.PURPLE : BarColor.valueOf(bossbar.getString("color").toUpperCase());
 			BarStyle bossbarType = bossbar == null ? BarStyle.SOLID :  BarStyle.valueOf(bossbar.getString("style").toUpperCase());
 			ConfigurationSection restrictions = channelSection.getConfigurationSection("restrictions");
-			boolean restrictMove = restrictions == null ? false : restrictions.getBoolean("move");
-			boolean restrictDamage = restrictions == null ? false : restrictions.getBoolean("damage");
+			boolean restrictMove = restrictions != null && restrictions.getBoolean("move");
+			boolean restrictDamage = restrictions != null && restrictions.getBoolean("damage");
 			ConfigurationSection avoid = channelSection.getConfigurationSection("avoid");
 			Set<Material> avoidBlocks = new HashSet<>();
 			boolean avoidBlocksBlacklist = true;
@@ -109,8 +109,8 @@ public class RtpManager {
 					avoidBiomes.add(Biome.valueOf(b.toUpperCase()));
 				}
 			}
-			boolean avoidRegions = avoid == null ? false : avoid.getBoolean("regions", false) && pluginManager.isPluginEnabled("WorldGuard");
-			boolean avoidTowns = avoid == null ? false : avoid.getBoolean("towns", false) && pluginManager.isPluginEnabled("Towny");
+			boolean avoidRegions = avoid != null && avoid.getBoolean("regions", false) && pluginManager.isPluginEnabled("WorldGuard");
+			boolean avoidTowns = avoid != null && avoid.getBoolean("towns", false) && pluginManager.isPluginEnabled("Towny");
 			ConfigurationSection actions = channelSection.getConfigurationSection("actions");
 			List<Action> preTeleportActions = new ArrayList<>();
 			for (String a : actions.getStringList("pre_teleport")) {
@@ -503,7 +503,7 @@ public class RtpManager {
 				}
 				if (channel.isBossbarEnabled()) {
 					double percents = (channel.getTeleportCooldown() - (channel.getTeleportCooldown() - perPlayerPreTeleportCooldown.get(playerName)))
-							/ Double.valueOf(channel.getTeleportCooldown());
+							/ (double) channel.getTeleportCooldown();
 					if (percents < 1 && percents > 0) {
 						perPlayerBossBar.get(playerName).setProgress(percents);
 					}
@@ -585,8 +585,8 @@ public class RtpManager {
 				Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 					String[] splittedContext = action.getContext().split(";");
 					Sound sound = Sound.valueOf(splittedContext[0]);
-					Float volume = Float.parseFloat(splittedContext[1]);
-					Float pitch = Float.parseFloat(splittedContext[2]);
+					float volume = Float.parseFloat(splittedContext[1]);
+					float pitch = Float.parseFloat(splittedContext[2]);
 					p.playSound(p.getLocation(), sound, volume, pitch);
 				});
 				break;

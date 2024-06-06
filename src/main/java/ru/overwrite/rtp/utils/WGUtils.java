@@ -166,14 +166,6 @@ public class WGUtils {
 	private static boolean isInsideTown(Location loc, Channel channel) {
 		return channel.isAvoidTowns() && TownyUtils.getTownByLocation(loc) != null;
 	}
-	
-	public static WorldGuardPlugin getWorldGuardPlugin() {
-		Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
-		if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
-			return null;
-		}
-		return (WorldGuardPlugin) plugin;
-	}
 
 	public static ApplicableRegionSet getApplicableRegions(Location location) {
 		RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer()

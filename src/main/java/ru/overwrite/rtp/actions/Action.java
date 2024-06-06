@@ -14,7 +14,7 @@ public class Action {
 	private ActionType type;
 	
 	@Getter
-	private String context;
+	private final String context;
 	
 	public Action(ActionType type, String context) {
 		this.type = type;

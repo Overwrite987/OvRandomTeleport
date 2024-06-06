@@ -33,33 +33,31 @@ public class RtpListener implements Listener {
 		Player p = e.getPlayer();
 		if (e.getTo().getBlockY() < Utils.VOID_LEVEL) {
 			for (Channel channel : rtpManager.getVoidChannels().keySet()) {
-				if (p.hasPermission("rtp.channel." + rtpManager.getVoidChannels().get(channel))) {
-					if (!channel.getActiveWorlds().contains(p.getWorld())) {
-						if (channel.isTeleportToFirstAllowedWorld()) {
-							rtpManager.preTeleport(p, channel, channel.getActiveWorlds().get(0));
-							return;
-						}
+				if (!p.hasPermission("rtp.channel." + rtpManager.getVoidChannels().get(channel))) {
+					continue;
+				}
+				if (!channel.getActiveWorlds().contains(p.getWorld())) {
+					if (channel.isTeleportToFirstAllowedWorld()) {
+						rtpManager.preTeleport(p, channel, channel.getActiveWorlds().get(0));
 						return;
 					}
-					rtpManager.preTeleport(p, channel, p.getWorld());
 					return;
 				}
+				rtpManager.preTeleport(p, channel, p.getWorld());
+				return;
 			}
-		}
-		if (rtpManager.perPlayerActiveRtpTask.isEmpty()) {
-			return;
 		}
 		String playerName = p.getName();
-		if (rtpManager.perPlayerActiveRtpTask.containsKey(playerName) && rtpManager.perPlayerActiveRtpChannel.get(playerName).isRestrictMove()) {
+		if (hasActiveTasks(playerName) && rtpManager.perPlayerActiveRtpChannel.get(playerName).isRestrictMove()) {
 			p.sendMessage(pluginConfig.messages_moved_on_teleport);
 			rtpManager.teleportingNow.remove(playerName);
-			if (rtpManager.perPlayerActiveRtpTask.containsKey(playerName)) {
-				rtpManager.perPlayerActiveRtpTask.get(playerName).cancel();
-			}
+			rtpManager.perPlayerActiveRtpTask.get(playerName).cancel();
 			rtpManager.perPlayerActiveRtpTask.remove(playerName);
 			rtpManager.perPlayerActiveRtpChannel.remove(playerName);
-			rtpManager.perPlayerBossBar.get(playerName).removeAll();
-			rtpManager.perPlayerBossBar.remove(playerName);
+			if (rtpManager.perPlayerBossBar.containsKey(playerName)) {
+				rtpManager.perPlayerBossBar.get(playerName).removeAll();
+				rtpManager.perPlayerBossBar.remove(playerName);
+			}
 			rtpManager.perPlayerPreTeleportCooldown.remove(playerName);
 		}
 	}
@@ -71,16 +69,16 @@ public class RtpListener implements Listener {
 		}
 		Player p = (Player) e.getEntity();
 		String playerName = p.getName();
-		if (rtpManager.perPlayerActiveRtpTask.containsKey(playerName) && rtpManager.perPlayerActiveRtpChannel.get(playerName).isRestrictDamage()) {
+		if (hasActiveTasks(playerName) && rtpManager.perPlayerActiveRtpChannel.get(playerName).isRestrictDamage()) {
 			p.sendMessage(pluginConfig.messages_damaged_on_teleport);
 			rtpManager.teleportingNow.remove(playerName);
-			if (rtpManager.perPlayerActiveRtpTask.containsKey(playerName)) {
-				rtpManager.perPlayerActiveRtpTask.get(playerName).cancel();
-			}
+			rtpManager.perPlayerActiveRtpTask.get(playerName).cancel();
 			rtpManager.perPlayerActiveRtpTask.remove(playerName);
 			rtpManager.perPlayerActiveRtpChannel.remove(playerName);
-			rtpManager.perPlayerBossBar.get(playerName).removeAll();
-			rtpManager.perPlayerBossBar.remove(playerName);
+			if (rtpManager.perPlayerBossBar.containsKey(playerName)) {
+				rtpManager.perPlayerBossBar.get(playerName).removeAll();
+				rtpManager.perPlayerBossBar.remove(playerName);
+			}
 			rtpManager.perPlayerPreTeleportCooldown.remove(playerName);
 		}
 	}
@@ -89,10 +87,10 @@ public class RtpListener implements Listener {
 	public void onLeave(PlayerQuitEvent e) {
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 			String playerName = e.getPlayer().getName();
-			if (rtpManager.perPlayerActiveRtpTask.containsKey(playerName)) {
+			if (hasActiveTasks(playerName)) {
 				rtpManager.perPlayerActiveRtpTask.get(playerName).cancel();
+				rtpManager.perPlayerActiveRtpTask.remove(playerName);
 			}
-			rtpManager.perPlayerActiveRtpTask.remove(playerName);
 			rtpManager.perPlayerActiveRtpChannel.remove(playerName);
 			rtpManager.perPlayerBossBar.remove(playerName);
 			rtpManager.perPlayerPreTeleportCooldown.remove(playerName);
@@ -103,13 +101,17 @@ public class RtpListener implements Listener {
 	public void onKick(PlayerKickEvent e) {
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 			String playerName = e.getPlayer().getName();
-			if (rtpManager.perPlayerActiveRtpTask.containsKey(playerName)) {
+			if (hasActiveTasks(playerName)) {
 				rtpManager.perPlayerActiveRtpTask.get(playerName).cancel();
+				rtpManager.perPlayerActiveRtpTask.remove(playerName);
 			}
-			rtpManager.perPlayerActiveRtpTask.remove(playerName);
 			rtpManager.perPlayerActiveRtpChannel.remove(playerName);
 			rtpManager.perPlayerBossBar.remove(playerName);
 			rtpManager.perPlayerPreTeleportCooldown.remove(playerName);
 		});
+	}
+
+	private boolean hasActiveTasks(String playerName) {
+		return !rtpManager.perPlayerActiveRtpTask.isEmpty() && rtpManager.perPlayerActiveRtpTask.containsKey(playerName);
 	}
 }

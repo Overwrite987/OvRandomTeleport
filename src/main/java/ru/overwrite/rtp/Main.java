@@ -32,7 +32,7 @@ public class Main extends JavaPlugin {
 	private final Config pluginConfig = new Config();
 	
 	@Getter 
-	private RtpManager rtpManager = new RtpManager(this);
+	private final RtpManager rtpManager = new RtpManager(this);
 	
 	@Getter
 	private Economy economy;
@@ -92,9 +92,9 @@ public class Main extends JavaPlugin {
 			command.setExecutor(new RtpCommand(this));
 			command.setTabCompleter(new RtpCommand(this));
 			commandMap.register(getDescription().getName(), command);
-		} catch (Exception e) {
+		} catch (Exception ex) {
 			logger.info("Unable to register password command!");
-			e.printStackTrace();
+			ex.printStackTrace();
 			pluginManager.disablePlugin(this);
 		}
 	}

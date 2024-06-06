@@ -15,97 +15,68 @@ import org.bukkit.block.Biome;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 
+@Getter
 public class Channel {
 	
-	@Getter
 	private final ExpiringMap<String, Long> playerCooldowns;
 	
-	@Getter
-	private String id;
+	private final String id;
 	
-	@Getter
-	private String name;
+	private final String name;
 	
-	@Getter
-	private ChannelType type;
+	private final ChannelType type;
 	
-	@Getter
-	private List<World> activeWorlds;
+	private final List<World> activeWorlds;
 	
-	@Getter
-	private boolean teleportToFirstAllowedWorld;
+	private final boolean teleportToFirstAllowedWorld;
 	
-	@Getter 
-	private boolean teleportOnVoid;
+	private final boolean teleportOnVoid;
 	
-	@Getter
-	private double teleportCost;
+	private final double teleportCost;
 	
-	@Getter
-	private String shape;
+	private final String shape;
 	
-	@Getter
-	private int minX, maxX;
+	private final int minX, maxX;
 	
-	@Getter
-	private int minZ, maxZ;
+	private final int minZ, maxZ;
 	
-	@Getter
-	private int maxLocationAttempts;
+	private final int maxLocationAttempts;
 	
-	@Getter
-	private int invulnerableTicks;
+	private final int invulnerableTicks;
 	
-	@Getter
-	private int cooldown;
+	private final int cooldown;
 	
-	@Getter
-	private int teleportCooldown;
+	private final int teleportCooldown;
 	
-	@Getter
-	private boolean bossbarEnabled;
+	private final boolean bossbarEnabled;
 	
-	@Getter
-	private String bossbarTitle;
+	private final String bossbarTitle;
 	
-	@Getter
-	private BarColor bossbarColor;
+	private final BarColor bossbarColor;
 	
-	@Getter
-	private BarStyle bossbarType;
+	private final BarStyle bossbarType;
 	
-	@Getter
-	private boolean restrictMove;
+	private final boolean restrictMove;
 	
-	@Getter
-	private boolean restrictDamage;
+	private final boolean restrictDamage;
 	
-	@Getter 
-	private boolean avoidBlocksBlacklist;
+	private final boolean avoidBlocksBlacklist;
 	
-	@Getter
-	private Set<Material> avoidBlocks;
+	private final Set<Material> avoidBlocks;
 	
-	@Getter
-	private boolean avoidBiomesBlacklist;
+	private final boolean avoidBiomesBlacklist;
 	
-	@Getter
-	private Set<Biome> avoidBiomes;
+	private final Set<Biome> avoidBiomes;
 	
-	@Getter
-	private boolean avoidRegions;
+	private final boolean avoidRegions;
 	
-	@Getter
-	private boolean avoidTowns;
+	private final boolean avoidTowns;
 	
-	@Getter
-	private List<Action> preTeleportActions;
+	private final List<Action> preTeleportActions;
 	
-	@Getter
-	private Map<Integer, List<Action>> onCooldownActions;
+	private final Map<Integer, List<Action>> onCooldownActions;
 	
-	@Getter
-	private List<Action> afterTeleportActions;
+	private final List<Action> afterTeleportActions;
 	
 	public Channel(String id,
 			String name,
@@ -167,7 +138,7 @@ public class Channel {
 		 this.preTeleportActions = preTeleportActions;
 		 this.onCooldownActions = onCooldownActions;
 		 this.afterTeleportActions = afterTeleportActions;
-		 this.playerCooldowns = new ExpiringMap<String, Long>(cooldown, TimeUnit.SECONDS);
+		 this.playerCooldowns = new ExpiringMap<>(cooldown, TimeUnit.SECONDS);
 	}
 
 }

@@ -11,6 +11,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.utils.Config;
 import ru.overwrite.rtp.utils.Utils;
@@ -27,7 +28,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 		this.rtpManager = plugin.getRtpManager();
 	}
 	
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
 		if (!(sender instanceof Player) && (args.length == 0 || !args[0].equals("admin"))) {
 			plugin.loggerInfo("Вы должны быть игроком!");
 			return true;
@@ -147,13 +148,12 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 	}
 	
 	@Override
-	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+	public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
 		List<String> completions = new ArrayList<>();
 		if (args.length == 1) {
 			for (String channelName : rtpManager.getNamedChannels().keySet()) {
 				if (sender.hasPermission("rtp.channel." + channelName)) {
 					completions.add(channelName);
-					 
 				}
 			}
 		}
@@ -161,14 +161,14 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 			if (args.length == 1) {
 				completions.add("admin");
 			}
-			if (args[0].toLowerCase().equals("admin")) {
+			if (args[0].equalsIgnoreCase("admin")) {
 				if (args.length == 2) {
 					completions.add("help");
 					completions.add("reload");
 					completions.add("forceteleport");
 					completions.add("forcertp");
 				}
-				if (args[1].toLowerCase().equals("forceteleport")) {
+				if (args[1].equalsIgnoreCase("forceteleport")) {
 					if (args.length == 3) {
 						for (Player p : Bukkit.getOnlinePlayers()) {
 							completions.add(p.getName());
