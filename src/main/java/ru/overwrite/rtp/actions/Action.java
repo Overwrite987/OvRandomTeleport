@@ -10,8 +10,7 @@ public class Action {
 	private static final Pattern ACTION_PATTERN = Pattern.compile("\\[(\\w+)\\](?: ?(.*))");
 	
 	@Getter
-	@Setter
-	private ActionType type;
+	private final ActionType type;
 	
 	@Getter
 	private final String context;

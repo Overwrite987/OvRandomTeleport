@@ -288,7 +288,6 @@ public class RtpManager {
 	    		break;
 	    	}
 	    	default: {
-	    		location = null;
 	    		return null;
 	    	}
 	    }
@@ -332,7 +331,6 @@ public class RtpManager {
     			break;
     		}
     		default: {
-    			location = null;
     			return null;
     		}
 	    }
