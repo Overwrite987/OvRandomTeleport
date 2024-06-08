@@ -35,7 +35,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 		}
 		if (args.length == 0) {
 			Player p = (Player) sender;
-			if (rtpManager.perPlayerActiveRtpTask.containsKey(p.getName())) {
+			if (rtpManager.hasActiveTasks(p.getName())) {
 				return false;
 			}
 			Channel channel = rtpManager.getDefaultChannel();
@@ -107,7 +107,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 		}
 		if (args.length == 1) {
 			Player p = (Player) sender;
-			if (rtpManager.perPlayerActiveRtpTask.containsKey(p.getName())) {
+			if (rtpManager.hasActiveTasks(p.getName())) {
 				return false;
 			}
 			if (!rtpManager.getNamedChannels().containsKey(args[0])) {

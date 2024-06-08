@@ -10,23 +10,18 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
-import org.bukkit.boss.BossBar;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
 import lombok.Getter;
 import ru.overwrite.rtp.actions.Action;
@@ -47,6 +42,9 @@ public class RtpManager {
 	
 	@Getter
 	public final Map<Channel, String> voidChannels = new HashMap<>();
+
+	@Getter
+	private final Map<String, RtpTask> perPlayerActiveRtpTask = new ConcurrentHashMap<>();
 	
 	private final Random random = new Random();
 	
@@ -57,9 +55,13 @@ public class RtpManager {
 	
 	public void setupChannels(FileConfiguration config, PluginManager pluginManager) {
 		for (String channelId : config.getConfigurationSection("channels").getKeys(false)) {
+			plugin.getLogger().info(channelId);
 			ConfigurationSection channelSection = config.getConfigurationSection("channels." + channelId);
 			String name = channelSection.getString("name", "Абстрактный канал");
 			ChannelType type = channelSection.getString("type") == null ? ChannelType.DEFAULT : ChannelType.valueOf(channelSection.getString("type").toUpperCase());
+			if (type == ChannelType.NEAR_REGION && !pluginManager.isPluginEnabled("WorldGuard")) {
+				type = ChannelType.DEFAULT;
+			}
 			List<World> activeWorlds = new ArrayList<>();
 			for (String w : channelSection.getStringList("active_worlds")) {
 				activeWorlds.add(Bukkit.getWorld(w));
@@ -132,15 +134,24 @@ public class RtpManager {
 				afterTeleportActions.add(Action.fromString(a));
 			}
 			ConfigurationSection messages = channelSection.getConfigurationSection("messages");
-			String prefix = messages == null ? pluginConfig.messages_prefix : messages.getString("prefix");
-			String noPermsMessage = messages == null ? pluginConfig.messages_no_perms : pluginConfig.getPrefixed(messages.getString("no_perms"), prefix);
-			String invalidWorldMessage = messages == null ? pluginConfig.messages_invalid_world : pluginConfig.getPrefixed(messages.getString("invalid_world"), prefix);
-			String notEnoughMoneyMessage = messages == null ? pluginConfig.messages_not_enough_money : pluginConfig.getPrefixed(messages.getString("not_enough_money"), prefix);
-			String cooldownMessage = messages == null ? pluginConfig.messages_cooldown : pluginConfig.getPrefixed(messages.getString("cooldown"), prefix);
-			String movedOnTeleportMessage = messages == null ? pluginConfig.messages_moved_on_teleport : pluginConfig.getPrefixed(messages.getString("moved_on_teleport"), prefix);
-			String damagedOnTeleportMessage = messages == null ? pluginConfig.messages_damaged_on_teleport : pluginConfig.getPrefixed(messages.getString("damaged_on_teleport"), prefix);
-			String failToFindLocationMessage = messages == null ? pluginConfig.messages_fail_to_find_location : pluginConfig.getPrefixed(messages.getString("fail_to_find_location"), prefix);
-			String alreadyTeleportingMessage = messages == null ? pluginConfig.messages_already_teleporting: pluginConfig.getPrefixed(messages.getString("already_teleporting"), prefix);
+			String prefix = (messages == null || messages.getString("prefix") == null)
+					? pluginConfig.messages_prefix : messages.getString("prefix");
+			String noPermsMessage = (messages == null || messages.getString("no_perms") == null)
+					? pluginConfig.messages_no_perms : pluginConfig.getPrefixed(messages.getString("no_perms"), prefix);
+			String invalidWorldMessage = (messages == null || messages.getString("invalid_world") == null)
+					? pluginConfig.messages_invalid_world : pluginConfig.getPrefixed(messages.getString("invalid_world"), prefix);
+			String notEnoughMoneyMessage = (messages == null || messages.getString("not_enough_money") == null)
+					? pluginConfig.messages_not_enough_money : pluginConfig.getPrefixed(messages.getString("not_enough_money"), prefix);
+			String cooldownMessage = (messages == null || messages.getString("cooldown") == null)
+					? pluginConfig.messages_cooldown : pluginConfig.getPrefixed(messages.getString("cooldown"), prefix);
+			String movedOnTeleportMessage = (messages == null || messages.getString("moved_on_teleport") == null)
+					? pluginConfig.messages_moved_on_teleport : pluginConfig.getPrefixed(messages.getString("moved_on_teleport"), prefix);
+			String damagedOnTeleportMessage = (messages == null || messages.getString("damaged_on_teleport") == null)
+					? pluginConfig.messages_damaged_on_teleport : pluginConfig.getPrefixed(messages.getString("damaged_on_teleport"), prefix);
+			String failToFindLocationMessage = (messages == null || messages.getString("fail_to_find_location") == null)
+					? pluginConfig.messages_fail_to_find_location : pluginConfig.getPrefixed(messages.getString("fail_to_find_location"), prefix);
+			String alreadyTeleportingMessage = (messages == null || messages.getString("already_teleporting") == null)
+					? pluginConfig.messages_already_teleporting: pluginConfig.getPrefixed(messages.getString("already_teleporting"), prefix);
 			Channel newChannel = new Channel(channelId,
 					name,
 					type,
@@ -220,7 +231,9 @@ public class RtpManager {
 					}
 					if (channel.getTeleportCooldown() > 0) {
 						this.executeActions(p, channel, channel.getPreTeleportActions(), p.getLocation());
-						startPreTeleportTimer(p, channel, loc);
+						RtpTask rtpTask = new RtpTask(plugin, this, p.getName(), channel);
+						perPlayerActiveRtpTask.put(p.getName(), rtpTask);
+						rtpTask.startPreTeleportTimer(p, channel, loc);
 						return;
 					}
 					teleportPlayer(p, channel, loc);
@@ -237,7 +250,9 @@ public class RtpManager {
 					}
 					if (channel.getTeleportCooldown() > 0) {
 						this.executeActions(p, channel, channel.getPreTeleportActions(), p.getLocation());
-						startPreTeleportTimer(p, channel, loc);
+						RtpTask rtpTask = new RtpTask(plugin, this, p.getName(), channel);
+						perPlayerActiveRtpTask.put(p.getName(), rtpTask);
+						rtpTask.startPreTeleportTimer(p, channel, loc);
 						return;
 					}
 					teleportPlayer(p, channel, loc);
@@ -254,7 +269,9 @@ public class RtpManager {
 					}
 					if (channel.getTeleportCooldown() > 0) {
 						this.executeActions(p, channel, channel.getPreTeleportActions(), p.getLocation());
-						startPreTeleportTimer(p, channel, loc);
+						RtpTask rtpTask = new RtpTask(plugin, this, p.getName(), channel);
+						perPlayerActiveRtpTask.put(p.getName(), rtpTask);
+						rtpTask.startPreTeleportTimer(p, channel, loc);
 						return;
 					}
 					teleportPlayer(p, channel, loc);
@@ -362,60 +379,6 @@ public class RtpManager {
 	    }
 	    return nearbyPlayers;
 	}
-
-	public final Map<String, BossBar> perPlayerBossBar = new ConcurrentHashMap<>();
-	public final Map<String, Integer> perPlayerPreTeleportCooldown = new ConcurrentHashMap<>();
-	public final Map<String, BukkitTask> perPlayerActiveRtpTask = new ConcurrentHashMap<>();
-	public final Map<String, Channel> perPlayerActiveRtpChannel = new ConcurrentHashMap<>();
-	
-	private void startPreTeleportTimer(Player p, Channel channel, Location loc) {
-		String playerName = p.getName();
-		perPlayerPreTeleportCooldown.put(playerName, channel.getTeleportCooldown());
-		if (channel.isBossbarEnabled()) {
-			if (perPlayerBossBar.get(playerName) == null) {
-				String barTitle = Utils.colorize(channel.getBossbarTitle().replace("%time%", Utils.getTime(channel.getTeleportCooldown())));
-				BossBar bossbar = Bukkit.createBossBar(barTitle, channel.getBossbarColor(), channel.getBossbarType());
-				perPlayerBossBar.put(playerName, bossbar);
-				bossbar.addPlayer(p);
-			}
-		}
-		BukkitTask runnable = (new BukkitRunnable() {
-			@Override
-			public void run() {
-				perPlayerPreTeleportCooldown.compute(p.getName(), (k, currentTimeRemaining) -> currentTimeRemaining - 1);
-				if (perPlayerPreTeleportCooldown.get(playerName) <= 0) {
-					if (perPlayerBossBar.containsKey(playerName)) {
-						perPlayerBossBar.get(playerName).removeAll();
-						perPlayerBossBar.remove(playerName);
-					}
-					perPlayerPreTeleportCooldown.remove(playerName);
-					perPlayerActiveRtpTask.remove(playerName);
-					perPlayerActiveRtpChannel.remove(playerName);
-					teleportPlayer(p, channel, loc);
-					cancel();
-					return;
-				}
-				if (channel.isBossbarEnabled()) {
-					double percents = (channel.getTeleportCooldown() - (channel.getTeleportCooldown() - perPlayerPreTeleportCooldown.get(playerName)))
-							/ (double) channel.getTeleportCooldown();
-					if (percents < 1 && percents > 0) {
-						perPlayerBossBar.get(playerName).setProgress(percents);
-					}
-					String barTitle = Utils.colorize(channel.getBossbarTitle().replace("%time%", Utils.getTime(perPlayerPreTeleportCooldown.get(playerName))));
-					perPlayerBossBar.get(playerName).setTitle(barTitle);
-				}
-				if (!channel.getOnCooldownActions().isEmpty()) {
-					for (int i : channel.getOnCooldownActions().keySet()) {
-						if (i == perPlayerPreTeleportCooldown.get(playerName)) {
-							executeActions(p, channel, channel.getOnCooldownActions().get(i), p.getLocation());
-						}
-					}
-				}
-			}
-		}).runTaskTimerAsynchronously(plugin, 20L, 20L);
-		perPlayerActiveRtpTask.put(playerName, runnable);
-		perPlayerActiveRtpChannel.put(playerName, channel);
-	}
 	
 	public void teleportPlayer(Player p, Channel channel, Location loc) {
 		Bukkit.getScheduler().runTask(plugin, () -> {
@@ -431,74 +394,70 @@ public class RtpManager {
 			this.executeActions(p, channel, channel.getAfterTeleportActions(), loc);
 		});
 	}
+
+	private final String[] searchList = { "%player%", "%name%", "%time%", "%x%", "%y%", "%z%"};
 	
-	private void executeActions(Player p, Channel channel, List<Action> actions, Location loc) {
+	public void executeActions(Player p, Channel channel, List<Action> actions, Location loc) {
 		if (actions.isEmpty()) {
 			return;
 		}
 		for (Action action : actions) {
 			switch (action.getType()) {
-			case MESSAGE: {
-				Bukkit.getScheduler().runTaskAsynchronously(plugin,() -> {
+				case MESSAGE: {
+					Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+						String name = channel.getName();
+						String cd = Utils.getTime(channel.getTeleportCooldown());
+						String x = Integer.toString(loc.getBlockX());
+						String y = Integer.toString(loc.getBlockY());
+						String z = Integer.toString(loc.getBlockZ());
+						String[] replacementList = { p.getName(), name, cd, x, y, z };
+						String message = Utils.colorize(StringUtils.replaceEach(action.getContext(), searchList, replacementList));
+						p.sendMessage(message);
+					});
+					break;
+				}
+				case TITLE: {
+					Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+						String name = channel.getName();
+						String cd = Utils.getTime(channel.getTeleportCooldown());
+						String x = Integer.toString(loc.getBlockX());
+						String y = Integer.toString(loc.getBlockY());
+						String z = Integer.toString(loc.getBlockZ());
+						String[] replacementList = { p.getName(), name, cd, x, y, z };
+						String result = Utils.colorize(StringUtils.replaceEach(action.getContext(), searchList, replacementList));
+						String[] titledMessage = result.split(";");
+						Utils.sendTitleMessage(titledMessage, p);
+					});
+					break;
+				}
+				case SOUND: {
+					Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+						Utils.sendSound(action.getContext().split(";"), p);
+					});
+					break;
+				}
+				case EFFECT: {
+					Utils.giveEffect(action.getContext().split(";"), p);
+					break;
+				}
+				case CONSOLE: {
 					String name = channel.getName();
 					String cd = Utils.getTime(channel.getTeleportCooldown());
 					String x = Integer.toString(loc.getBlockX());
 					String y = Integer.toString(loc.getBlockY());
 					String z = Integer.toString(loc.getBlockZ());
-					String message = Utils.colorize(action.getContext().replace("%player%", p.getName()).replace("%name%", name).replace("%time%", cd)
-							.replace("%x%", x).replace("%y%", y).replace("%z%", z));
-					p.sendMessage(message);
-				});
-				break;
-			}
-			case SOUND: {
-				Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-					String[] splittedContext = action.getContext().split(";");
-					Sound sound = Sound.valueOf(splittedContext[0]);
-					float volume = Float.parseFloat(splittedContext[1]);
-					float pitch = Float.parseFloat(splittedContext[2]);
-					p.playSound(p.getLocation(), sound, volume, pitch);
-				});
-				break;
-			}
-			case TITLE: {
-				Bukkit.getScheduler().runTaskAsynchronously(plugin,() -> {
-					String name = channel.getName();
-					String cd = Utils.getTime(channel.getTeleportCooldown());
-					String x = Integer.toString(loc.getBlockX());
-					String y = Integer.toString(loc.getBlockY());
-					String z = Integer.toString(loc.getBlockZ());
-					String result = Utils.colorize(action.getContext().replace("%player%", p.getName()).replace("%name%", name).replace("%time%", cd)
-							.replace("%x%", x).replace("%y%", y).replace("%z%", z));
-					String[] titledMessage = result.split(";");
-					Utils.sendTitleMessage(titledMessage, p);
-				});
-				break;
-			}
-			case EFFECT: {
-				String[] effectSplitted = action.getContext().split(";");
-				PotionEffectType effectType = PotionEffectType.getByName(effectSplitted[0]);
-				int duration = Integer.parseInt(effectSplitted[1]);
-				int amplifier = Integer.parseInt(effectSplitted[2]);
-				PotionEffect effect = new PotionEffect(effectType, duration, amplifier);
-				p.addPotionEffect(effect);
-				break;
-			}
-			case CONSOLE: {
-				String name = channel.getName();
-				String cd = Utils.getTime(channel.getTeleportCooldown());
-				String x = Integer.toString(loc.getBlockX());
-				String y = Integer.toString(loc.getBlockY());
-				String z = Integer.toString(loc.getBlockZ());
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), action.getContext().replace("%player%", p.getName()).replace("%name%", name).replace("%time%", cd)
-						.replace("%x%", x).replace("%y%", y).replace("%z%", z));
-				break;
-			}
-			default: {
-				break;
-			}
+					String[] replacementList = { p.getName(), name, cd, x, y, z };
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), StringUtils.replaceEach(action.getContext(), searchList, replacementList));
+					break;
+				}
+				default: {
+					break;
+				}
 			}
 		}
 	}
 
+	public boolean hasActiveTasks(String playerName) {
+		return !perPlayerActiveRtpTask.isEmpty() && perPlayerActiveRtpTask.containsKey(playerName);
+	}
 }

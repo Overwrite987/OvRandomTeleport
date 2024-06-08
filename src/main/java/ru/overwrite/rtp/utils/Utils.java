@@ -2,12 +2,15 @@ package ru.overwrite.rtp.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import static net.md_5.bungee.api.ChatColor.COLOR_CHAR;
 
@@ -40,9 +43,13 @@ public class Utils {
 			while (matcher.find()) {
 				String group = matcher.group(1);
 				matcher.appendReplacement(builder,
-						COLOR_CHAR + "x" + COLOR_CHAR + group.charAt(0) + COLOR_CHAR + group.charAt(1) + COLOR_CHAR
-								+ group.charAt(2) + COLOR_CHAR + group.charAt(3) + COLOR_CHAR + group.charAt(4)
-								+ COLOR_CHAR + group.charAt(5));
+						COLOR_CHAR + "x" +
+								COLOR_CHAR + group.charAt(0) +
+								COLOR_CHAR + group.charAt(1) +
+								COLOR_CHAR + group.charAt(2) +
+								COLOR_CHAR + group.charAt(3) +
+								COLOR_CHAR + group.charAt(4) +
+								COLOR_CHAR + group.charAt(5));
 			}
 			message = matcher.appendTail(builder).toString();
 		}
@@ -60,6 +67,29 @@ public class Utils {
 		int stay = (titleMessages.length >= 4 && titleMessages[3] != null) ? Integer.parseInt(titleMessages[3]) : 70;
 		int fadeOut = (titleMessages.length == 5 && titleMessages[4] != null) ? Integer.parseInt(titleMessages[4]) : 20;
 		p.sendTitle(title, subtitle, fadeIn, stay, fadeOut);
+	}
+
+	public static void sendSound(String[] soundArgs, Player p) {
+		if (soundArgs.length > 3) {
+			Bukkit.getConsoleSender().sendMessage ("Unable to send sound. " + soundArgs.toString());
+			return;
+		}
+		Sound sound = Sound.valueOf(soundArgs[0]);
+		float volume = (soundArgs.length >= 2 && soundArgs[1] != null) ? Float.parseFloat(soundArgs[1]) : 1.0f;
+		float pitch = (soundArgs.length == 3 && soundArgs[2] != null) ? Float.parseFloat(soundArgs[2]) : 1.0f;
+		p.playSound(p.getLocation(), sound, volume, pitch);
+	}
+
+	public static void giveEffect(String[] effectArgs, Player p) {
+		if (effectArgs.length > 3) {
+			Bukkit.getConsoleSender().sendMessage ("Unable to give effect. " + effectArgs.toString());
+			return;
+		}
+		PotionEffectType effectType = PotionEffectType.getByName(effectArgs[0]);
+		int duration = (effectArgs.length >= 2 && effectArgs[1] != null) ? Integer.parseInt(effectArgs[1]) : 1;
+		int amplifier = (effectArgs.length == 3 && effectArgs[2] != null) ? Integer.parseInt(effectArgs[2]) : 1;
+		PotionEffect effect = new PotionEffect(effectType, duration, amplifier);
+		p.addPotionEffect(effect);
 	}
 	
 	public static String getTime(int time) {

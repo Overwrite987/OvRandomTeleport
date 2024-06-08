@@ -46,17 +46,11 @@ public class RtpListener implements Listener {
 			}
 		}
 		String playerName = p.getName();
-		if (hasActiveTasks(playerName) && rtpManager.perPlayerActiveRtpChannel.get(playerName).isRestrictMove()) {
-			p.sendMessage(rtpManager.perPlayerActiveRtpChannel.get(playerName).getMovedOnTeleportMessage());
+		if (rtpManager.hasActiveTasks(playerName) && rtpManager.getPerPlayerActiveRtpTask().get(playerName).getActiveChannel().isRestrictMove()) {
+			p.sendMessage(rtpManager.getPerPlayerActiveRtpTask().get(playerName).getActiveChannel().getMovedOnTeleportMessage());
+			rtpManager.getPerPlayerActiveRtpTask().get(playerName).cancel();
 			rtpManager.teleportingNow.remove(playerName);
-			rtpManager.perPlayerActiveRtpTask.get(playerName).cancel();
-			rtpManager.perPlayerActiveRtpTask.remove(playerName);
-			rtpManager.perPlayerActiveRtpChannel.remove(playerName);
-			if (rtpManager.perPlayerBossBar.containsKey(playerName)) {
-				rtpManager.perPlayerBossBar.get(playerName).removeAll();
-				rtpManager.perPlayerBossBar.remove(playerName);
-			}
-			rtpManager.perPlayerPreTeleportCooldown.remove(playerName);
+			rtpManager.getPerPlayerActiveRtpTask().remove(playerName);
 		}
 	}
 	
@@ -67,17 +61,11 @@ public class RtpListener implements Listener {
 		}
 		Player p = (Player) e.getEntity();
 		String playerName = p.getName();
-		if (hasActiveTasks(playerName) && rtpManager.perPlayerActiveRtpChannel.get(playerName).isRestrictDamage()) {
-			p.sendMessage(rtpManager.perPlayerActiveRtpChannel.get(playerName).getDamagedOnTeleportMessage());
+		if (rtpManager.hasActiveTasks(playerName) && rtpManager.getPerPlayerActiveRtpTask().get(playerName).getActiveChannel().isRestrictDamage()) {
+			p.sendMessage(rtpManager.getPerPlayerActiveRtpTask().get(playerName).getActiveChannel().getDamagedOnTeleportMessage());
+			rtpManager.getPerPlayerActiveRtpTask().get(playerName).cancel();
 			rtpManager.teleportingNow.remove(playerName);
-			rtpManager.perPlayerActiveRtpTask.get(playerName).cancel();
-			rtpManager.perPlayerActiveRtpTask.remove(playerName);
-			rtpManager.perPlayerActiveRtpChannel.remove(playerName);
-			if (rtpManager.perPlayerBossBar.containsKey(playerName)) {
-				rtpManager.perPlayerBossBar.get(playerName).removeAll();
-				rtpManager.perPlayerBossBar.remove(playerName);
-			}
-			rtpManager.perPlayerPreTeleportCooldown.remove(playerName);
+			rtpManager.getPerPlayerActiveRtpTask().remove(playerName);
 		}
 	}
 	
@@ -85,13 +73,11 @@ public class RtpListener implements Listener {
 	public void onLeave(PlayerQuitEvent e) {
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 			String playerName = e.getPlayer().getName();
-			if (hasActiveTasks(playerName)) {
-				rtpManager.perPlayerActiveRtpTask.get(playerName).cancel();
-				rtpManager.perPlayerActiveRtpTask.remove(playerName);
+			if (rtpManager.hasActiveTasks(playerName)) {
+				rtpManager.getPerPlayerActiveRtpTask().get(playerName).cancel();
+				rtpManager.teleportingNow.remove(playerName);
+				rtpManager.getPerPlayerActiveRtpTask().remove(playerName);
 			}
-			rtpManager.perPlayerActiveRtpChannel.remove(playerName);
-			rtpManager.perPlayerBossBar.remove(playerName);
-			rtpManager.perPlayerPreTeleportCooldown.remove(playerName);
 		});
 	}
 	
@@ -99,17 +85,11 @@ public class RtpListener implements Listener {
 	public void onKick(PlayerKickEvent e) {
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 			String playerName = e.getPlayer().getName();
-			if (hasActiveTasks(playerName)) {
-				rtpManager.perPlayerActiveRtpTask.get(playerName).cancel();
-				rtpManager.perPlayerActiveRtpTask.remove(playerName);
+			if (rtpManager.hasActiveTasks(playerName)) {
+				rtpManager.getPerPlayerActiveRtpTask().get(playerName).cancel();
+				rtpManager.teleportingNow.remove(playerName);
+				rtpManager.getPerPlayerActiveRtpTask().remove(playerName);
 			}
-			rtpManager.perPlayerActiveRtpChannel.remove(playerName);
-			rtpManager.perPlayerBossBar.remove(playerName);
-			rtpManager.perPlayerPreTeleportCooldown.remove(playerName);
 		});
-	}
-
-	private boolean hasActiveTasks(String playerName) {
-		return !rtpManager.perPlayerActiveRtpTask.isEmpty() && rtpManager.perPlayerActiveRtpTask.containsKey(playerName);
 	}
 }
