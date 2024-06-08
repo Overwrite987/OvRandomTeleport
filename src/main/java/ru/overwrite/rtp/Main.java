@@ -54,7 +54,7 @@ public class Main extends JavaPlugin {
 		}
 		setupEconomy(pluginManager);
 		pluginManager.registerEvents(new RtpListener(this), this);
-		getServer().getScheduler().runTaskAsynchronously(this, () -> rtpManager.setupChannels(config, pluginManager));
+		server.getScheduler().runTaskAsynchronously(this, () -> rtpManager.setupChannels(config, pluginManager));
 	}
 	
 	public boolean isPaper() {
@@ -86,8 +86,7 @@ public class Main extends JavaPlugin {
 	private void registerCommand(PluginManager pluginManager, ConfigurationSection mainSettings) {
 		try {
 			CommandMap commandMap = server.getCommandMap();
-			Constructor<PluginCommand> constructor = PluginCommand.class.getDeclaredConstructor(String.class,
-					Plugin.class);
+			Constructor<PluginCommand> constructor = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
 			constructor.setAccessible(true);
 			PluginCommand command = constructor.newInstance(mainSettings.getString("rtp_command"), this);
 			command.setExecutor(new RtpCommand(this));
