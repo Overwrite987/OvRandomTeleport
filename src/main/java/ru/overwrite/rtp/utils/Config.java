@@ -34,7 +34,7 @@ public class Config {
 	}
 
 	public static String getPrefixed(String message, String prefix) {
-		return  Utils.colorize(message.replace("%prefix%", prefix));
+		return Utils.colorize(message.replace("%prefix%", prefix));
 	}
 
 }

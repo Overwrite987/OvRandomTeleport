@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 
 public class Action {
 	
-	private static final Pattern ACTION_PATTERN = Pattern.compile("\\[(\\w+)\\](?: ?(.*))");
+	private static final Pattern ACTION_PATTERN = Pattern.compile("\\[(\\w+)](?: ?(.*))");
 	
 	@Getter
 	private final ActionType type;
