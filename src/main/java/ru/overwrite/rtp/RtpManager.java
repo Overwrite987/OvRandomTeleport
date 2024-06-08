@@ -55,7 +55,9 @@ public class RtpManager {
 	
 	public void setupChannels(FileConfiguration config, PluginManager pluginManager) {
 		for (String channelId : config.getConfigurationSection("channels").getKeys(false)) {
-			plugin.getLogger().info(channelId);
+			if (Utils.DEBUG) {
+				plugin.getPluginLogger().info("Id: " + channelId);
+			}
 			ConfigurationSection channelSection = config.getConfigurationSection("channels." + channelId);
 			String name = channelSection.getString("name", "Абстрактный канал");
 			ChannelType type = channelSection.getString("type") == null ? ChannelType.DEFAULT : ChannelType.valueOf(channelSection.getString("type").toUpperCase());
@@ -224,73 +226,47 @@ public class RtpManager {
 			return;
 		}
 		teleportingNow.add(p.getName());
-		switch (channel.getType()) {
-			case DEFAULT: {
-				Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-					Location loc = generateRandomLocation(p, channel, world);
-					if (loc == null) {
-						teleportingNow.remove(p.getName());
-						p.sendMessage(pluginConfig.messages_fail_to_find_location);
-						return;
-					}
-					if (channel.getTeleportCooldown() > 0) {
-						this.executeActions(p, channel, channel.getPreTeleportActions(), p.getLocation());
-						RtpTask rtpTask = new RtpTask(plugin, this, p.getName(), channel);
-						perPlayerActiveRtpTask.put(p.getName(), rtpTask);
-						rtpTask.startPreTeleportTimer(p, channel, loc);
-						return;
-					}
-					teleportPlayer(p, channel, loc);
-				});
-				break;
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+			Location loc = null;
+			switch (channel.getType()) {
+				case DEFAULT: {
+					loc = generateRandomLocation(p, channel, world);
+					break;
+				}
+				case NEAR_PLAYER: {
+					loc = generateRandomLocationNearPlayer(p, channel, world);
+					break;
+				}
+				case NEAR_REGION: {
+					loc = WGUtils.generateRandomLocationNearRandomRegion(p, channel, world);
+					break;
+				}
+				default: {
+					break;
+				}
 			}
-			case NEAR_PLAYER: {
-				Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-					Location loc = generateRandomLocationNearPlayer(p, channel, world);
-					if (loc == null) {
-						teleportingNow.remove(p.getName());
-						p.sendMessage(pluginConfig.messages_fail_to_find_location);
-						return;
-					}
-					if (channel.getTeleportCooldown() > 0) {
-						this.executeActions(p, channel, channel.getPreTeleportActions(), p.getLocation());
-						RtpTask rtpTask = new RtpTask(plugin, this, p.getName(), channel);
-						perPlayerActiveRtpTask.put(p.getName(), rtpTask);
-						rtpTask.startPreTeleportTimer(p, channel, loc);
-						return;
-					}
-					teleportPlayer(p, channel, loc);
-				});
-				break;
+			if (loc == null) {
+				teleportingNow.remove(p.getName());
+				p.sendMessage(pluginConfig.messages_fail_to_find_location);
+				return;
 			}
-			case NEAR_REGION: {
-				Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-					Location loc = WGUtils.generateRandomLocationNearRandomRegion(p, channel, world);
-					if (loc == null) {
-						teleportingNow.remove(p.getName());
-						p.sendMessage(pluginConfig.messages_fail_to_find_location);
-						return;
-					}
-					if (channel.getTeleportCooldown() > 0) {
-						this.executeActions(p, channel, channel.getPreTeleportActions(), p.getLocation());
-						RtpTask rtpTask = new RtpTask(plugin, this, p.getName(), channel);
-						perPlayerActiveRtpTask.put(p.getName(), rtpTask);
-						rtpTask.startPreTeleportTimer(p, channel, loc);
-						return;
-					}
-					teleportPlayer(p, channel, loc);
-				});
-				break;
+			if (channel.getTeleportCooldown() > 0) {
+				this.executeActions(p, channel, channel.getPreTeleportActions(), p.getLocation());
+				RtpTask rtpTask = new RtpTask(plugin, this, p.getName(), channel);
+				perPlayerActiveRtpTask.put(p.getName(), rtpTask);
+				rtpTask.startPreTeleportTimer(p, channel, loc);
+				return;
 			}
-			default: {
-				break;
-			}
-		}
+			teleportPlayer(p, channel, loc);
+		});
 	}
 	
 	private final Map<String, Integer> iterationsPerPlayer = new HashMap<>();
 	
 	private Location generateRandomLocation(Player p, Channel channel, World world) {
+		if (Utils.DEBUG) {
+			plugin.getPluginLogger().info("Iterations for player " + p.getName() + ": " + iterationsPerPlayer.getOrDefault(p.getName(), 0));
+		}
 	    if (iterationsPerPlayer.getOrDefault(p.getName(), 0) > channel.getMaxLocationAttempts()) {
 	    	iterationsPerPlayer.remove(p.getName());
 	        return null;

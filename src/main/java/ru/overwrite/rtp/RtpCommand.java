@@ -101,6 +101,11 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 					sender.sendMessage(pluginConfig.messages_admin_help);
 					return true;
 				}
+				case "debug": {
+					Utils.DEBUG = !Utils.DEBUG;
+					sender.sendMessage("Дебаг переключен в значение: " + Utils.DEBUG);
+					return true;
+				}
 			}
 			sender.sendMessage(pluginConfig.messages_unknown_argument);
 			return false;
@@ -167,6 +172,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 					completions.add("reload");
 					completions.add("forceteleport");
 					completions.add("forcertp");
+					completions.add("debug");
 				}
 				if (args[1].equalsIgnoreCase("forceteleport")) {
 					if (args.length == 3) {
