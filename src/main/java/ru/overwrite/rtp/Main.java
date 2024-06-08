@@ -100,4 +100,9 @@ public class Main extends JavaPlugin {
 		}
 	}
 
+	@Override
+	public void onDisable() {
+		server.getScheduler().cancelTasks(this);
+	}
+
 }
