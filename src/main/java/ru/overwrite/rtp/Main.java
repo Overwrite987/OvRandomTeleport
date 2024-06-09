@@ -106,8 +106,9 @@ public class Main extends JavaPlugin {
 			Constructor<PluginCommand> constructor = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
 			constructor.setAccessible(true);
 			PluginCommand command = constructor.newInstance(mainSettings.getString("rtp_command"), this);
-			command.setExecutor(new RtpCommand(this));
-			command.setTabCompleter(new RtpCommand(this));
+			RtpCommand rtpCommand = new RtpCommand(this);
+			command.setExecutor(rtpCommand);
+			command.setTabCompleter(rtpCommand);
 			commandMap.register(getDescription().getName(), command);
 		} catch (Exception ex) {
 			pluginLogger.info("Unable to register password command!");
