@@ -6,11 +6,17 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import ru.overwrite.rtp.Main;
 
 import static net.md_5.bungee.api.ChatColor.COLOR_CHAR;
 
@@ -54,6 +60,18 @@ public class Utils {
 			message = matcher.appendTail(builder).toString();
 		}
 		return ChatColor.translateAlternateColorCodes('&', message);
+	}
+
+	public static void checkUpdates(Main plugin, Consumer<String> consumer) {
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+					new URL("https://raw.githubusercontent.com/Overwrite987/UltimateServerProtector/master/VERSION")
+							.openStream()))) {
+				consumer.accept(reader.readLine().trim());
+			} catch (IOException exception) {
+				plugin.getLogger().warning("Can't check for updates: " + exception.getMessage());
+			}
+		});
 	}
 	
 	public static void sendTitleMessage(String[] titleMessages, Player p) {

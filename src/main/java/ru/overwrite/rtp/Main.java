@@ -71,6 +71,23 @@ public class Main extends JavaPlugin {
 		}
 		return true;
 	}
+
+	public void checkForUpdates(FileConfiguration config) {
+		if (!config.getBoolean("main-settings.update-checker")) {
+			return;
+		}
+		Utils.checkUpdates(this, version -> {
+			pluginLogger.info("§6========================================");
+			if (getDescription().getVersion().equals(version)) {
+				pluginLogger.info("§aВы используете последнюю версию плагина!");
+			} else {
+				pluginLogger.info("§aВы используете устаревшую плагина!");
+				pluginLogger.info("§aВы можете скачать новую версию здесь:");
+				pluginLogger.info("§bgithub.com/Overwrite987/OvRandomTeleport/releases/");
+			}
+			pluginLogger.info("§6========================================");
+		});
+	}
 	
 	private void setupEconomy(PluginManager pluginManager) {
         if (!pluginManager.isPluginEnabled("Vault")) {
