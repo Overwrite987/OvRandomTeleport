@@ -65,7 +65,7 @@ public class Utils {
 	public static void checkUpdates(Main plugin, Consumer<String> consumer) {
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 			try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-					new URL("https://raw.githubusercontent.com/Overwrite987/UltimateServerProtector/master/VERSION")
+					new URL("https://raw.githubusercontent.com/Overwrite987/OvRandomTeleport/master/VERSION")
 							.openStream()))) {
 				consumer.accept(reader.readLine().trim());
 			} catch (IOException exception) {
