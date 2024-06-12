@@ -1,4 +1,4 @@
-# OvRandomTeleport
+# OvRandomTeleport [![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/overwritemc/ovrandomteleport?style=flat-square)](https://www.codefactor.io/repository/github/overwritemc/ovrandomteleport)
 ### Функционал и особенности:
 - Возможность создавать множество каналов телепортации со своими функциями
 - Асинхронный поиск локации
