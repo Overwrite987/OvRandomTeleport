@@ -39,78 +39,13 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 				return false;
 			}
 			Channel channel = rtpManager.getDefaultChannel();
-			if (!p.hasPermission("rtp.channel." + channel.getId())) {
-				p.sendMessage(channel.getNoPermsMessage());
-				return false;
-			}
-			if (channel.getPlayerCooldowns().containsKey(p.getName())) {
-				p.sendMessage(channel.getCooldownMessage()
-						.replace("%time%", Utils.getTime((int) (channel.getCooldown() - (System.currentTimeMillis() - channel.getPlayerCooldowns().get(p.getName())) / 1000))));
-				return false;
-			}
-			if (channel.isTeleportToFirstAllowedWorld()) {
-				rtpManager.preTeleport(p, channel, channel.getActiveWorlds().get(0));
-				return true;
-			}
-			rtpManager.preTeleport(p, rtpManager.getDefaultChannel(), p.getWorld());
-			return true;
+			return processTeleport(p, channel);
 		}
-		if (args[0].equals("admin")) {
-			if (!sender.hasPermission("rtp.admin")) {
-				sender.sendMessage(pluginConfig.messages_incorrect_channel);
-				return false;
-			}
-			switch (args[1].toLowerCase()) {
-				case "reload": {
-					plugin.reloadConfig();
-					FileConfiguration config = plugin.getConfig();
-					pluginConfig.setupMessages(config);
-					rtpManager.getNamedChannels().clear();
-					rtpManager.setupChannels(config, Bukkit.getPluginManager());
-					sender.sendMessage(pluginConfig.messages_reload);
-					return true;
-				}
-				case "forceteleport":
-				case "forcertp": {
-					if (args.length < 4) {
-						sender.sendMessage(pluginConfig.messages_unknown_argument);
-						return false;
-					}
-					Player targetPlayer = Bukkit.getPlayerExact(args[2]);
-					if (targetPlayer == null) {
-						sender.sendMessage(pluginConfig.messages_player_not_found);
-						return false;
-					}
-					if (!rtpManager.getNamedChannels().containsKey(args[3])) {
-						sender.sendMessage(pluginConfig.messages_incorrect_channel);
-						return false;
-					}
-					Channel channel = rtpManager.getChannelByName(args[3]);
-					if (!channel.getActiveWorlds().contains(targetPlayer.getWorld())) {
-						if (channel.isTeleportToFirstAllowedWorld()) {
-							rtpManager.preTeleport(targetPlayer, channel, channel.getActiveWorlds().get(0));
-							return true;
-						}
-						sender.sendMessage(channel.getInvalidWorldMessage());
-						return false;
-					}
-					rtpManager.preTeleport(targetPlayer, channel, targetPlayer.getWorld());
-					return true;
-				}
-				case "help": {
-					sender.sendMessage(pluginConfig.messages_admin_help);
-					return true;
-				}
-				case "debug": {
-					Utils.DEBUG = !Utils.DEBUG;
-					sender.sendMessage("Дебаг переключен в значение: " + Utils.DEBUG);
-					return true;
-				}
-			}
-			sender.sendMessage(pluginConfig.messages_unknown_argument);
-			return false;
-		}
+
 		if (args.length == 1) {
+			if (args[0].equals("admin")) {
+				return processAdminCommand(sender, args);
+			}
 			Player p = (Player) sender;
 			if (rtpManager.hasActiveTasks(p.getName())) {
 				return false;
@@ -120,36 +55,96 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 				return false;
 			}
 			Channel channel = rtpManager.getChannelByName(args[0]);
-			if (!p.hasPermission("rtp.channel." + channel.getId())) {
-				p.sendMessage(channel.getNoPermsMessage());
-				return false;
-			}
-			if (channel.getPlayerCooldowns().containsKey(p.getName())) {
-				p.sendMessage(channel.getCooldownMessage()
-						.replace("%time%", Utils.getTime((int) (channel.getCooldown() - (System.currentTimeMillis() - channel.getPlayerCooldowns().get(p.getName())) / 1000))));
-				return false;
-			}
-			if (!channel.getActiveWorlds().contains(p.getWorld())) {
-				if (channel.isTeleportToFirstAllowedWorld()) {
-					rtpManager.preTeleport(p, channel, channel.getActiveWorlds().get(0));
-					return true;
-				}
-				p.sendMessage(channel.getInvalidWorldMessage());
-				return false;
-			}
-			if (plugin.getEconomy() != null) {
-				if (plugin.getEconomy().getBalance(p) < channel.getTeleportCost()) {
-					p.sendMessage(channel.getNotEnoughMoneyMessage());
-					return false;
-				}
-				plugin.getEconomy().withdrawPlayer(p, channel.getTeleportCost());
-			}
-			rtpManager.preTeleport(p, channel, p.getWorld());
-			return true;
+			return processTeleport(p, channel);
 		} else {
 			sender.sendMessage(pluginConfig.messages_incorrect_channel);
 			return false;
 		}
+	}
+
+	private boolean processTeleport(Player p, Channel channel) {
+		if (!p.hasPermission("rtp.channel." + channel.getId())) {
+			p.sendMessage(channel.getNoPermsMessage());
+			return false;
+		}
+		if (channel.getPlayerCooldowns().containsKey(p.getName())) {
+			p.sendMessage(channel.getCooldownMessage()
+					.replace("%time%", Utils.getTime((int) (channel.getCooldown() - (System.currentTimeMillis() - channel.getPlayerCooldowns().get(p.getName())) / 1000))));
+			return false;
+		}
+		if (!channel.getActiveWorlds().contains(p.getWorld())) {
+			if (channel.isTeleportToFirstAllowedWorld()) {
+				rtpManager.preTeleport(p, channel, channel.getActiveWorlds().get(0));
+				return true;
+			}
+			p.sendMessage(channel.getInvalidWorldMessage());
+			return false;
+		}
+		if (plugin.getEconomy() != null) {
+			if (plugin.getEconomy().getBalance(p) < channel.getTeleportCost()) {
+				p.sendMessage(channel.getNotEnoughMoneyMessage());
+				return false;
+			}
+			plugin.getEconomy().withdrawPlayer(p, channel.getTeleportCost());
+		}
+		rtpManager.preTeleport(p, channel, p.getWorld());
+		return true;
+	}
+
+	private boolean processAdminCommand(CommandSender sender, String[] args) {
+		if (!sender.hasPermission("rtp.admin")) {
+			sender.sendMessage(pluginConfig.messages_incorrect_channel);
+			return false;
+		}
+		switch (args[1].toLowerCase()) {
+			case "reload": {
+				plugin.reloadConfig();
+				FileConfiguration config = plugin.getConfig();
+				pluginConfig.setupMessages(config);
+				rtpManager.getNamedChannels().clear();
+				rtpManager.setupChannels(config, Bukkit.getPluginManager());
+				sender.sendMessage(pluginConfig.messages_reload);
+				return true;
+			}
+			case "forceteleport":
+			case "forcertp": {
+				if (args.length < 4) {
+					sender.sendMessage(pluginConfig.messages_unknown_argument);
+					return false;
+				}
+				Player targetPlayer = Bukkit.getPlayerExact(args[2]);
+				if (targetPlayer == null) {
+					sender.sendMessage(pluginConfig.messages_player_not_found);
+					return false;
+				}
+				if (!rtpManager.getNamedChannels().containsKey(args[3])) {
+					sender.sendMessage(pluginConfig.messages_incorrect_channel);
+					return false;
+				}
+				Channel channel = rtpManager.getChannelByName(args[3]);
+				if (!channel.getActiveWorlds().contains(targetPlayer.getWorld())) {
+					if (channel.isTeleportToFirstAllowedWorld()) {
+						rtpManager.preTeleport(targetPlayer, channel, channel.getActiveWorlds().get(0));
+						return true;
+					}
+					sender.sendMessage(channel.getInvalidWorldMessage());
+					return false;
+				}
+				rtpManager.preTeleport(targetPlayer, channel, targetPlayer.getWorld());
+				return true;
+			}
+			case "help": {
+				sender.sendMessage(pluginConfig.messages_admin_help);
+				return true;
+			}
+			case "debug": {
+				Utils.DEBUG = !Utils.DEBUG;
+				sender.sendMessage("Дебаг переключен в значение: " + Utils.DEBUG);
+				return true;
+			}
+		}
+		sender.sendMessage(pluginConfig.messages_unknown_argument);
+		return false;
 	}
 	
 	@Override
