@@ -74,7 +74,7 @@ public class Main extends JavaPlugin {
 	}
 
 	public void checkForUpdates(FileConfiguration config) {
-		if (!config.getBoolean("main-settings.update-checker")) {
+		if (!config.getBoolean("main_settings.update_checker")) {
 			return;
 		}
 		Utils.checkUpdates(this, version -> {
