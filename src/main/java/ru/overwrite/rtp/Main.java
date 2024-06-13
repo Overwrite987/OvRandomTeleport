@@ -54,7 +54,7 @@ public class Main extends JavaPlugin {
 		}
 		setupEconomy(pluginManager);
 		pluginManager.registerEvents(new RtpListener(this), this);
-		checkForUpdates(config);
+		checkForUpdates(mainSettings);
 		server.getScheduler().runTaskAsynchronously(this, () -> rtpManager.setupChannels(config, pluginManager));
 	}
 	
@@ -73,8 +73,8 @@ public class Main extends JavaPlugin {
 		return true;
 	}
 
-	public void checkForUpdates(FileConfiguration config) {
-		if (!config.getBoolean("main_settings.update_checker")) {
+	public void checkForUpdates(ConfigurationSection mainSettings) {
+		if (!mainSettings.getBoolean("update_checker")) {
 			return;
 		}
 		Utils.checkUpdates(this, version -> {
