@@ -54,6 +54,7 @@ public class Main extends JavaPlugin {
 		}
 		setupEconomy(pluginManager);
 		pluginManager.registerEvents(new RtpListener(this), this);
+		checkForUpdates(config);
 		server.getScheduler().runTaskAsynchronously(this, () -> rtpManager.setupChannels(config, pluginManager));
 	}
 	
