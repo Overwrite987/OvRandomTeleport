@@ -293,6 +293,9 @@ public class RtpManager {
 	        iterationsPerPlayer.put(p.getName(), iterationsPerPlayer.getOrDefault(p.getName(), 0)+1);
 	        return generateRandomLocation(p, channel, world);
 	    } else {
+			if (Utils.DEBUG) {
+				plugin.getPluginLogger().info("Location for player " + p.getName() + " found in " + iterationsPerPlayer.get(p.getName()) + "iterations");
+			}
 	        iterationsPerPlayer.remove(p.getName());
 	        return location;
 	    }
@@ -336,6 +339,9 @@ public class RtpManager {
 	        iterationsPerPlayer.put(p.getName(), iterationsPerPlayer.getOrDefault(p.getName(), 0)+1);
 	        return generateRandomLocationNearPlayer(p, channel, world);
 	    } else {
+			if (Utils.DEBUG) {
+				plugin.getPluginLogger().info("Location for player " + p.getName() + " found in " + iterationsPerPlayer.get(p.getName()) + " iterations");
+			}
 	        iterationsPerPlayer.remove(p.getName());
 	        return location;
 	    }
