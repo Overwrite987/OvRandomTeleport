@@ -29,7 +29,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 	}
 	
 	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
-		if (!(sender instanceof Player) && (args.length == 0 || !args[0].equals("admin"))) {
+		if (!(sender instanceof Player) && (args.length == 0 || !args[0].equalsIgnoreCase("admin"))) {
 			plugin.getLogger().info("Вы должны быть игроком!");
 			return true;
 		}
@@ -42,10 +42,11 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 			return processTeleport(p, channel);
 		}
 
+		if (args[0].equalsIgnoreCase("admin")) {
+			return processAdminCommand(sender, args);
+		}
+
 		if (args.length == 1) {
-			if (args[0].equals("admin")) {
-				return processAdminCommand(sender, args);
-			}
 			Player p = (Player) sender;
 			if (rtpManager.hasActiveTasks(p.getName())) {
 				return false;
