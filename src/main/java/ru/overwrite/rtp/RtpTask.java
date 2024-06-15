@@ -43,7 +43,9 @@ public class RtpTask {
             public void run() {
                 preTeleportCooldown--;
                 if (preTeleportCooldown <= 0) {
-                    bossBar.removeAll();
+                    if (bossBar!= null) {
+                        bossBar.removeAll();
+                    }
                     rtpManager.getPerPlayerActiveRtpTask().remove(playerName);
                     rtpManager.teleportPlayer(p, channel, loc);
                     cancel();
@@ -71,7 +73,9 @@ public class RtpTask {
     }
 
     public void cancel() {
-        bossBar.removeAll();
+        if (bossBar!= null) {
+            bossBar.removeAll();
+        }
         runnable.cancel();
         rtpManager.getPerPlayerActiveRtpTask().remove(playerName);
     }
