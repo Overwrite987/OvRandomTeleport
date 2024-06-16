@@ -63,10 +63,10 @@ public class WGUtils {
 
 	    switch (shape) {
 	        case "SQUARE":
-	            location = LocationUtils.generateRandomSquareLocationNearPoint(world, centerX, centerZ, channel);
+	            location = LocationUtils.generateRandomSquareLocationNearPoint(p, centerX, centerZ, channel, world);
 	            break;
 	        case "ROUND":
-	            location = LocationUtils.generateRandomRoundLocationNearPoint(world, centerX, centerZ, channel);
+	            location = LocationUtils.generateRandomRoundLocationNearPoint(p, centerX, centerZ, channel, world);
 	            break;
 	        default:
 	            location = null;

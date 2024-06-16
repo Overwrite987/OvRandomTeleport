@@ -65,69 +65,7 @@ public class LocationUtils {
         }
     }
 
-    public static Location generateRandomSquareLocationNearPlayer(Player sourcePlayer, Player targetPlayer, Channel channel, World world) {
-        int minX = channel.getMinX();
-        int maxX = channel.getMaxX();
-        int minZ = channel.getMinZ();
-        int maxZ = channel.getMaxZ();
-
-        int centerX = targetPlayer.getLocation().getBlockX();
-        int centerZ = targetPlayer.getLocation().getBlockZ();
-
-        int x, z;
-        do {
-            x = centerX + random.nextInt(61) - 30;
-            z = centerZ + random.nextInt(61) - 30;
-        } while (x < minX || x > maxX || z < minZ || z > maxZ);
-
-        int y = world.getEnvironment() != World.Environment.NETHER ? world.getHighestBlockYAt(x, z) : findSafeNetherYPoint(world, x, z);
-        if (y < 0) {
-            return null;
-        }
-
-        Location location = new Location(world, x + 0.5, y, z + 0.5, sourcePlayer.getLocation().getYaw(), sourcePlayer.getLocation().getPitch());
-        if (isDisallowedBlock(location, channel) || isDisallowedBiome(location, channel) || isInsideRegion(location, channel) || isInsideTown(location, channel)) {
-            return null;
-        } else {
-            location.setY(y + 1);
-            return location;
-        }
-    }
-
-    public static Location generateRandomRoundLocationNearPlayer(Player sourcePlayer, Player targetPlayer, Channel channel, World world) {
-        int minX = channel.getMinX();
-        int maxX = channel.getMaxX();
-        int minZ = channel.getMinZ();
-        int maxZ = channel.getMaxZ();
-
-        int centerX = targetPlayer.getLocation().getBlockX();
-        int centerZ = targetPlayer.getLocation().getBlockZ();
-        int radiusMin = 30;
-        int radiusMax = 60;
-
-        int x, z;
-        do {
-            double theta = random.nextDouble() * 2 * Math.PI;
-            double r = radiusMin + (radiusMax - radiusMin) * Math.sqrt(random.nextDouble());
-            x = (int) (centerX + r * Math.cos(theta));
-            z = (int) (centerZ + r * Math.sin(theta));
-        } while (x < minX || x > maxX || z < minZ || z > maxZ);
-
-        int y = world.getEnvironment() != World.Environment.NETHER ? world.getHighestBlockYAt(x, z) : findSafeNetherYPoint(world, x, z);
-        if (y < 0) {
-            return null;
-        }
-
-        Location location = new Location(world, x + 0.5, y, z + 0.5, sourcePlayer.getLocation().getYaw(), sourcePlayer.getLocation().getPitch());
-        if (isDisallowedBlock(location, channel) || isDisallowedBiome(location, channel) || isInsideRegion(location, channel) || isInsideTown(location, channel)) {
-            return null;
-        } else {
-            location.setY(y + 1);
-            return location;
-        }
-    }
-
-    public static Location generateRandomSquareLocationNearPoint(World world, int centerX, int centerZ, Channel channel) {
+    public static Location generateRandomSquareLocationNearPoint(Player p, int centerX, int centerZ, Channel channel, World world) {
         int minX = channel.getMinX();
         int maxX = channel.getMaxX();
         int minZ = channel.getMinZ();
@@ -144,7 +82,7 @@ public class LocationUtils {
             return null;
         }
 
-        Location location = new Location(world, x + 0.5, y, z + 0.5);
+        Location location = new Location(world, x + 0.5, y, z + 0.5, p.getLocation().getYaw(), p.getLocation().getPitch());
         if (isDisallowedBlock(location, channel) || isDisallowedBiome(location, channel) || isInsideRegion(location, channel) || isInsideTown(location, channel)) {
             return null;
         } else {
@@ -153,7 +91,7 @@ public class LocationUtils {
         }
     }
 
-    public static Location generateRandomRoundLocationNearPoint(World world, int centerX, int centerZ, Channel channel) {
+    public static Location generateRandomRoundLocationNearPoint(Player p, int centerX, int centerZ, Channel channel, World world) {
         int minX = channel.getMinX();
         int maxX = channel.getMaxX();
         int minZ = channel.getMinZ();
@@ -175,7 +113,7 @@ public class LocationUtils {
             return null;
         }
 
-        Location location = new Location(world, x + 0.5, y, z + 0.5);
+        Location location = new Location(world, x + 0.5, y, z + 0.5, p.getLocation().getYaw(), p.getLocation().getPitch());
         if (isDisallowedBlock(location, channel) || isDisallowedBiome(location, channel) || isInsideRegion(location, channel) || isInsideTown(location, channel)) {
             return null;
         } else {
