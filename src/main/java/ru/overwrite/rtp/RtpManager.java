@@ -39,9 +39,15 @@ public class RtpManager {
 	
 	@Getter
 	private final Map<String, Channel> namedChannels = new HashMap<>();
+
+	@Getter
+	public final Map<Channel, String> joinChannels = new HashMap<>();
 	
 	@Getter
 	public final Map<Channel, String> voidChannels = new HashMap<>();
+
+	@Getter
+	public final Map<Channel, String> respawnChannels = new HashMap<>();
 
 	@Getter
 	private final Map<String, RtpTask> perPlayerActiveRtpTask = new ConcurrentHashMap<>();
@@ -69,7 +75,9 @@ public class RtpManager {
 				activeWorlds.add(Bukkit.getWorld(w));
 			}
 			boolean teleportToFirstAllowedWorld = channelSection.getBoolean("teleport_to_first_world", false);
+			boolean teleportOnFirstJoin = channelSection.getBoolean("teleport_on_first_join", false);
 			boolean teleportOnVoid = channelSection.getBoolean("teleport_on_void", false);
+			boolean teleportOnRespawn = channelSection.getBoolean("teleport_on_respawn", false);
 			double teleportCost = plugin.getEconomy() != null ? channelSection.getDouble("teleport_cost", -1) : -1;
 			ConfigurationSection locationGenOptions = channelSection.getConfigurationSection("location_generation_options");
 			if (locationGenOptions == null) {
@@ -159,7 +167,9 @@ public class RtpManager {
 					type,
 					activeWorlds, 
 					teleportToFirstAllowedWorld,
+					teleportOnFirstJoin,
 					teleportOnVoid,
+					teleportOnRespawn,
 					teleportCost,
 					shape,
 					minX, maxX,
@@ -192,11 +202,21 @@ public class RtpManager {
 					failToFindLocationMessage,
 					alreadyTeleportingMessage);
 			namedChannels.put(channelId, newChannel);
-			if (teleportOnVoid) {
-				voidChannels.put(newChannel, channelId);
-			}
+			assignChannelToSpecification(newChannel, channelId);
 		}
 		this.defaultChannel = getChannelByName(config.getString("main_settings.default_channel"));
+	}
+
+	private void assignChannelToSpecification(Channel newChannel, String channelId) {
+		if (newChannel.isTeleportOnFisrtJoin()) {
+			joinChannels.put(newChannel, channelId);
+		}
+		if (newChannel.isTeleportOnVoid()) {
+			voidChannels.put(newChannel, channelId);
+		}
+		if (newChannel.isTeleportOnRespawn()) {
+			respawnChannels.put(newChannel, channelId);
+		}
 	}
 
 	private boolean doesConfigValueExists(ConfigurationSection section, String key) {

@@ -5,9 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 
 import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.utils.Config;
@@ -53,6 +51,44 @@ public class RtpListener implements Listener {
 			rtpManager.getPerPlayerActiveRtpTask().remove(playerName);
 		}
 	}
+
+	@EventHandler
+	public void onFirstJoin(PlayerJoinEvent e) {
+		Player p = e.getPlayer();
+		for (Channel channel : rtpManager.getJoinChannels().keySet()) {
+			if (!p.hasPermission("rtp.channel." + rtpManager.getJoinChannels().get(channel))) {
+				continue;
+			}
+			if (!channel.getActiveWorlds().contains(p.getWorld())) {
+				if (channel.isTeleportToFirstAllowedWorld()) {
+					rtpManager.preTeleport(p, channel, channel.getActiveWorlds().get(0));
+					return;
+				}
+				return;
+			}
+			rtpManager.preTeleport(p, channel, p.getWorld());
+			return;
+		}
+	}
+
+	@EventHandler
+	public void onRespawn(PlayerRespawnEvent e) {
+		Player p = e.getPlayer();
+		for (Channel channel : rtpManager.getRespawnChannels().keySet()) {
+			if (!p.hasPermission("rtp.channel." + rtpManager.getRespawnChannels().get(channel))) {
+				continue;
+			}
+			if (!channel.getActiveWorlds().contains(p.getWorld())) {
+				if (channel.isTeleportToFirstAllowedWorld()) {
+					rtpManager.preTeleport(p, channel, channel.getActiveWorlds().get(0));
+					return;
+				}
+				return;
+			}
+			rtpManager.preTeleport(p, channel, p.getWorld());
+			return;
+		}
+	}
 	
 	@EventHandler
 	public void onDamage(EntityDamageEvent e) {
@@ -71,20 +107,19 @@ public class RtpListener implements Listener {
 	
 	@EventHandler
 	public void onLeave(PlayerQuitEvent e) {
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			String playerName = e.getPlayer().getName();
-			if (rtpManager.hasActiveTasks(playerName)) {
-				rtpManager.getPerPlayerActiveRtpTask().get(playerName).cancel();
-				rtpManager.teleportingNow.remove(playerName);
-				rtpManager.getPerPlayerActiveRtpTask().remove(playerName);
-			}
-		});
+		Player p = e.getPlayer();
+		handlePlayerLeave(p);
 	}
 	
 	@EventHandler
 	public void onKick(PlayerKickEvent e) {
+		Player p = e.getPlayer();
+		handlePlayerLeave(p);
+	}
+
+	private void handlePlayerLeave(Player p) {
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			String playerName = e.getPlayer().getName();
+			String playerName = p.getName();
 			if (rtpManager.hasActiveTasks(playerName)) {
 				rtpManager.getPerPlayerActiveRtpTask().get(playerName).cancel();
 				rtpManager.teleportingNow.remove(playerName);
