@@ -145,7 +145,7 @@ public class LocationUtils {
         }
 
         Location location = new Location(world, x + 0.5, y, z + 0.5);
-        if (LocationUtils.isDisallowedBlock(location, channel) || LocationUtils.isDisallowedBiome(location, channel) || LocationUtils.isInsideRegion(location, channel) || LocationUtils.isInsideTown(location, channel)) {
+        if (isDisallowedBlock(location, channel) || isDisallowedBiome(location, channel) || isInsideRegion(location, channel) || isInsideTown(location, channel)) {
             return null;
         } else {
             location.setY(y + 1);
@@ -176,7 +176,7 @@ public class LocationUtils {
         }
 
         Location location = new Location(world, x + 0.5, y, z + 0.5);
-        if (LocationUtils.isDisallowedBlock(location, channel) || LocationUtils.isDisallowedBiome(location, channel) || LocationUtils.isInsideRegion(location, channel) || LocationUtils.isInsideTown(location, channel)) {
+        if (isDisallowedBlock(location, channel) || isDisallowedBiome(location, channel) || isInsideRegion(location, channel) || isInsideTown(location, channel)) {
             return null;
         } else {
             location.setY(y + 1);
