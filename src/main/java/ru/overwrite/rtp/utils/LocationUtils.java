@@ -65,7 +65,21 @@ public class LocationUtils {
         }
     }
 
-    public static Location generateRandomSquareLocationNearPoint(Player p, int centerX, int centerZ, Channel channel, World world) {
+    public static Location generateRandomLocationNearPoint(String shape, Player p, int centerX, int centerZ, Channel channel, World world) {
+        switch (shape) {
+            case "SQUARE": {
+                return generateRandomSquareLocationNearPoint(p, centerX, centerZ, channel, world);
+            }
+            case "ROUND": {
+                return generateRandomRoundLocationNearPoint(p, centerX, centerZ, channel, world);
+            }
+            default: {
+                return null;
+            }
+        }
+    }
+
+    private static Location generateRandomSquareLocationNearPoint(Player p, int centerX, int centerZ, Channel channel, World world) {
         int minX = channel.getMinX();
         int maxX = channel.getMaxX();
         int minZ = channel.getMinZ();
@@ -91,7 +105,7 @@ public class LocationUtils {
         }
     }
 
-    public static Location generateRandomRoundLocationNearPoint(Player p, int centerX, int centerZ, Channel channel, World world) {
+    private static Location generateRandomRoundLocationNearPoint(Player p, int centerX, int centerZ, Channel channel, World world) {
         int minX = channel.getMinX();
         int maxX = channel.getMaxX();
         int minZ = channel.getMinZ();

@@ -322,21 +322,7 @@ public class RtpManager {
 		int centerZ = targetPlayer.getLocation().getBlockZ();
 
 	    String shape = channel.getShape();
-	    Location location;
-
-	    switch (shape) {
-    		case "SQUARE":	{
-    			location = LocationUtils.generateRandomSquareLocationNearPoint(p, centerX, centerZ, channel, world);
-    			break;
-    		}
-    		case "ROUND":	{
-    			location = LocationUtils.generateRandomRoundLocationNearPoint(p, centerX, centerZ, channel, world);
-    			break;
-    		}
-    		default: {
-    			return null;
-    		}
-	    }
+	    Location location = LocationUtils.generateRandomLocationNearPoint(shape, p, centerX, centerZ, channel, world);
 
 	    if (location == null) {
 	        iterationsPerPlayer.put(p.getName(), iterationsPerPlayer.getOrDefault(p.getName(), 0)+1);
