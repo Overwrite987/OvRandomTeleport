@@ -55,6 +55,9 @@ public class RtpListener implements Listener {
 	@EventHandler
 	public void onFirstJoin(PlayerJoinEvent e) {
 		Player p = e.getPlayer();
+		if (p.hasPlayedBefore()) {
+			return;
+		}
 		for (Channel channel : rtpManager.getJoinChannels().keySet()) {
 			if (!p.hasPermission("rtp.channel." + rtpManager.getJoinChannels().get(channel))) {
 				continue;
