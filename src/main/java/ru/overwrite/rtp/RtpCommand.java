@@ -97,6 +97,10 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 			sender.sendMessage(pluginConfig.messages_incorrect_channel);
 			return false;
 		}
+		if (args.length < 2) {
+			sender.sendMessage(pluginConfig.messages_admin_help);
+			return true;
+		}
 		switch (args[1].toLowerCase()) {
 			case "reload": {
 				plugin.reloadConfig();
