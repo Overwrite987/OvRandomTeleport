@@ -2,6 +2,8 @@
 main_settings:
   # Команда рандомной телепортации (указывается без /)
   rtp_command: 'rtp'
+  # Алиасы к команде рандомной телепортации
+  rtp_aliases: ['randomteleport', 'ovrandomteleport']
   # Название дефолтного канала.
   # Указанный канал будет использован в качестве основного при вводе команды /rtp
   default_channel: 'default'

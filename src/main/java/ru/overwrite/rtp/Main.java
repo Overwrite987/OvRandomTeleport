@@ -107,6 +107,7 @@ public class Main extends JavaPlugin {
 			Constructor<PluginCommand> constructor = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
 			constructor.setAccessible(true);
 			PluginCommand command = constructor.newInstance(mainSettings.getString("rtp_command"), this);
+			command.setAliases(mainSettings.getStringList("rtp_aliases"));
 			RtpCommand rtpCommand = new RtpCommand(this);
 			command.setExecutor(rtpCommand);
 			command.setTabCompleter(rtpCommand);
