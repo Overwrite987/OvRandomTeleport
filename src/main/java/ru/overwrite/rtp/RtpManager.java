@@ -197,7 +197,7 @@ public class RtpManager {
 	}
 
 	private void assignChannelToSpecification(Channel newChannel, String channelId) {
-		if (newChannel.isTeleportOnFisrtJoin()) {
+		if (newChannel.isTeleportOnFirstJoin()) {
 			joinChannels.put(newChannel, channelId);
 		}
 		if (newChannel.isTeleportOnVoid()) {

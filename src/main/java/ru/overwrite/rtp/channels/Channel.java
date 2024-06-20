@@ -30,7 +30,7 @@ public class Channel {
 	
 	private final boolean teleportToFirstAllowedWorld;
 
-	private final boolean teleportOnFisrtJoin;
+	private final boolean teleportOnFirstJoin;
 	
 	private final boolean teleportOnVoid;
 
@@ -99,7 +99,7 @@ public class Channel {
 			ChannelType type,
 			List<World> activeWorlds,
 			boolean teleportToFirstAllowedWorld,
-			boolean teleportOnFisrtJoin,
+			boolean teleportOnFirstJoin,
 			boolean teleportOnVoid,
 			boolean teleportOnRespawn,
 			int minPlayersToUse,
@@ -140,7 +140,7 @@ public class Channel {
 		 this.type = type;
 		 this.activeWorlds = activeWorlds;
 		 this.teleportToFirstAllowedWorld = teleportToFirstAllowedWorld;
-		 this.teleportOnFisrtJoin = teleportOnFisrtJoin;
+		 this.teleportOnFirstJoin = teleportOnFirstJoin;
 		 this.teleportOnVoid = teleportOnVoid;
 		 this.teleportOnRespawn = teleportOnRespawn;
 		 this.minPlayersToUse = minPlayersToUse;

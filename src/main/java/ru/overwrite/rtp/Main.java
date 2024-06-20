@@ -94,7 +94,7 @@ public class Main extends JavaPlugin {
         if (!pluginManager.isPluginEnabled("Vault")) {
             return;
         }
-        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        RegisteredServiceProvider<Economy> rsp = server.getServicesManager().getRegistration(Economy.class);
         if (rsp == null) {
             return;
         }
