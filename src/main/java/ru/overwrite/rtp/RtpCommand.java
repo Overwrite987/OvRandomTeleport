@@ -81,9 +81,13 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 			p.sendMessage(channel.getInvalidWorldMessage());
 			return false;
 		}
+		if (channel.getMinPlayersToUse() > 0 && channel.getMinPlayersToUse() < Bukkit.getOnlinePlayers().size()) {
+			p.sendMessage(channel.getNotEnoughMoneyMessage().replace("%required%", Integer.toString(channel.getMinPlayersToUse())));
+			return false;
+		}
 		if (plugin.getEconomy() != null) {
 			if (plugin.getEconomy().getBalance(p) < channel.getTeleportCost()) {
-				p.sendMessage(channel.getNotEnoughMoneyMessage());
+				p.sendMessage(channel.getNotEnoughMoneyMessage().replace("%required%", Double.toString(channel.getTeleportCost())));
 				return false;
 			}
 			plugin.getEconomy().withdrawPlayer(p, channel.getTeleportCost());

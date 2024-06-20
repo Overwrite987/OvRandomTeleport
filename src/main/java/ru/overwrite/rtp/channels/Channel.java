@@ -35,6 +35,8 @@ public class Channel {
 	private final boolean teleportOnVoid;
 
 	private final boolean teleportOnRespawn;
+
+	private final int minPlayersToUse;
 	
 	private final double teleportCost;
 	
@@ -84,6 +86,7 @@ public class Channel {
 
 	private final String noPermsMessage,
 			invalidWorldMessage,
+			notEnoughPlayersMessage,
 			notEnoughMoneyMessage,
 			cooldownMessage,
 			movedOnTeleportMessage,
@@ -94,11 +97,12 @@ public class Channel {
 	public Channel(String id,
 			String name,
 			ChannelType type,
-			List<World> activeWorlds, 
+			List<World> activeWorlds,
 			boolean teleportToFirstAllowedWorld,
 			boolean teleportOnFisrtJoin,
 			boolean teleportOnVoid,
 			boolean teleportOnRespawn,
+			int minPlayersToUse,
 			double teleportCost,
 			String shape,
 			int minX, int maxX,
@@ -124,6 +128,7 @@ public class Channel {
 			List<Action> afterTeleportActions,
 			String noPermsMessage,
 			String invalidWorldMessage,
+			String notEnoughPlayersMessage,
 			String notEnoughMoneyMessage,
 			String cooldownMessage,
 			String movedOnTeleportMessage,
@@ -138,6 +143,7 @@ public class Channel {
 		 this.teleportOnFisrtJoin = teleportOnFisrtJoin;
 		 this.teleportOnVoid = teleportOnVoid;
 		 this.teleportOnRespawn = teleportOnRespawn;
+		 this.minPlayersToUse = minPlayersToUse;
 		 this.teleportCost = teleportCost;
 		 this.shape = shape;
 		 this.minX = minX; 
@@ -166,6 +172,7 @@ public class Channel {
 		 this.playerCooldowns = new ExpiringMap<>(cooldown, TimeUnit.SECONDS);
 		 this.noPermsMessage = noPermsMessage;
 		 this.invalidWorldMessage = invalidWorldMessage;
+		 this.notEnoughPlayersMessage = notEnoughPlayersMessage;
 		 this.notEnoughMoneyMessage = notEnoughMoneyMessage;
 		 this.cooldownMessage = cooldownMessage;
 		 this.movedOnTeleportMessage = movedOnTeleportMessage;

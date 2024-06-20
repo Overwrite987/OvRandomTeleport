@@ -5,8 +5,21 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 public class Config {
 	
-	public String messages_prefix, messages_no_perms, messages_invalid_world, messages_not_enough_money, messages_cooldown, messages_incorrect_channel, messages_moved_on_teleport, messages_damaged_on_teleport, messages_fail_to_find_location, messages_already_teleporting,
-	messages_reload, messages_unknown_argument, messages_player_not_found, messages_admin_help;
+	public String messages_prefix,
+			messages_no_perms,
+			messages_invalid_world,
+			messages_not_enough_players,
+			messages_not_enough_money,
+			messages_cooldown,
+			messages_incorrect_channel,
+			messages_moved_on_teleport,
+			messages_damaged_on_teleport,
+			messages_fail_to_find_location,
+			messages_already_teleporting,
+			messages_reload,
+			messages_unknown_argument,
+			messages_player_not_found,
+			messages_admin_help;
 	
 	public static String time_hours, time_minutes, time_seconds;
 	
@@ -15,6 +28,7 @@ public class Config {
 		messages_prefix = Utils.colorize(messages.getString("prefix", "messages.prefix"));
 		messages_no_perms = getPrefixed(messages.getString("no_perms", "messages.no_perms"), messages_prefix);
 		messages_invalid_world = getPrefixed(messages.getString("invalid_world", "messages.invalid_world"), messages_prefix);
+		messages_not_enough_players = getPrefixed(messages.getString("not_enough_players", "messages.not_enough_players"), messages_prefix);
 		messages_not_enough_money = getPrefixed(messages.getString("not_enough_money", "messages.not_enough_money"), messages_prefix);
 		messages_cooldown = getPrefixed(messages.getString("cooldown", "messages.cooldown"), messages_prefix);
 		messages_incorrect_channel = getPrefixed(messages.getString("incorrect_channel", "messages.incorrect_channel"), messages_prefix);

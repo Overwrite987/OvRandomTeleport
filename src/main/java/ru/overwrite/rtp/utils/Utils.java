@@ -1,9 +1,7 @@
 package ru.overwrite.rtp.utils;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Sound;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.io.BufferedReader;
@@ -45,7 +43,7 @@ public class Utils {
 	public static String colorize(String message) {
 		if (SUB_VERSION >= 16) {
 			Matcher matcher = HEX_PATTERN.matcher(message);
-			StringBuilder builder = new StringBuilder(message.length() + 4 * 8);
+			StringBuilder builder = new StringBuilder(message.length() + 32);
 			while (matcher.find()) {
 				String group = matcher.group(1);
 				matcher.appendReplacement(builder,

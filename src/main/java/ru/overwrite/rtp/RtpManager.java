@@ -78,6 +78,7 @@ public class RtpManager {
 			boolean teleportOnFirstJoin = channelSection.getBoolean("teleport_on_first_join", false);
 			boolean teleportOnVoid = channelSection.getBoolean("teleport_on_void", false);
 			boolean teleportOnRespawn = channelSection.getBoolean("teleport_on_respawn", false);
+			int minPlayersToUse = channelSection.getInt("min_players_to_use", -1);
 			double teleportCost = plugin.getEconomy() != null ? channelSection.getDouble("teleport_cost", -1) : -1;
 			ConfigurationSection locationGenOptions = channelSection.getConfigurationSection("location_generation_options");
 			if (locationGenOptions == null) {
@@ -96,7 +97,7 @@ public class RtpManager {
 			boolean bossbarEnabled = bossbar != null && bossbar.getBoolean("enabled", false);
 			String bossbarTitle = bossbar == null ? "" : Utils.colorize(bossbar.getString("title"));
 			BarColor bossbarColor = bossbar == null ? BarColor.PURPLE : BarColor.valueOf(bossbar.getString("color").toUpperCase());
-			BarStyle bossbarType = bossbar == null ? BarStyle.SOLID :  BarStyle.valueOf(bossbar.getString("style").toUpperCase());
+			BarStyle bossbarType = bossbar == null ? BarStyle.SOLID : BarStyle.valueOf(bossbar.getString("style").toUpperCase());
 			ConfigurationSection restrictions = channelSection.getConfigurationSection("restrictions");
 			boolean restrictMove = restrictions != null && restrictions.getBoolean("move");
 			boolean restrictDamage = restrictions != null && restrictions.getBoolean("damage");
@@ -120,10 +121,10 @@ public class RtpManager {
 			boolean avoidRegions = avoid != null && avoid.getBoolean("regions", false) && pluginManager.isPluginEnabled("WorldGuard");
 			boolean avoidTowns = avoid != null && avoid.getBoolean("towns", false) && pluginManager.isPluginEnabled("Towny");
 			ConfigurationSection actions = channelSection.getConfigurationSection("actions");
-			List<Action> preTeleportActions = new ArrayList<>();
-			for (String a : actions.getStringList("pre_teleport")) {
-				preTeleportActions.add(Action.fromString(a));
+			if (actions == null) {
+				continue;
 			}
+			List<Action> preTeleportActions = getActionList(actions.getStringList("pre_teleport"));
 			Map<Integer, List<Action>> onCooldownActions = new HashMap<>();
 			ConfigurationSection cdActions = actions.getConfigurationSection("on_cooldown");
 			if (cdActions != null) {
@@ -132,36 +133,22 @@ public class RtpManager {
 						continue;
 					}
 					int time = Integer.parseInt(s);
-					List<Action> actionList = new ArrayList<>();
-					for (String a : cdActions.getStringList(s)) {
-						actionList.add(Action.fromString(a));
-					}
+					List<Action> actionList = getActionList(cdActions.getStringList(s));
 					onCooldownActions.put(time, actionList);
 				}
 			}
-			List<Action> afterTeleportActions = new ArrayList<>();
-			for (String a : actions.getStringList("after_teleport")) {
-				afterTeleportActions.add(Action.fromString(a));
-			}
+			List<Action> afterTeleportActions = getActionList(actions.getStringList("after_teleport"));
 			ConfigurationSection messages = channelSection.getConfigurationSection("messages");
-			String prefix = doesConfigValueExists(messages, "prefix")
-					? pluginConfig.messages_prefix : messages.getString("prefix");
-			String noPermsMessage = doesConfigValueExists(messages, "no_perms")
-					? pluginConfig.messages_no_perms : pluginConfig.getPrefixed(messages.getString("no_perms"), prefix);
-			String invalidWorldMessage = doesConfigValueExists(messages, "invalid_world")
-					? pluginConfig.messages_invalid_world : pluginConfig.getPrefixed(messages.getString("invalid_world"), prefix);
-			String notEnoughMoneyMessage = doesConfigValueExists(messages, "not_enough_money")
-					? pluginConfig.messages_not_enough_money : pluginConfig.getPrefixed(messages.getString("not_enough_money"), prefix);
-			String cooldownMessage = doesConfigValueExists(messages, "cooldown")
-					? pluginConfig.messages_cooldown : pluginConfig.getPrefixed(messages.getString("cooldown"), prefix);
-			String movedOnTeleportMessage = doesConfigValueExists(messages, "moved_on_teleport")
-					? pluginConfig.messages_moved_on_teleport : pluginConfig.getPrefixed(messages.getString("moved_on_teleport"), prefix);
-			String damagedOnTeleportMessage = doesConfigValueExists(messages, "damaged_on_teleport")
-					? pluginConfig.messages_damaged_on_teleport : pluginConfig.getPrefixed(messages.getString("damaged_on_teleport"), prefix);
-			String failToFindLocationMessage = doesConfigValueExists(messages, "fail_to_find_location")
-					? pluginConfig.messages_fail_to_find_location : pluginConfig.getPrefixed(messages.getString("fail_to_find_location"), prefix);
-			String alreadyTeleportingMessage = doesConfigValueExists(messages, "already_teleporting")
-					? pluginConfig.messages_already_teleporting: pluginConfig.getPrefixed(messages.getString("already_teleporting"), prefix);
+			String prefix = doesConfigValueExists(messages, "prefix") ? pluginConfig.messages_prefix : messages.getString("prefix");
+			String noPermsMessage = getMessage(messages, "no_perms", pluginConfig.messages_no_perms, prefix);
+			String invalidWorldMessage = getMessage(messages, "invalid_world", pluginConfig.messages_invalid_world, prefix);
+			String notEnoughPlayersMessage = getMessage(messages, "not_enough_players", pluginConfig.messages_not_enough_players, prefix);
+			String notEnoughMoneyMessage = getMessage(messages, "not_enough_money", pluginConfig.messages_not_enough_money, prefix);
+			String cooldownMessage = getMessage(messages, "cooldown", pluginConfig.messages_cooldown, prefix);
+			String movedOnTeleportMessage = getMessage(messages, "moved_on_teleport", pluginConfig.messages_moved_on_teleport, prefix);
+			String damagedOnTeleportMessage = getMessage(messages, "damaged_on_teleport", pluginConfig.messages_damaged_on_teleport, prefix);
+			String failToFindLocationMessage = getMessage(messages, "fail_to_find_location", pluginConfig.messages_fail_to_find_location, prefix);
+			String alreadyTeleportingMessage = getMessage(messages, "already_teleporting", pluginConfig.messages_already_teleporting, prefix);
 			Channel newChannel = new Channel(channelId,
 					name,
 					type,
@@ -170,6 +157,7 @@ public class RtpManager {
 					teleportOnFirstJoin,
 					teleportOnVoid,
 					teleportOnRespawn,
+					minPlayersToUse,
 					teleportCost,
 					shape,
 					minX, maxX,
@@ -195,6 +183,7 @@ public class RtpManager {
 					afterTeleportActions,
 					noPermsMessage,
 					invalidWorldMessage,
+					notEnoughPlayersMessage,
 					notEnoughMoneyMessage,
 					cooldownMessage,
 					movedOnTeleportMessage,
@@ -219,8 +208,12 @@ public class RtpManager {
 		}
 	}
 
-	private boolean doesConfigValueExists(ConfigurationSection section, String key) {
-		return (section == null || section.getString(key) == null);
+	private List<Action> getActionList(List<String> actionStrings) {
+		List<Action> actions = new ArrayList<>(actionStrings.size());
+		for (String actionString : actionStrings) {
+			actions.add(Action.fromString(actionString));
+		}
+		return actions;
 	}
 	
 	private boolean isNumber(String string) {
@@ -234,6 +227,14 @@ public class RtpManager {
         }
         return true;
     }
+
+	private String getMessage(ConfigurationSection messages, String key, String global, String prefix) {
+		return doesConfigValueExists(messages, key) ? global : pluginConfig.getPrefixed(messages.getString(key), prefix);
+	}
+
+	private boolean doesConfigValueExists(ConfigurationSection section, String key) {
+		return (section == null || section.getString(key) == null);
+	}
 	
 	public Channel getChannelByName(String channelName) {
 		return namedChannels.get(channelName);
@@ -243,6 +244,7 @@ public class RtpManager {
 	
 	public void preTeleport(Player p, Channel channel, World world) {
 		if (teleportingNow.contains(p.getName())) {
+			p.sendMessage(channel.getAlreadyTeleportingMessage());
 			return;
 		}
 		teleportingNow.add(p.getName());
