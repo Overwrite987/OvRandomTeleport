@@ -44,8 +44,8 @@ public class WGUtils {
 	        .filter(region -> {
 	            BlockVector3 minPoint = region.getMinimumPoint();
 	            BlockVector3 maxPoint = region.getMaximumPoint();
-	            return minPoint.x() >= minX && maxPoint.x() <= maxX &&
-	                   minPoint.z() >= minZ && maxPoint.z() <= maxZ;
+	            return minPoint.getX() >= minX && maxPoint.getX() <= maxX &&
+	                   minPoint.getZ() >= minZ && maxPoint.getZ() <= maxZ;
 	        })
 	        .collect(Collectors.toList());
 
