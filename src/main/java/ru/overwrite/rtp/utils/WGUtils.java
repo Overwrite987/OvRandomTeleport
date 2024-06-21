@@ -55,8 +55,8 @@ public class WGUtils {
 
 	    ProtectedRegion randomRegion = regionsInRange.get(random.nextInt(regionsInRange.size()));
 
-	    int centerX = (randomRegion.getMinimumPoint().x() + randomRegion.getMaximumPoint().x()) / 2;
-	    int centerZ = (randomRegion.getMinimumPoint().z() + randomRegion.getMaximumPoint().z()) / 2;
+	    int centerX = (randomRegion.getMinimumPoint().getX() + randomRegion.getMaximumPoint().getX()) / 2;
+	    int centerZ = (randomRegion.getMinimumPoint().getZ() + randomRegion.getMaximumPoint().getZ()) / 2;
 
 	    String shape = channel.getShape();
 		Location location = LocationUtils.generateRandomLocationNearPoint(shape, p, centerX, centerZ, channel, world);
