@@ -94,17 +94,17 @@ public class RtpManager {
 			int cooldown = channelSection.getInt("cooldown", 60);
 			int teleportCooldown = channelSection.getInt("teleport_cooldown", -1);
 			ConfigurationSection bossbar = channelSection.getConfigurationSection("bossbar");
-			boolean bossbarEnabled = bossbar != null && bossbar.getBoolean("enabled", false);
-			String bossbarTitle = bossbar == null ? "" : Utils.colorize(bossbar.getString("title"));
-			BarColor bossbarColor = bossbar == null ? BarColor.PURPLE : BarColor.valueOf(bossbar.getString("color").toUpperCase());
-			BarStyle bossbarType = bossbar == null ? BarStyle.SOLID : BarStyle.valueOf(bossbar.getString("style").toUpperCase());
+			boolean bossbarEnabled = !isSectionNull(bossbar) && bossbar.getBoolean("enabled", false);
+			String bossbarTitle = isSectionNull(bossbar) ? "" : Utils.colorize(bossbar.getString("title"));
+			BarColor bossbarColor = isSectionNull(bossbar) ? BarColor.PURPLE : BarColor.valueOf(bossbar.getString("color").toUpperCase());
+			BarStyle bossbarType = isSectionNull(bossbar) ? BarStyle.SOLID : BarStyle.valueOf(bossbar.getString("style").toUpperCase());
 			ConfigurationSection restrictions = channelSection.getConfigurationSection("restrictions");
-			boolean restrictMove = restrictions != null && restrictions.getBoolean("move");
-			boolean restrictDamage = restrictions != null && restrictions.getBoolean("damage");
+			boolean restrictMove = !isSectionNull(restrictions) && restrictions.getBoolean("move");
+			boolean restrictDamage = !isSectionNull(restrictions) && restrictions.getBoolean("damage");
 			ConfigurationSection avoid = channelSection.getConfigurationSection("avoid");
 			Set<Material> avoidBlocks = new HashSet<>();
 			boolean avoidBlocksBlacklist = true;
-			if (avoid != null) {
+			if (!isSectionNull(avoid)) {
 				avoidBlocksBlacklist= avoid.getBoolean("blocks.blacklist", true);
 				for (String m : avoid.getStringList("blocks.list")) {
 					avoidBlocks.add(Material.valueOf(m.toUpperCase()));
@@ -112,22 +112,22 @@ public class RtpManager {
 			}
 			Set<Biome> avoidBiomes = new HashSet<>();
 			boolean avoidBiomesBlacklist = true;
-			if (avoid != null) {
+			if (!isSectionNull(avoid)) {
 				avoidBiomesBlacklist = avoid.getBoolean("biomes.blacklist", true);
 				for (String b : avoid.getStringList("biomes.list")) {
 					avoidBiomes.add(Biome.valueOf(b.toUpperCase()));
 				}
 			}
-			boolean avoidRegions = avoid != null && avoid.getBoolean("regions", false) && pluginManager.isPluginEnabled("WorldGuard");
-			boolean avoidTowns = avoid != null && avoid.getBoolean("towns", false) && pluginManager.isPluginEnabled("Towny");
+			boolean avoidRegions = !isSectionNull(avoid) && avoid.getBoolean("regions", false) && pluginManager.isPluginEnabled("WorldGuard");
+			boolean avoidTowns = !isSectionNull(avoid) && avoid.getBoolean("towns", false) && pluginManager.isPluginEnabled("Towny");
 			ConfigurationSection actions = channelSection.getConfigurationSection("actions");
-			if (actions == null) {
+			if (isSectionNull(actions)) {
 				continue;
 			}
 			List<Action> preTeleportActions = getActionList(actions.getStringList("pre_teleport"));
 			Map<Integer, List<Action>> onCooldownActions = new HashMap<>();
 			ConfigurationSection cdActions = actions.getConfigurationSection("on_cooldown");
-			if (cdActions != null) {
+			if (!isSectionNull(cdActions)) {
 				for (String s : cdActions.getKeys(false)) {
 					if (!isNumber(s)) {
 						continue;
@@ -139,7 +139,7 @@ public class RtpManager {
 			}
 			List<Action> afterTeleportActions = getActionList(actions.getStringList("after_teleport"));
 			ConfigurationSection messages = channelSection.getConfigurationSection("messages");
-			String prefix = doesConfigValueExists(messages, "prefix") ? pluginConfig.messages_prefix : messages.getString("prefix");
+			String prefix = doesConfigValueExists(messages, "prefix") ? messages.getString("prefix") : pluginConfig.messages_prefix;
 			String noPermsMessage = getMessage(messages, "no_perms", pluginConfig.messages_no_perms, prefix);
 			String invalidWorldMessage = getMessage(messages, "invalid_world", pluginConfig.messages_invalid_world, prefix);
 			String notEnoughPlayersMessage = getMessage(messages, "not_enough_players", pluginConfig.messages_not_enough_players, prefix);
@@ -229,11 +229,18 @@ public class RtpManager {
     }
 
 	private String getMessage(ConfigurationSection messages, String key, String global, String prefix) {
-		return doesConfigValueExists(messages, key) ? global : pluginConfig.getPrefixed(messages.getString(key), prefix);
+		return doesConfigValueExists(messages, key) ? pluginConfig.getPrefixed(messages.getString(key), prefix) : global;
 	}
 
 	private boolean doesConfigValueExists(ConfigurationSection section, String key) {
-		return (section == null || section.getString(key) == null);
+		if (isSectionNull(section)) {
+			return false;
+		}
+		return section.getString(key) != null;
+	}
+
+	private boolean isSectionNull(ConfigurationSection section) {
+		return section == null;
 	}
 	
 	public Channel getChannelByName(String channelName) {
