@@ -52,6 +52,10 @@ channels:
       max_x: 1000
       min_z: -1000
       max_z: 1000
+      # Координаты при работе с NEAR_<ЧТО-ТО>
+      # Какое может быть самое близкое и самое далёкое расстояние от точки локации исходного объекта
+      min_near_point_distance: 30
+      max_near_point_distance: 60
     # Максимальное кол-во попыток найти локацию для телепорта (нужно, чтобы не застрять в бесконечном цикле поиска локации)
     max_location_attemps: 50
     # Сколько тиков игрок должен быть неуязвим после телепортации через канал RTP (-1 чтобы отключить)
@@ -146,12 +150,16 @@ channels:
     teleport_on_void: false
     # Необязательный параметр
     teleport_cost: 1000
+    # Обязательные параметры
     location_generation_options:
       shape: SQUARE
       min_x: -1000
       max_x: 1000
       min_z: -1000
       max_z: 1000
+      # Необязательные параметры
+      min_near_point_distance: 30
+      max_near_point_distance: 90
     # Необязательный параметр
     max_location_attemps: 50
     # Необязательный параметр

@@ -85,10 +85,13 @@ public class LocationUtils {
         int minZ = channel.getMinZ();
         int maxZ = channel.getMaxZ();
 
+        int radiusMin = channel.getRadiusMin();
+        int radiusMax = channel.getRadiusMax();
+
         int x, z;
         do {
-            x = centerX + random.nextInt(61) - 30;
-            z = centerZ + random.nextInt(61) - 30;
+            x = centerX + random.nextInt(radiusMax+1) - radiusMin;
+            z = centerZ + random.nextInt(radiusMax+1) - radiusMin;
         } while (x < minX || x > maxX || z < minZ || z > maxZ);
 
         int y = world.getEnvironment() != World.Environment.NETHER ? world.getHighestBlockYAt(x, z) : findSafeNetherYPoint(world, x, z);
@@ -111,8 +114,8 @@ public class LocationUtils {
         int minZ = channel.getMinZ();
         int maxZ = channel.getMaxZ();
 
-        int radiusMin = 30;
-        int radiusMax = 60;
+        int radiusMin = channel.getRadiusMin();
+        int radiusMax = channel.getRadiusMax();
 
         int x, z;
         do {

@@ -89,6 +89,8 @@ public class RtpManager {
 			int maxX = locationGenOptions.getInt("max_x");
 			int minZ = locationGenOptions.getInt("min_z"); 
 			int maxZ = locationGenOptions.getInt("max_z");
+			int radiusMin = locationGenOptions.getInt("min_near_point_distance", 30);
+			int radiusMax = locationGenOptions.getInt("max_near_point_distance", 60);
 			int maxLocationAttempts = channelSection.getInt("max_location_attemps", 50);
 			int invulnerableTicks = channelSection.getInt("invulnerable_after_teleport", 1);
 			int cooldown = channelSection.getInt("cooldown", 60);
@@ -162,6 +164,7 @@ public class RtpManager {
 					shape,
 					minX, maxX,
 					minZ, maxZ,
+					radiusMin, radiusMax,
 					maxLocationAttempts,
 					invulnerableTicks,
 					cooldown,

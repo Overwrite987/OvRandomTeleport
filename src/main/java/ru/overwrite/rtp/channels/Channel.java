@@ -45,6 +45,8 @@ public class Channel {
 	private final int minX, maxX;
 	
 	private final int minZ, maxZ;
+
+	private final int radiusMin, radiusMax;
 	
 	private final int maxLocationAttempts;
 	
@@ -107,6 +109,7 @@ public class Channel {
 			String shape,
 			int minX, int maxX,
 			int minZ, int maxZ,
+			int radiusMin, int radiusMax,
 			int maxLocationAttempts,
 			int invulnerableTicks,
 			int cooldown,
@@ -150,6 +153,8 @@ public class Channel {
 		 this.maxX = maxX;
 		 this.minZ = minZ; 
 		 this.maxZ = maxZ;
+		 this.radiusMin = radiusMin;
+		 this.radiusMax = radiusMax;
 		 this.maxLocationAttempts = maxLocationAttempts;
 		 this.invulnerableTicks = invulnerableTicks;
 		 this.cooldown = cooldown;
