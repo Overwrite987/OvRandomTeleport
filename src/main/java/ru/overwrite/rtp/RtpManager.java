@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
@@ -339,7 +338,7 @@ public class RtpManager {
 
 	    nearbyPlayers = nearbyPlayers.stream()
 	        .filter(player -> !player.hasPermission("rtpnear.unaffected"))
-	        .collect(Collectors.toList());
+	        .toList();
 
 	    if (nearbyPlayers.isEmpty()) {
 	        return null;

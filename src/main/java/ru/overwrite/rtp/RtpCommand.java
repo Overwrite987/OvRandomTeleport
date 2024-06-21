@@ -82,7 +82,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 			return false;
 		}
 		if (channel.getMinPlayersToUse() > 0 && channel.getMinPlayersToUse() < Bukkit.getOnlinePlayers().size()) {
-			p.sendMessage(channel.getNotEnoughMoneyMessage().replace("%required%", Integer.toString(channel.getMinPlayersToUse())));
+			p.sendMessage(channel.getNotEnoughPlayersMessage().replace("%required%", Integer.toString(channel.getMinPlayersToUse())));
 			return false;
 		}
 		if (plugin.getEconomy() != null) {
