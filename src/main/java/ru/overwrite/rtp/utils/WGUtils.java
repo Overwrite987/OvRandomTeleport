@@ -47,7 +47,7 @@ public class WGUtils {
 	            return minPoint.getX() >= minX && maxPoint.getX() <= maxX &&
 	                   minPoint.getZ() >= minZ && maxPoint.getZ() <= maxZ;
 	        })
-	        .collect(Collectors.toList());
+	        .toList();
 
 	    if (regionsInRange.isEmpty()) {
 	        return null;
