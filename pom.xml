@@ -9,7 +9,7 @@
   <version>1.3.0</version>
   <packaging>jar</packaging>
 
-  <name>untitled</name>
+  <name>OvRandomTeleport</name>
 
   <properties>
     <java.version>17</java.version>
