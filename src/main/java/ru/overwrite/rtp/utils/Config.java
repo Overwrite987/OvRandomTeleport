@@ -47,7 +47,7 @@ public class Config {
 		time_seconds = Utils.colorize(time.getString("seconds", " сек."));
 	}
 
-	public static String getPrefixed(String message, String prefix) {
+	public String getPrefixed(String message, String prefix) {
 		return Utils.colorize(message.replace("%prefix%", prefix));
 	}
 

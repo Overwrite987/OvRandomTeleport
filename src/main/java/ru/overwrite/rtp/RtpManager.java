@@ -139,7 +139,7 @@ public class RtpManager {
 			}
 			List<Action> afterTeleportActions = getActionList(actions.getStringList("after_teleport"));
 			ConfigurationSection messages = channelSection.getConfigurationSection("messages");
-			String prefix = doesConfigValueExists(messages, "prefix") ? messages.getString("prefix") : pluginConfig.messages_prefix;
+			String prefix = doesConfigValueExist(messages, "prefix") ? messages.getString("prefix") : pluginConfig.messages_prefix;
 			String noPermsMessage = getMessage(messages, "no_perms", pluginConfig.messages_no_perms, prefix);
 			String invalidWorldMessage = getMessage(messages, "invalid_world", pluginConfig.messages_invalid_world, prefix);
 			String notEnoughPlayersMessage = getMessage(messages, "not_enough_players", pluginConfig.messages_not_enough_players, prefix);
@@ -217,7 +217,7 @@ public class RtpManager {
 	}
 	
 	private boolean isNumber(String string) {
-        if (string == null || string.isEmpty() || string.isBlank()) {
+        if (string.isEmpty() || string.isBlank()) {
             return false;
         }
         for (char c : string.toCharArray()) {
@@ -229,14 +229,11 @@ public class RtpManager {
     }
 
 	private String getMessage(ConfigurationSection messages, String key, String global, String prefix) {
-		return doesConfigValueExists(messages, key) ? pluginConfig.getPrefixed(messages.getString(key), prefix) : global;
+		return doesConfigValueExist(messages, key) ? pluginConfig.getPrefixed(messages.getString(key), prefix) : global;
 	}
 
-	private boolean doesConfigValueExists(ConfigurationSection section, String key) {
-		if (isSectionNull(section)) {
-			return false;
-		}
-		return section.getString(key) != null;
+	private boolean doesConfigValueExist(ConfigurationSection section, String key) {
+		return !isSectionNull(section) && section.getString(key) != null;
 	}
 
 	private boolean isSectionNull(ConfigurationSection section) {
