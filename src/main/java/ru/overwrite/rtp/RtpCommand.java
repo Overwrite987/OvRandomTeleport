@@ -115,9 +115,10 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 				sender.sendMessage(pluginConfig.messages_reload);
 				return true;
 			}
+			case "teleport":
 			case "forceteleport":
 			case "forcertp": {
-				if (args.length < 4) {
+				if (args.length < 4 || args.length > 5) {
 					sender.sendMessage(pluginConfig.messages_unknown_argument);
 					return false;
 				}
@@ -133,13 +134,21 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 				Channel channel = rtpManager.getChannelByName(args[3]);
 				if (!channel.getActiveWorlds().contains(targetPlayer.getWorld())) {
 					if (channel.isTeleportToFirstAllowedWorld()) {
+						if (args.length == 5 && args[4].equalsIgnoreCase("force")) {
+							rtpManager.teleportPlayer(targetPlayer, channel, rtpManager.generateRandomLocation(targetPlayer, channel, channel.getActiveWorlds().get(0)));
+							return true;
+						}
 						rtpManager.preTeleport(targetPlayer, channel, channel.getActiveWorlds().get(0));
 						return true;
 					}
 					sender.sendMessage(channel.getInvalidWorldMessage());
 					return false;
 				}
-				rtpManager.preTeleport(targetPlayer, channel, targetPlayer.getWorld());
+				if (args.length == 5 && args[4].equalsIgnoreCase("force")) {
+					rtpManager.teleportPlayer(targetPlayer, channel, rtpManager.generateRandomLocation(targetPlayer, channel, targetPlayer.getWorld()));
+					return true;
+				}
+				rtpManager.preTeleport(targetPlayer, channel, channel.getActiveWorlds().get(0));
 				return true;
 			}
 			case "help": {
@@ -178,7 +187,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 					completions.add("forcertp");
 					completions.add("debug");
 				}
-				if (args[1].equalsIgnoreCase("forceteleport")) {
+				if (args[1].equalsIgnoreCase("forceteleport") || args[1].equalsIgnoreCase("forcertp")) {
 					if (args.length == 3) {
 						for (Player p : Bukkit.getOnlinePlayers()) {
 							completions.add(p.getName());
@@ -186,6 +195,9 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 					}
 					if (args.length == 4) {
 						completions.addAll(rtpManager.getNamedChannels().keySet());
+					}
+					if (args.length == 5) {
+						completions.add("force");
 					}
 				}
 			}

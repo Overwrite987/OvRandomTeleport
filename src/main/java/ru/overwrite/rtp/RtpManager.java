@@ -140,7 +140,7 @@ public class RtpManager {
 			}
 			List<Action> afterTeleportActions = getActionList(actions.getStringList("after_teleport"));
 			ConfigurationSection messages = channelSection.getConfigurationSection("messages");
-			String prefix = doesConfigValueExist(messages, "prefix") ? messages.getString("prefix") : pluginConfig.messages_prefix;
+			String prefix = isConfigValueExist(messages, "prefix") ? messages.getString("prefix") : pluginConfig.messages_prefix;
 			String noPermsMessage = getMessage(messages, "no_perms", pluginConfig.messages_no_perms, prefix);
 			String invalidWorldMessage = getMessage(messages, "invalid_world", pluginConfig.messages_invalid_world, prefix);
 			String notEnoughPlayersMessage = getMessage(messages, "not_enough_players", pluginConfig.messages_not_enough_players, prefix);
@@ -231,10 +231,10 @@ public class RtpManager {
     }
 
 	private String getMessage(ConfigurationSection messages, String key, String global, String prefix) {
-		return doesConfigValueExist(messages, key) ? pluginConfig.getPrefixed(messages.getString(key), prefix) : global;
+		return isConfigValueExist(messages, key) ? pluginConfig.getPrefixed(messages.getString(key), prefix) : global;
 	}
 
-	private boolean doesConfigValueExist(ConfigurationSection section, String key) {
+	private boolean isConfigValueExist(ConfigurationSection section, String key) {
 		return !isSectionNull(section) && section.getString(key) != null;
 	}
 
@@ -291,7 +291,7 @@ public class RtpManager {
 	
 	private final Map<String, Integer> iterationsPerPlayer = new HashMap<>();
 	
-	private Location generateRandomLocation(Player p, Channel channel, World world) {
+	public Location generateRandomLocation(Player p, Channel channel, World world) {
 		if (Utils.DEBUG) {
 			plugin.getPluginLogger().info("Iterations for player " + p.getName() + ": " + iterationsPerPlayer.getOrDefault(p.getName(), 0));
 		}
