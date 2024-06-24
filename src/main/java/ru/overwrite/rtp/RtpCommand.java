@@ -188,7 +188,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 					completions.add("forcertp");
 					completions.add("debug");
 				}
-				if (isForceRtp(args[1])) {
+				if (args.length > 2 && isForceRtp(args[1])) {
 					getForceRtpTabCompletion(args, completions);
 				}
 			}
