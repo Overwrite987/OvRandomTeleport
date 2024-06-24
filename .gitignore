@@ -5,4 +5,4 @@ target/
 target/*
 build
 bukkit/build
-bukkit/dependency-reduced-pom.xml
+dependency-reduced-pom.xml
