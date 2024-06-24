@@ -9,6 +9,9 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -103,7 +106,7 @@ public class RtpManager {
 			boolean restrictMove = !isSectionNull(restrictions) && restrictions.getBoolean("move");
 			boolean restrictDamage = !isSectionNull(restrictions) && restrictions.getBoolean("damage");
 			ConfigurationSection avoid = channelSection.getConfigurationSection("avoid");
-			Set<Material> avoidBlocks = new HashSet<>();
+			Set<Material> avoidBlocks = new ObjectOpenHashSet<>();
 			boolean avoidBlocksBlacklist = true;
 			if (!isSectionNull(avoid)) {
 				avoidBlocksBlacklist= avoid.getBoolean("blocks.blacklist", true);
@@ -111,7 +114,7 @@ public class RtpManager {
 					avoidBlocks.add(Material.valueOf(m.toUpperCase()));
 				}
 			}
-			Set<Biome> avoidBiomes = new HashSet<>();
+			Set<Biome> avoidBiomes = new ObjectOpenHashSet<>();
 			boolean avoidBiomesBlacklist = true;
 			if (!isSectionNull(avoid)) {
 				avoidBiomesBlacklist = avoid.getBoolean("biomes.blacklist", true);
@@ -126,7 +129,7 @@ public class RtpManager {
 				continue;
 			}
 			List<Action> preTeleportActions = getActionList(actions.getStringList("pre_teleport"));
-			Map<Integer, List<Action>> onCooldownActions = new HashMap<>();
+			Map<Integer, List<Action>> onCooldownActions = new Int2ObjectOpenHashMap<>();
 			ConfigurationSection cdActions = actions.getConfigurationSection("on_cooldown");
 			if (!isSectionNull(cdActions)) {
 				for (String s : cdActions.getKeys(false)) {
