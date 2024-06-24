@@ -258,24 +258,11 @@ public class RtpManager {
 		}
 		teleportingNow.add(p.getName());
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			Location loc = null;
-			switch (channel.getType()) {
-				case DEFAULT: {
-					loc = generateRandomLocation(p, channel, world);
-					break;
-				}
-				case NEAR_PLAYER: {
-					loc = generateRandomLocationNearPlayer(p, channel, world);
-					break;
-				}
-				case NEAR_REGION: {
-					loc = WGUtils.generateRandomLocationNearRandomRegion(p, channel, world);
-					break;
-				}
-				default: {
-					break;
-				}
-			}
+			Location loc = switch (channel.getType()) {
+				case DEFAULT -> generateRandomLocation(p, channel, world);
+				case NEAR_PLAYER -> generateRandomLocationNearPlayer(p, channel, world);
+				case NEAR_REGION -> WGUtils.generateRandomLocationNearRandomRegion(p, channel, world);
+			};
 			if (loc == null) {
 				teleportingNow.remove(p.getName());
 				p.sendMessage(pluginConfig.messages_fail_to_find_location);
