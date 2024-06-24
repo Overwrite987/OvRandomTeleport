@@ -193,13 +193,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 				}
 			}
 		}
-		List<String> result = new ArrayList<>();
-		for (String c : completions) {
-			if (c.toLowerCase().startsWith(args[args.length - 1].toLowerCase())) {
-				result.add(c);
-			}
-		}
-		return result;
+		return getResult(args, completions);
 	}
 
 	private boolean isForceRtp(String arg) {
@@ -218,5 +212,15 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 		if (args.length == 5) {
 			completions.add("force");
 		}
+	}
+
+	private List<String> getResult(String[] args, List<String> completions) {
+		List<String> result = new ArrayList<>();
+		for (String c : completions) {
+			if (c.toLowerCase().startsWith(args[args.length - 1].toLowerCase())) {
+				result.add(c);
+			}
+		}
+		return result;
 	}
 }
