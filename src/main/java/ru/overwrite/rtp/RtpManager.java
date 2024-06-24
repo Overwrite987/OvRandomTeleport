@@ -384,16 +384,16 @@ public class RtpManager {
 		if (actions.isEmpty()) {
 			return;
 		}
+		String name = channel.getName();
+		String cd = Utils.getTime(channel.getTeleportCooldown());
+		String x = Integer.toString(loc.getBlockX());
+		String y = Integer.toString(loc.getBlockY());
+		String z = Integer.toString(loc.getBlockZ());
+		String[] replacementList = { p.getName(), name, cd, x, y, z };
 		for (Action action : actions) {
 			switch (action.getType()) {
 				case MESSAGE: {
 					Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-						String name = channel.getName();
-						String cd = Utils.getTime(channel.getTeleportCooldown());
-						String x = Integer.toString(loc.getBlockX());
-						String y = Integer.toString(loc.getBlockY());
-						String z = Integer.toString(loc.getBlockZ());
-						String[] replacementList = { p.getName(), name, cd, x, y, z };
 						String message = Utils.colorize(StringUtils.replaceEach(action.getContext(), searchList, replacementList));
 						p.sendMessage(message);
 					});
@@ -401,12 +401,6 @@ public class RtpManager {
 				}
 				case TITLE: {
 					Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-						String name = channel.getName();
-						String cd = Utils.getTime(channel.getTeleportCooldown());
-						String x = Integer.toString(loc.getBlockX());
-						String y = Integer.toString(loc.getBlockY());
-						String z = Integer.toString(loc.getBlockZ());
-						String[] replacementList = { p.getName(), name, cd, x, y, z };
 						String result = Utils.colorize(StringUtils.replaceEach(action.getContext(), searchList, replacementList));
 						String[] titledMessage = result.split(";");
 						Utils.sendTitleMessage(titledMessage, p);
@@ -424,12 +418,6 @@ public class RtpManager {
 					break;
 				}
 				case CONSOLE: {
-					String name = channel.getName();
-					String cd = Utils.getTime(channel.getTeleportCooldown());
-					String x = Integer.toString(loc.getBlockX());
-					String y = Integer.toString(loc.getBlockY());
-					String z = Integer.toString(loc.getBlockZ());
-					String[] replacementList = { p.getName(), name, cd, x, y, z };
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), StringUtils.replaceEach(action.getContext(), searchList, replacementList));
 					break;
 				}
