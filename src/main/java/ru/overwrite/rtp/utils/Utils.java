@@ -36,7 +36,7 @@ public class Utils {
 	public static boolean DEBUG = false;
 	
 	private static final Pattern HEX_PATTERN = Pattern.compile("&#([a-fA-F\\d]{6})");
-	public static final int SUB_VERSION = Integer.parseInt(Bukkit.getBukkitVersion().split("\\.")[1]);
+	public static final int SUB_VERSION = Integer.parseInt(Bukkit.getBukkitVersion().split("-")[0].split("\\.")[1]);
 	
 	public static final int VOID_LEVEL = SUB_VERSION >= 18 ? -60 : 0;
 
