@@ -66,17 +66,11 @@ public class LocationUtils {
     }
 
     public static Location generateRandomLocationNearPoint(String shape, Player p, int centerX, int centerZ, Channel channel, World world) {
-        switch (shape) {
-            case "SQUARE": {
-                return generateRandomSquareLocationNearPoint(p, centerX, centerZ, channel, world);
-            }
-            case "ROUND": {
-                return generateRandomRoundLocationNearPoint(p, centerX, centerZ, channel, world);
-            }
-            default: {
-                return null;
-            }
-        }
+        return switch (shape) {
+            case "SQUARE" -> generateRandomSquareLocationNearPoint(p, centerX, centerZ, channel, world);
+            case "ROUND" -> generateRandomRoundLocationNearPoint(p, centerX, centerZ, channel, world);
+            default -> null;
+        };
     }
 
     private static Location generateRandomSquareLocationNearPoint(Player p, int centerX, int centerZ, Channel channel, World world) {
