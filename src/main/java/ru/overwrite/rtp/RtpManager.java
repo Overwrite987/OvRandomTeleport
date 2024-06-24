@@ -291,21 +291,11 @@ public class RtpManager {
 	    }
 	    
 	    String shape = channel.getShape();
-	    Location location;
-	    
-	    switch (shape) {
-	    	case "SQUARE":	{
-	    		location = LocationUtils.generateRandomSquareLocation(p, channel, world);
-	    		break;
-	    	}
-	    	case "ROUND":	{
-	    		location = LocationUtils.generateRandomRoundLocation(p, channel, world);
-	    		break;
-	    	}
-	    	default: {
-	    		return null;
-	    	}
-	    }
+	    Location location = switch (shape) {
+			case "SQUARE" -> LocationUtils.generateRandomSquareLocation(p, channel, world);
+			case "ROUND" -> LocationUtils.generateRandomRoundLocation(p, channel, world);
+			default -> null;
+		};
 	    
 	    if (location == null) {
 	        iterationsPerPlayer.put(p.getName(), iterationsPerPlayer.getOrDefault(p.getName(), 0)+1);
