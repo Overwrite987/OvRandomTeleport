@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -134,21 +135,13 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 				Channel channel = rtpManager.getChannelByName(args[3]);
 				if (!channel.getActiveWorlds().contains(targetPlayer.getWorld())) {
 					if (channel.isTeleportToFirstAllowedWorld()) {
-						if (args.length == 5 && args[4].equalsIgnoreCase("force")) {
-							rtpManager.teleportPlayer(targetPlayer, channel, rtpManager.generateRandomLocation(targetPlayer, channel, channel.getActiveWorlds().get(0)));
-							return true;
-						}
-						rtpManager.preTeleport(targetPlayer, channel, channel.getActiveWorlds().get(0));
+						processForceTeleport(args, targetPlayer, channel, channel.getActiveWorlds().get(0));
 						return true;
 					}
 					sender.sendMessage(channel.getInvalidWorldMessage());
 					return false;
 				}
-				if (args.length == 5 && args[4].equalsIgnoreCase("force")) {
-					rtpManager.teleportPlayer(targetPlayer, channel, rtpManager.generateRandomLocation(targetPlayer, channel, targetPlayer.getWorld()));
-					return true;
-				}
-				rtpManager.preTeleport(targetPlayer, channel, channel.getActiveWorlds().get(0));
+				processForceTeleport(args, targetPlayer, channel, targetPlayer.getWorld());
 				return true;
 			}
 			case "help": {
@@ -163,6 +156,14 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 		}
 		sender.sendMessage(pluginConfig.messages_unknown_argument);
 		return false;
+	}
+
+	private void processForceTeleport(String[] args, Player targetPlayer, Channel channel, World world) {
+		if (args.length == 5 && args[4].equalsIgnoreCase("force")) {
+			rtpManager.teleportPlayer(targetPlayer, channel, rtpManager.generateRandomLocation(targetPlayer, channel, world));
+			return;
+		}
+		rtpManager.preTeleport(targetPlayer, channel, world);
 	}
 	
 	@Override
@@ -187,18 +188,8 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 					completions.add("forcertp");
 					completions.add("debug");
 				}
-				if (args[1].equalsIgnoreCase("forceteleport") || args[1].equalsIgnoreCase("forcertp")) {
-					if (args.length == 3) {
-						for (Player p : Bukkit.getOnlinePlayers()) {
-							completions.add(p.getName());
-						}
-					}
-					if (args.length == 4) {
-						completions.addAll(rtpManager.getNamedChannels().keySet());
-					}
-					if (args.length == 5) {
-						completions.add("force");
-					}
+				if (isForceRtp(args[1])) {
+					getForceRtpTabCompletion(args, completions);
 				}
 			}
 		}
@@ -209,5 +200,23 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 			}
 		}
 		return result;
+	}
+
+	private boolean isForceRtp(String arg) {
+		return arg.equalsIgnoreCase("forceteleport") || arg.equalsIgnoreCase("forcertp");
+	}
+
+	private void getForceRtpTabCompletion(String[] args, List<String> completions) {
+		if (args.length == 3) {
+			for (Player p : Bukkit.getOnlinePlayers()) {
+				completions.add(p.getName());
+			}
+		}
+		if (args.length == 4) {
+			completions.addAll(rtpManager.getNamedChannels().keySet());
+		}
+		if (args.length == 5) {
+			completions.add("force");
+		}
 	}
 }
