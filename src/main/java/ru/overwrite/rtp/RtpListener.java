@@ -40,7 +40,7 @@ public class RtpListener implements Listener {
 		}
 		String playerName = p.getName();
 		if (rtpManager.hasActiveTasks(playerName) && rtpManager.getPerPlayerActiveRtpTask().get(playerName).getActiveChannel().isRestrictMove()) {
-			p.sendMessage(rtpManager.getPerPlayerActiveRtpTask().get(playerName).getActiveChannel().getChannelMessages().movedOnTeleportMessage());
+			p.sendMessage(rtpManager.getPerPlayerActiveRtpTask().get(playerName).getActiveChannel().getMessages().movedOnTeleportMessage());
 			rtpManager.getPerPlayerActiveRtpTask().get(playerName).cancel();
 			rtpManager.teleportingNow.remove(playerName);
 			rtpManager.getPerPlayerActiveRtpTask().remove(playerName);
@@ -94,7 +94,7 @@ public class RtpListener implements Listener {
 		}
         String playerName = p.getName();
 		if (rtpManager.hasActiveTasks(playerName) && rtpManager.getPerPlayerActiveRtpTask().get(playerName).getActiveChannel().isRestrictDamage()) {
-			p.sendMessage(rtpManager.getPerPlayerActiveRtpTask().get(playerName).getActiveChannel().getChannelMessages().damagedOnTeleportMessage());
+			p.sendMessage(rtpManager.getPerPlayerActiveRtpTask().get(playerName).getActiveChannel().getMessages().damagedOnTeleportMessage());
 			rtpManager.getPerPlayerActiveRtpTask().get(playerName).cancel();
 			rtpManager.teleportingNow.remove(playerName);
 			rtpManager.getPerPlayerActiveRtpTask().remove(playerName);

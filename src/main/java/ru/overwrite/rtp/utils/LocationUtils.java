@@ -3,6 +3,7 @@ package ru.overwrite.rtp.utils;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import ru.overwrite.rtp.channels.Avoidance;
 import ru.overwrite.rtp.channels.Channel;
 
 import java.util.Random;
@@ -26,7 +27,8 @@ public class LocationUtils {
         }
 
         Location location = new Location(world, x + 0.5, y, z + 0.5, p.getLocation().getYaw(), p.getLocation().getPitch());
-        if (isDisallowedBlock(location, channel) || isDisallowedBiome(location, channel) || isInsideRegion(location, channel) || isInsideTown(location, channel)) {
+        Avoidance avoidance = channel.getAvoidance();
+        if (isDisallowedBlock(location, avoidance) || isDisallowedBiome(location, avoidance) || isInsideRegion(location, avoidance) || isInsideTown(location, avoidance)) {
             return null;
         } else {
             location.setY(y + 1);
@@ -57,7 +59,8 @@ public class LocationUtils {
         }
 
         Location location = new Location(world, x + 0.5, y, z + 0.5, p.getLocation().getYaw(), p.getLocation().getPitch());
-        if (isDisallowedBlock(location, channel) || isDisallowedBiome(location, channel) || isInsideRegion(location, channel) || isInsideTown(location, channel)) {
+        Avoidance avoidance = channel.getAvoidance();
+        if (isDisallowedBlock(location, avoidance) || isDisallowedBiome(location, avoidance) || isInsideRegion(location, avoidance) || isInsideTown(location, avoidance)) {
             return null;
         } else {
             location.setY(y + 1);
@@ -94,7 +97,8 @@ public class LocationUtils {
         }
 
         Location location = new Location(world, x + 0.5, y, z + 0.5, p.getLocation().getYaw(), p.getLocation().getPitch());
-        if (isDisallowedBlock(location, channel) || isDisallowedBiome(location, channel) || isInsideRegion(location, channel) || isInsideTown(location, channel)) {
+        Avoidance avoidance = channel.getAvoidance();
+        if (isDisallowedBlock(location, avoidance) || isDisallowedBiome(location, avoidance) || isInsideRegion(location, avoidance) || isInsideTown(location, avoidance)) {
             return null;
         } else {
             location.setY(y + 1);
@@ -125,7 +129,8 @@ public class LocationUtils {
         }
 
         Location location = new Location(world, x + 0.5, y, z + 0.5, p.getLocation().getYaw(), p.getLocation().getPitch());
-        if (isDisallowedBlock(location, channel) || isDisallowedBiome(location, channel) || isInsideRegion(location, channel) || isInsideTown(location, channel)) {
+        Avoidance avoidance = channel.getAvoidance();
+        if (isDisallowedBlock(location, avoidance) || isDisallowedBiome(location, avoidance) || isInsideRegion(location, avoidance) || isInsideTown(location, avoidance)) {
             return null;
         } else {
             location.setY(y + 1);
@@ -149,27 +154,27 @@ public class LocationUtils {
         return -1;
     }
 
-    private static boolean isDisallowedBlock(Location loc, Channel channel) {
-        if (channel.isAvoidBlocksBlacklist()) {
-            return !channel.getAvoidBlocks().isEmpty() && channel.getAvoidBlocks().contains(loc.getBlock().getType());
+    private static boolean isDisallowedBlock(Location loc, Avoidance avoidance) {
+        if (avoidance.avoidBlocksBlacklist()) {
+            return !avoidance.avoidBlocks().isEmpty() && avoidance.avoidBlocks().contains(loc.getBlock().getType());
         } else {
-            return !channel.getAvoidBlocks().isEmpty() && !channel.getAvoidBlocks().contains(loc.getBlock().getType());
+            return !avoidance.avoidBlocks().isEmpty() && !avoidance.avoidBlocks().contains(loc.getBlock().getType());
         }
     }
 
-    private static boolean isDisallowedBiome(Location loc, Channel channel) {
-        if (channel.isAvoidBiomesBlacklist()) {
-            return !channel.getAvoidBiomes().isEmpty() && channel.getAvoidBiomes().contains(loc.getBlock().getBiome());
+    private static boolean isDisallowedBiome(Location loc, Avoidance avoidance) {
+        if (avoidance.avoidBiomesBlacklist()) {
+            return !avoidance.avoidBiomes().isEmpty() && avoidance.avoidBiomes().contains(loc.getBlock().getBiome());
         } else {
-            return !channel.getAvoidBiomes().isEmpty() && !channel.getAvoidBiomes().contains(loc.getBlock().getBiome());
+            return !avoidance.avoidBiomes().isEmpty() && !avoidance.avoidBiomes().contains(loc.getBlock().getBiome());
         }
     }
 
-    private static boolean isInsideRegion(Location loc, Channel channel) {
-        return channel.isAvoidRegions() && (WGUtils.getApplicableRegions(loc) != null && !WGUtils.getApplicableRegions(loc).getRegions().isEmpty());
+    private static boolean isInsideRegion(Location loc, Avoidance avoidance) {
+        return avoidance.avoidRegions() && (WGUtils.getApplicableRegions(loc) != null && !WGUtils.getApplicableRegions(loc).getRegions().isEmpty());
     }
 
-    private static boolean isInsideTown(Location loc, Channel channel) {
-        return channel.isAvoidTowns() && TownyUtils.getTownByLocation(loc) != null;
+    private static boolean isInsideTown(Location loc, Avoidance avoidance) {
+        return avoidance.avoidTowns() && TownyUtils.getTownByLocation(loc) != null;
     }
 }

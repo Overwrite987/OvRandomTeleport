@@ -5,7 +5,7 @@ import ru.overwrite.rtp.actions.Action;
 import java.util.List;
 import java.util.Map;
 
-public record ChannelActions(
+public record Actions(
         List<Action> preTeleportActions,
         Map<Integer, List<Action>> onCooldownActions,
         List<Action> afterTeleportActions) {

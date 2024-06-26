@@ -1,6 +1,6 @@
 package ru.overwrite.rtp.channels;
 
-public record ChannelMessages(
+public record Messages(
         String noPermsMessage,
         String invalidWorldMessage,
         String notEnoughPlayersMessage,

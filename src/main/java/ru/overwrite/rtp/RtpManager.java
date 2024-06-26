@@ -25,10 +25,7 @@ import org.bukkit.plugin.PluginManager;
 
 import lombok.Getter;
 import ru.overwrite.rtp.actions.Action;
-import ru.overwrite.rtp.channels.Channel;
-import ru.overwrite.rtp.channels.ChannelActions;
-import ru.overwrite.rtp.channels.ChannelMessages;
-import ru.overwrite.rtp.channels.ChannelType;
+import ru.overwrite.rtp.channels.*;
 import ru.overwrite.rtp.utils.*;
 
 public class RtpManager {
@@ -72,10 +69,7 @@ public class RtpManager {
 			if (type == ChannelType.NEAR_REGION && !pluginManager.isPluginEnabled("WorldGuard")) {
 				type = ChannelType.DEFAULT;
 			}
-			List<World> activeWorlds = new ArrayList<>();
-			for (String w : channelSection.getStringList("active_worlds")) {
-				activeWorlds.add(Bukkit.getWorld(w));
-			}
+			List<World> activeWorlds = getWorldList(channelSection.getStringList("active_worlds"));
 			boolean teleportToFirstAllowedWorld = channelSection.getBoolean("teleport_to_first_world", false);
 			boolean teleportOnFirstJoin = channelSection.getBoolean("teleport_on_first_join", false);
 			boolean teleportOnVoid = channelSection.getBoolean("teleport_on_void", false);
@@ -97,41 +91,16 @@ public class RtpManager {
 			int invulnerableTicks = channelSection.getInt("invulnerable_after_teleport", 1);
 			int cooldown = channelSection.getInt("cooldown", 60);
 			int teleportCooldown = channelSection.getInt("teleport_cooldown", -1);
-			ConfigurationSection bossbar = channelSection.getConfigurationSection("bossbar");
-			boolean bossbarEnabled = !isSectionNull(bossbar) && bossbar.getBoolean("enabled", false);
-			String bossbarTitle = isSectionNull(bossbar) ? "" : Utils.colorize(bossbar.getString("title"));
-			BarColor bossbarColor = isSectionNull(bossbar) ? BarColor.PURPLE : BarColor.valueOf(bossbar.getString("color").toUpperCase());
-			BarStyle bossbarType = isSectionNull(bossbar) ? BarStyle.SOLID : BarStyle.valueOf(bossbar.getString("style").toUpperCase());
+			BossBar bossBar = setupChannelBossBar(channelSection.getConfigurationSection("bossbar"));
 			ConfigurationSection restrictions = channelSection.getConfigurationSection("restrictions");
 			boolean restrictMove = !isSectionNull(restrictions) && restrictions.getBoolean("move");
 			boolean restrictDamage = !isSectionNull(restrictions) && restrictions.getBoolean("damage");
-			ConfigurationSection avoid = channelSection.getConfigurationSection("avoid");
-			Set<Material> avoidBlocks = new ObjectOpenHashSet<>();
-			boolean avoidBlocksBlacklist = true;
-			if (!isSectionNull(avoid)) {
-				avoidBlocksBlacklist= avoid.getBoolean("blocks.blacklist", true);
-				for (String m : avoid.getStringList("blocks.list")) {
-					avoidBlocks.add(Material.valueOf(m.toUpperCase()));
-				}
-			}
-			Set<Biome> avoidBiomes = new ObjectOpenHashSet<>();
-			boolean avoidBiomesBlacklist = true;
-			if (!isSectionNull(avoid)) {
-				avoidBiomesBlacklist = avoid.getBoolean("biomes.blacklist", true);
-				for (String b : avoid.getStringList("biomes.list")) {
-					avoidBiomes.add(Biome.valueOf(b.toUpperCase()));
-				}
-			}
-			boolean avoidRegions = !isSectionNull(avoid) && avoid.getBoolean("regions", false) && pluginManager.isPluginEnabled("WorldGuard");
-			boolean avoidTowns = !isSectionNull(avoid) && avoid.getBoolean("towns", false) && pluginManager.isPluginEnabled("Towny");
-			ConfigurationSection actions = channelSection.getConfigurationSection("actions");
-			if (isSectionNull(actions)) {
+			Avoidance avoidance = setupChannelAvoidance(channelSection.getConfigurationSection("avoid"), pluginManager);
+			Actions channelActions = setupChannelActions(channelSection.getConfigurationSection("actions"));
+			if (channelActions == null) {
 				continue;
 			}
-
-			ChannelActions channelActions = setupChannelActions(actions);
-
-			ChannelMessages channelMessages = setupChannelMessages(channelSection.getConfigurationSection("messages"));
+			Messages messages = setupChannelMessages(channelSection.getConfigurationSection("messages"));
 
 			Channel newChannel = new Channel(channelId,
 					name,
@@ -151,24 +120,24 @@ public class RtpManager {
 					invulnerableTicks,
 					cooldown,
 					teleportCooldown,
-					bossbarEnabled,
-					bossbarTitle,
-					bossbarColor,
-					bossbarType,
+					bossBar,
 					restrictMove,
-					restrictDamage, 
-					avoidBlocksBlacklist,
-					avoidBlocks,
-					avoidBiomesBlacklist,
-					avoidBiomes,
-					avoidRegions,
-					avoidTowns,
+					restrictDamage,
+					avoidance,
 					channelActions,
-					channelMessages);
+					messages);
 			namedChannels.put(channelId, newChannel);
 			assignChannelToSpecification(newChannel, channelId);
 		}
 		this.defaultChannel = getChannelByName(config.getString("main_settings.default_channel"));
+	}
+
+	private List<World> getWorldList(List<String> worldNames) {
+		List<World> worldList = new ArrayList<>();
+		for (String w : worldNames) {
+			worldList.add(Bukkit.getWorld(w));
+		}
+		return worldList;
 	}
 
 	private void assignChannelToSpecification(Channel newChannel, String channelId) {
@@ -183,32 +152,46 @@ public class RtpManager {
 		}
 	}
 
-	public ChannelMessages setupChannelMessages(ConfigurationSection messages) {
-		String prefix = isConfigValueExist(messages, "prefix") ? messages.getString("prefix") : pluginConfig.messages_prefix;
-		String noPermsMessage = getMessage(messages, "no_perms", pluginConfig.messages_no_perms, prefix);
-		String invalidWorldMessage = getMessage(messages, "invalid_world", pluginConfig.messages_invalid_world, prefix);
-		String notEnoughPlayersMessage = getMessage(messages, "not_enough_players", pluginConfig.messages_not_enough_players, prefix);
-		String notEnoughMoneyMessage = getMessage(messages, "not_enough_money", pluginConfig.messages_not_enough_money, prefix);
-		String cooldownMessage = getMessage(messages, "cooldown", pluginConfig.messages_cooldown, prefix);
-		String movedOnTeleportMessage = getMessage(messages, "moved_on_teleport", pluginConfig.messages_moved_on_teleport, prefix);
-		String damagedOnTeleportMessage = getMessage(messages, "damaged_on_teleport", pluginConfig.messages_damaged_on_teleport, prefix);
-		String failToFindLocationMessage = getMessage(messages, "fail_to_find_location", pluginConfig.messages_fail_to_find_location, prefix);
-		String alreadyTeleportingMessage = getMessage(messages, "already_teleporting", pluginConfig.messages_already_teleporting, prefix);
+	public BossBar setupChannelBossBar(ConfigurationSection bossbar) {
+		if (isSectionNull(bossbar)) {
+			return new BossBar(false, "", BarColor.PURPLE, BarStyle.SOLID);
+		}
+		boolean enabled = bossbar.getBoolean("enabled", false);
+		String title = Utils.colorize(bossbar.getString("title"));
+		BarColor color = BarColor.valueOf(bossbar.getString("color").toUpperCase());
+		BarStyle style = BarStyle.valueOf(bossbar.getString("style").toUpperCase());
 
-		return new ChannelMessages(
-				noPermsMessage,
-				invalidWorldMessage,
-				notEnoughPlayersMessage,
-				notEnoughMoneyMessage,
-				cooldownMessage,
-				movedOnTeleportMessage,
-				damagedOnTeleportMessage,
-				failToFindLocationMessage,
-				alreadyTeleportingMessage
-		);
+		return new BossBar(enabled, title, color, style);
 	}
 
-	public ChannelActions setupChannelActions(ConfigurationSection actions) {
+	public Avoidance setupChannelAvoidance(ConfigurationSection avoid, PluginManager pluginManager) {
+		boolean isNullSection = isSectionNull(avoid);
+		Set<Material> avoidBlocks = new ObjectOpenHashSet<>();
+		boolean avoidBlocksBlacklist = true;
+		if (!isNullSection) {
+			avoidBlocksBlacklist = avoid.getBoolean("blocks.blacklist", true);
+			for (String m : avoid.getStringList("blocks.list")) {
+				avoidBlocks.add(Material.valueOf(m.toUpperCase()));
+			}
+		}
+		Set<Biome> avoidBiomes = new ObjectOpenHashSet<>();
+		boolean avoidBiomesBlacklist = true;
+		if (!isNullSection) {
+			avoidBiomesBlacklist = avoid.getBoolean("biomes.blacklist", true);
+			for (String b : avoid.getStringList("biomes.list")) {
+				avoidBiomes.add(Biome.valueOf(b.toUpperCase()));
+			}
+		}
+		boolean avoidRegions = !isNullSection && avoid.getBoolean("regions", false) && pluginManager.isPluginEnabled("WorldGuard");
+		boolean avoidTowns = !isNullSection && avoid.getBoolean("towns", false) && pluginManager.isPluginEnabled("Towny");
+
+		return new Avoidance(avoidBlocksBlacklist, avoidBlocks, avoidBiomesBlacklist, avoidBiomes, avoidRegions, avoidTowns);
+	}
+
+	public Actions setupChannelActions(ConfigurationSection actions) {
+		if (isSectionNull(actions)) {
+			return null;
+		}
 		List<Action> preTeleportActions = getActionList(actions.getStringList("pre_teleport"));
 		Map<Integer, List<Action>> onCooldownActions = new Int2ObjectOpenHashMap<>();
 		ConfigurationSection cdActions = actions.getConfigurationSection("on_cooldown");
@@ -224,7 +207,7 @@ public class RtpManager {
 		}
 		List<Action> afterTeleportActions = getActionList(actions.getStringList("after_teleport"));
 
-		return new ChannelActions(preTeleportActions, onCooldownActions, afterTeleportActions);
+		return new Actions(preTeleportActions, onCooldownActions, afterTeleportActions);
 	}
 
 	private List<Action> getActionList(List<String> actionStrings) {
@@ -233,6 +216,31 @@ public class RtpManager {
 			actions.add(Action.fromString(actionString));
 		}
 		return actions;
+	}
+
+	public Messages setupChannelMessages(ConfigurationSection messages) {
+		String prefix = isConfigValueExist(messages, "prefix") ? messages.getString("prefix") : pluginConfig.messages_prefix;
+		String noPermsMessage = getMessage(messages, "no_perms", pluginConfig.messages_no_perms, prefix);
+		String invalidWorldMessage = getMessage(messages, "invalid_world", pluginConfig.messages_invalid_world, prefix);
+		String notEnoughPlayersMessage = getMessage(messages, "not_enough_players", pluginConfig.messages_not_enough_players, prefix);
+		String notEnoughMoneyMessage = getMessage(messages, "not_enough_money", pluginConfig.messages_not_enough_money, prefix);
+		String cooldownMessage = getMessage(messages, "cooldown", pluginConfig.messages_cooldown, prefix);
+		String movedOnTeleportMessage = getMessage(messages, "moved_on_teleport", pluginConfig.messages_moved_on_teleport, prefix);
+		String damagedOnTeleportMessage = getMessage(messages, "damaged_on_teleport", pluginConfig.messages_damaged_on_teleport, prefix);
+		String failToFindLocationMessage = getMessage(messages, "fail_to_find_location", pluginConfig.messages_fail_to_find_location, prefix);
+		String alreadyTeleportingMessage = getMessage(messages, "already_teleporting", pluginConfig.messages_already_teleporting, prefix);
+
+		return new Messages(
+				noPermsMessage,
+				invalidWorldMessage,
+				notEnoughPlayersMessage,
+				notEnoughMoneyMessage,
+				cooldownMessage,
+				movedOnTeleportMessage,
+				damagedOnTeleportMessage,
+				failToFindLocationMessage,
+				alreadyTeleportingMessage
+		);
 	}
 	
 	private boolean isNumber(String string) {
@@ -267,7 +275,7 @@ public class RtpManager {
 	
 	public void preTeleport(Player p, Channel channel, World world) {
 		if (teleportingNow.contains(p.getName())) {
-			p.sendMessage(channel.getChannelMessages().alreadyTeleportingMessage());
+			p.sendMessage(channel.getMessages().alreadyTeleportingMessage());
 			return;
 		}
 		teleportingNow.add(p.getName());
@@ -283,7 +291,7 @@ public class RtpManager {
 				return;
 			}
 			if (channel.getTeleportCooldown() > 0) {
-				this.executeActions(p, channel, channel.getChannelActions().preTeleportActions(), p.getLocation());
+				this.executeActions(p, channel, channel.getActions().preTeleportActions(), p.getLocation());
 				RtpTask rtpTask = new RtpTask(plugin, this, p.getName(), channel);
 				perPlayerActiveRtpTask.put(p.getName(), rtpTask);
 				rtpTask.startPreTeleportTimer(p, channel, loc);
@@ -388,7 +396,7 @@ public class RtpManager {
 			if (channel.getCooldown() > 0 && !p.hasPermission("rtp.bypasscooldown")) {
 				channel.getPlayerCooldowns().put(p.getName(), System.currentTimeMillis());
 			}
-			this.executeActions(p, channel, channel.getChannelActions().afterTeleportActions(), loc);
+			this.executeActions(p, channel, channel.getActions().afterTeleportActions(), loc);
 		});
 	}
 

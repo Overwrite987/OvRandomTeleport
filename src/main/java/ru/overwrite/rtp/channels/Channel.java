@@ -1,19 +1,12 @@
 package ru.overwrite.rtp.channels;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import lombok.Getter;
-import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.utils.ExpiringMap;
 
-import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Biome;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarStyle;
 
 @Getter
 public class Channel {
@@ -56,33 +49,17 @@ public class Channel {
 	
 	private final int teleportCooldown;
 	
-	private final boolean bossbarEnabled;
-	
-	private final String bossbarTitle;
-	
-	private final BarColor bossbarColor;
-	
-	private final BarStyle bossbarType;
+	private final BossBar bossBar;
 	
 	private final boolean restrictMove;
 	
 	private final boolean restrictDamage;
-	
-	private final boolean avoidBlocksBlacklist;
-	
-	private final Set<Material> avoidBlocks;
-	
-	private final boolean avoidBiomesBlacklist;
-	
-	private final Set<Biome> avoidBiomes;
-	
-	private final boolean avoidRegions;
-	
-	private final boolean avoidTowns;
 
-	private final ChannelActions channelActions;
+	private final Avoidance avoidance;
 
-	private final ChannelMessages channelMessages;
+	private final Actions actions;
+
+	private final Messages messages;
 	
 	public Channel(String id,
 			String name,
@@ -102,20 +79,12 @@ public class Channel {
 			int invulnerableTicks,
 			int cooldown,
 			int teleportCooldown,
-			boolean bossbarEnabled,
-			String bossbarTitle,
-			BarColor bossbarColor,
-			BarStyle bossbarType,
+			BossBar bossBar,
 			boolean restrictMove,
-			boolean restrictDamage, 
-			boolean avoidBlocksBlacklist,
-			Set<Material> avoidBlocks,
-			boolean avoidBiomesBlacklist,
-			Set<Biome> avoidBiomes,
-			boolean avoidRegions,
-			boolean avoidTowns,
-			ChannelActions channelActions,
-			ChannelMessages channelMessages) {
+			boolean restrictDamage,
+			Avoidance avoidance,
+			Actions actions,
+			Messages messages) {
 		this.id = id;
 		 this.name = name;
 		 this.type = type;
@@ -136,22 +105,14 @@ public class Channel {
 		 this.maxLocationAttempts = maxLocationAttempts;
 		 this.invulnerableTicks = invulnerableTicks;
 		 this.cooldown = cooldown;
+		 this.playerCooldowns = new ExpiringMap<>(cooldown, TimeUnit.SECONDS);
 		 this.teleportCooldown = teleportCooldown;
-		 this.bossbarEnabled = bossbarEnabled;
-		 this.bossbarTitle = bossbarTitle;
-		 this.bossbarColor = bossbarColor;
-		 this.bossbarType = bossbarType;
+		 this.bossBar = bossBar;
 		 this.restrictMove = restrictMove;
 		 this.restrictDamage = restrictDamage;
-		 this.avoidBlocksBlacklist = avoidBlocksBlacklist;
-		 this.avoidBlocks = avoidBlocks;
-		 this.avoidBiomesBlacklist = avoidBiomesBlacklist;
-		 this.avoidBiomes = avoidBiomes;
-		 this.avoidRegions = avoidRegions;
-		 this.avoidTowns = avoidTowns;
-		 this.playerCooldowns = new ExpiringMap<>(cooldown, TimeUnit.SECONDS);
-		 this.channelActions = channelActions;
-		 this.channelMessages = channelMessages;
+		 this.avoidance = avoidance;
+		 this.actions = actions;
+		 this.messages = messages;
 	}
 
 }

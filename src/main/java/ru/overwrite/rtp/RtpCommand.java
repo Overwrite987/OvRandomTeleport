@@ -48,7 +48,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 		}
 
 		if (args.length == 1) {
-			Player p = (Player) sender;
+            Player p = (Player) sender;
 			if (rtpManager.hasActiveTasks(p.getName())) {
 				return false;
 			}
@@ -66,11 +66,11 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 
 	private boolean processTeleport(Player p, Channel channel) {
 		if (!p.hasPermission("rtp.channel." + channel.getId())) {
-			p.sendMessage(channel.getChannelMessages().noPermsMessage());
+			p.sendMessage(channel.getMessages().noPermsMessage());
 			return false;
 		}
 		if (channel.getPlayerCooldowns().containsKey(p.getName())) {
-			p.sendMessage(channel.getChannelMessages().cooldownMessage()
+			p.sendMessage(channel.getMessages().cooldownMessage()
 					.replace("%time%", Utils.getTime((int) (channel.getCooldown() - (System.currentTimeMillis() - channel.getPlayerCooldowns().get(p.getName())) / 1000))));
 			return false;
 		}
@@ -79,16 +79,16 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 				rtpManager.preTeleport(p, channel, channel.getActiveWorlds().get(0));
 				return true;
 			}
-			p.sendMessage(channel.getChannelMessages().invalidWorldMessage());
+			p.sendMessage(channel.getMessages().invalidWorldMessage());
 			return false;
 		}
 		if (channel.getMinPlayersToUse() > 0 && channel.getMinPlayersToUse() < Bukkit.getOnlinePlayers().size()) {
-			p.sendMessage(channel.getChannelMessages().notEnoughPlayersMessage().replace("%required%", Integer.toString(channel.getMinPlayersToUse())));
+			p.sendMessage(channel.getMessages().notEnoughPlayersMessage().replace("%required%", Integer.toString(channel.getMinPlayersToUse())));
 			return false;
 		}
 		if (plugin.getEconomy() != null) {
 			if (plugin.getEconomy().getBalance(p) < channel.getTeleportCost()) {
-				p.sendMessage(channel.getChannelMessages().notEnoughMoneyMessage().replace("%required%", Double.toString(channel.getTeleportCost())));
+				p.sendMessage(channel.getMessages().notEnoughMoneyMessage().replace("%required%", Double.toString(channel.getTeleportCost())));
 				return false;
 			}
 			plugin.getEconomy().withdrawPlayer(p, channel.getTeleportCost());
@@ -116,9 +116,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 				sender.sendMessage(pluginConfig.messages_reload);
 				return true;
 			}
-			case "teleport":
-			case "forceteleport":
-			case "forcertp": {
+			case "teleport", "forceteleport", "forcertp": {
 				if (args.length < 4 || args.length > 5) {
 					sender.sendMessage(pluginConfig.messages_unknown_argument);
 					return false;
@@ -138,7 +136,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 						processForceTeleport(args, targetPlayer, channel, channel.getActiveWorlds().get(0));
 						return true;
 					}
-					sender.sendMessage(channel.getChannelMessages().invalidWorldMessage());
+					sender.sendMessage(channel.getMessages().invalidWorldMessage());
 					return false;
 				}
 				processForceTeleport(args, targetPlayer, channel, targetPlayer.getWorld());
