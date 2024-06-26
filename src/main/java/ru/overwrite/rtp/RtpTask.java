@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import ru.overwrite.rtp.channels.Channel;
+import ru.overwrite.rtp.channels.ChannelActions;
 import ru.overwrite.rtp.utils.Utils;
 
 public class RtpTask {
@@ -60,10 +61,11 @@ public class RtpTask {
                     String barTitle = Utils.colorize(channel.getBossbarTitle().replace("%time%", Utils.getTime(preTeleportCooldown)));
                     bossBar.setTitle(barTitle);
                 }
-                if (!channel.getOnCooldownActions().isEmpty()) {
-                    for (int i : channel.getOnCooldownActions().keySet()) {
+                ChannelActions channelActions = channel.getChannelActions();
+                if (!channelActions.onCooldownActions().isEmpty()) {
+                    for (int i : channelActions.onCooldownActions().keySet()) {
                         if (i == preTeleportCooldown) {
-                            rtpManager.executeActions(p, channel, channel.getOnCooldownActions().get(i), p.getLocation());
+                            rtpManager.executeActions(p, channel, channelActions.onCooldownActions().get(i), p.getLocation());
                         }
                     }
                 }

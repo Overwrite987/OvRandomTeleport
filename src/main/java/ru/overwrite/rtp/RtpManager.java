@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -28,6 +29,8 @@ import org.bukkit.plugin.PluginManager;
 import lombok.Getter;
 import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.channels.Channel;
+import ru.overwrite.rtp.channels.ChannelActions;
+import ru.overwrite.rtp.channels.ChannelMessages;
 import ru.overwrite.rtp.channels.ChannelType;
 import ru.overwrite.rtp.utils.*;
 
@@ -128,31 +131,11 @@ public class RtpManager {
 			if (isSectionNull(actions)) {
 				continue;
 			}
-			List<Action> preTeleportActions = getActionList(actions.getStringList("pre_teleport"));
-			Map<Integer, List<Action>> onCooldownActions = new Int2ObjectOpenHashMap<>();
-			ConfigurationSection cdActions = actions.getConfigurationSection("on_cooldown");
-			if (!isSectionNull(cdActions)) {
-				for (String s : cdActions.getKeys(false)) {
-					if (!isNumber(s)) {
-						continue;
-					}
-					int time = Integer.parseInt(s);
-					List<Action> actionList = getActionList(cdActions.getStringList(s));
-					onCooldownActions.put(time, actionList);
-				}
-			}
-			List<Action> afterTeleportActions = getActionList(actions.getStringList("after_teleport"));
-			ConfigurationSection messages = channelSection.getConfigurationSection("messages");
-			String prefix = isConfigValueExist(messages, "prefix") ? messages.getString("prefix") : pluginConfig.messages_prefix;
-			String noPermsMessage = getMessage(messages, "no_perms", pluginConfig.messages_no_perms, prefix);
-			String invalidWorldMessage = getMessage(messages, "invalid_world", pluginConfig.messages_invalid_world, prefix);
-			String notEnoughPlayersMessage = getMessage(messages, "not_enough_players", pluginConfig.messages_not_enough_players, prefix);
-			String notEnoughMoneyMessage = getMessage(messages, "not_enough_money", pluginConfig.messages_not_enough_money, prefix);
-			String cooldownMessage = getMessage(messages, "cooldown", pluginConfig.messages_cooldown, prefix);
-			String movedOnTeleportMessage = getMessage(messages, "moved_on_teleport", pluginConfig.messages_moved_on_teleport, prefix);
-			String damagedOnTeleportMessage = getMessage(messages, "damaged_on_teleport", pluginConfig.messages_damaged_on_teleport, prefix);
-			String failToFindLocationMessage = getMessage(messages, "fail_to_find_location", pluginConfig.messages_fail_to_find_location, prefix);
-			String alreadyTeleportingMessage = getMessage(messages, "already_teleporting", pluginConfig.messages_already_teleporting, prefix);
+
+			ChannelActions channelActions = setupChannelActions(actions);
+
+			ChannelMessages channelMessages = setupChannelMessages(channelSection.getConfigurationSection("messages"));
+
 			Channel newChannel = new Channel(channelId,
 					name,
 					type,
@@ -183,18 +166,8 @@ public class RtpManager {
 					avoidBiomes,
 					avoidRegions,
 					avoidTowns,
-					preTeleportActions,
-					onCooldownActions,
-					afterTeleportActions,
-					noPermsMessage,
-					invalidWorldMessage,
-					notEnoughPlayersMessage,
-					notEnoughMoneyMessage,
-					cooldownMessage,
-					movedOnTeleportMessage,
-					damagedOnTeleportMessage,
-					failToFindLocationMessage,
-					alreadyTeleportingMessage);
+					channelActions,
+					channelMessages);
 			namedChannels.put(channelId, newChannel);
 			assignChannelToSpecification(newChannel, channelId);
 		}
@@ -211,6 +184,50 @@ public class RtpManager {
 		if (newChannel.isTeleportOnRespawn()) {
 			respawnChannels.put(newChannel, channelId);
 		}
+	}
+
+	public ChannelMessages setupChannelMessages(ConfigurationSection messages) {
+		String prefix = isConfigValueExist(messages, "prefix") ? messages.getString("prefix") : pluginConfig.messages_prefix;
+		String noPermsMessage = getMessage(messages, "no_perms", pluginConfig.messages_no_perms, prefix);
+		String invalidWorldMessage = getMessage(messages, "invalid_world", pluginConfig.messages_invalid_world, prefix);
+		String notEnoughPlayersMessage = getMessage(messages, "not_enough_players", pluginConfig.messages_not_enough_players, prefix);
+		String notEnoughMoneyMessage = getMessage(messages, "not_enough_money", pluginConfig.messages_not_enough_money, prefix);
+		String cooldownMessage = getMessage(messages, "cooldown", pluginConfig.messages_cooldown, prefix);
+		String movedOnTeleportMessage = getMessage(messages, "moved_on_teleport", pluginConfig.messages_moved_on_teleport, prefix);
+		String damagedOnTeleportMessage = getMessage(messages, "damaged_on_teleport", pluginConfig.messages_damaged_on_teleport, prefix);
+		String failToFindLocationMessage = getMessage(messages, "fail_to_find_location", pluginConfig.messages_fail_to_find_location, prefix);
+		String alreadyTeleportingMessage = getMessage(messages, "already_teleporting", pluginConfig.messages_already_teleporting, prefix);
+
+		return new ChannelMessages(
+				noPermsMessage,
+				invalidWorldMessage,
+				notEnoughPlayersMessage,
+				notEnoughMoneyMessage,
+				cooldownMessage,
+				movedOnTeleportMessage,
+				damagedOnTeleportMessage,
+				failToFindLocationMessage,
+				alreadyTeleportingMessage
+		);
+	}
+
+	public ChannelActions setupChannelActions(ConfigurationSection actions) {
+		List<Action> preTeleportActions = getActionList(actions.getStringList("pre_teleport"));
+		Map<Integer, List<Action>> onCooldownActions = new Int2ObjectOpenHashMap<>();
+		ConfigurationSection cdActions = actions.getConfigurationSection("on_cooldown");
+		if (!isSectionNull(cdActions)) {
+			for (String s : cdActions.getKeys(false)) {
+				if (!isNumber(s)) {
+					continue;
+				}
+				int time = Integer.parseInt(s);
+				List<Action> actionList = getActionList(cdActions.getStringList(s));
+				onCooldownActions.put(time, actionList);
+			}
+		}
+		List<Action> afterTeleportActions = getActionList(actions.getStringList("after_teleport"));
+
+		return new ChannelActions(preTeleportActions, onCooldownActions, afterTeleportActions);
 	}
 
 	private List<Action> getActionList(List<String> actionStrings) {
@@ -253,7 +270,7 @@ public class RtpManager {
 	
 	public void preTeleport(Player p, Channel channel, World world) {
 		if (teleportingNow.contains(p.getName())) {
-			p.sendMessage(channel.getAlreadyTeleportingMessage());
+			p.sendMessage(channel.getChannelMessages().alreadyTeleportingMessage());
 			return;
 		}
 		teleportingNow.add(p.getName());
@@ -269,7 +286,7 @@ public class RtpManager {
 				return;
 			}
 			if (channel.getTeleportCooldown() > 0) {
-				this.executeActions(p, channel, channel.getPreTeleportActions(), p.getLocation());
+				this.executeActions(p, channel, channel.getChannelActions().preTeleportActions(), p.getLocation());
 				RtpTask rtpTask = new RtpTask(plugin, this, p.getName(), channel);
 				perPlayerActiveRtpTask.put(p.getName(), rtpTask);
 				rtpTask.startPreTeleportTimer(p, channel, loc);
@@ -374,7 +391,7 @@ public class RtpManager {
 			if (channel.getCooldown() > 0 && !p.hasPermission("rtp.bypasscooldown")) {
 				channel.getPlayerCooldowns().put(p.getName(), System.currentTimeMillis());
 			}
-			this.executeActions(p, channel, channel.getAfterTeleportActions(), loc);
+			this.executeActions(p, channel, channel.getChannelActions().afterTeleportActions(), loc);
 		});
 	}
 

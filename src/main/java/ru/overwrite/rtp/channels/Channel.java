@@ -79,22 +79,10 @@ public class Channel {
 	private final boolean avoidRegions;
 	
 	private final boolean avoidTowns;
-	
-	private final List<Action> preTeleportActions;
-	
-	private final Map<Integer, List<Action>> onCooldownActions;
-	
-	private final List<Action> afterTeleportActions;
 
-	private final String noPermsMessage,
-			invalidWorldMessage,
-			notEnoughPlayersMessage,
-			notEnoughMoneyMessage,
-			cooldownMessage,
-			movedOnTeleportMessage,
-			damagedOnTeleportMessage,
-			failToFindLocationMessage,
-			alreadyTeleportingMessage;
+	private final ChannelActions channelActions;
+
+	private final ChannelMessages channelMessages;
 	
 	public Channel(String id,
 			String name,
@@ -126,18 +114,8 @@ public class Channel {
 			Set<Biome> avoidBiomes,
 			boolean avoidRegions,
 			boolean avoidTowns,
-			List<Action> preTeleportActions,
-			Map<Integer, List<Action>> onCooldownActions,
-			List<Action> afterTeleportActions,
-			String noPermsMessage,
-			String invalidWorldMessage,
-			String notEnoughPlayersMessage,
-			String notEnoughMoneyMessage,
-			String cooldownMessage,
-			String movedOnTeleportMessage,
-			String damagedOnTeleportMessage,
-			String failToFindLocationMessage,
-			String alreadyTeleportingMessage) {
+			ChannelActions channelActions,
+			ChannelMessages channelMessages) {
 		this.id = id;
 		 this.name = name;
 		 this.type = type;
@@ -171,19 +149,9 @@ public class Channel {
 		 this.avoidBiomes = avoidBiomes;
 		 this.avoidRegions = avoidRegions;
 		 this.avoidTowns = avoidTowns;
-		 this.preTeleportActions = preTeleportActions;
-		 this.onCooldownActions = onCooldownActions;
-		 this.afterTeleportActions = afterTeleportActions;
 		 this.playerCooldowns = new ExpiringMap<>(cooldown, TimeUnit.SECONDS);
-		 this.noPermsMessage = noPermsMessage;
-		 this.invalidWorldMessage = invalidWorldMessage;
-		 this.notEnoughPlayersMessage = notEnoughPlayersMessage;
-		 this.notEnoughMoneyMessage = notEnoughMoneyMessage;
-		 this.cooldownMessage = cooldownMessage;
-		 this.movedOnTeleportMessage = movedOnTeleportMessage;
-		 this.damagedOnTeleportMessage = damagedOnTeleportMessage;
-		 this.failToFindLocationMessage = failToFindLocationMessage;
-		 this.alreadyTeleportingMessage = alreadyTeleportingMessage;
+		 this.channelActions = channelActions;
+		 this.channelMessages = channelMessages;
 	}
 
 }
