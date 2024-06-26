@@ -23,12 +23,6 @@ public class Channel {
 	
 	private final boolean teleportToFirstAllowedWorld;
 
-	private final boolean teleportOnFirstJoin;
-	
-	private final boolean teleportOnVoid;
-
-	private final boolean teleportOnRespawn;
-
 	private final int minPlayersToUse;
 	
 	private final double teleportCost;
@@ -66,9 +60,6 @@ public class Channel {
 			ChannelType type,
 			List<World> activeWorlds,
 			boolean teleportToFirstAllowedWorld,
-			boolean teleportOnFirstJoin,
-			boolean teleportOnVoid,
-			boolean teleportOnRespawn,
 			int minPlayersToUse,
 			double teleportCost,
 			String shape,
@@ -90,9 +81,6 @@ public class Channel {
 		 this.type = type;
 		 this.activeWorlds = activeWorlds;
 		 this.teleportToFirstAllowedWorld = teleportToFirstAllowedWorld;
-		 this.teleportOnFirstJoin = teleportOnFirstJoin;
-		 this.teleportOnVoid = teleportOnVoid;
-		 this.teleportOnRespawn = teleportOnRespawn;
 		 this.minPlayersToUse = minPlayersToUse;
 		 this.teleportCost = teleportCost;
 		 this.shape = shape;

@@ -71,11 +71,9 @@ public class RtpManager {
 			}
 			List<World> activeWorlds = getWorldList(channelSection.getStringList("active_worlds"));
 			boolean teleportToFirstAllowedWorld = channelSection.getBoolean("teleport_to_first_world", false);
-			boolean teleportOnFirstJoin = channelSection.getBoolean("teleport_on_first_join", false);
-			boolean teleportOnVoid = channelSection.getBoolean("teleport_on_void", false);
-			boolean teleportOnRespawn = channelSection.getBoolean("teleport_on_respawn", false);
 			int minPlayersToUse = channelSection.getInt("min_players_to_use", -1);
 			double teleportCost = plugin.getEconomy() != null ? channelSection.getDouble("teleport_cost", -1) : -1;
+			// locationGenOptions also should be moved to it's own record
 			ConfigurationSection locationGenOptions = channelSection.getConfigurationSection("location_generation_options");
 			if (locationGenOptions == null) {
 				continue;
@@ -87,12 +85,14 @@ public class RtpManager {
 			int maxZ = locationGenOptions.getInt("max_z");
 			int radiusMin = locationGenOptions.getInt("min_near_point_distance", 30);
 			int radiusMax = locationGenOptions.getInt("max_near_point_distance", 60);
+			// max_location_attemps should be a part of a locgenoptions
 			int maxLocationAttempts = channelSection.getInt("max_location_attemps", 50);
 			int invulnerableTicks = channelSection.getInt("invulnerable_after_teleport", 1);
 			int cooldown = channelSection.getInt("cooldown", 60);
 			int teleportCooldown = channelSection.getInt("teleport_cooldown", -1);
 			BossBar bossBar = setupChannelBossBar(channelSection.getConfigurationSection("bossbar"));
 			ConfigurationSection restrictions = channelSection.getConfigurationSection("restrictions");
+			// more restrictions will be added, also will be another record
 			boolean restrictMove = !isSectionNull(restrictions) && restrictions.getBoolean("move");
 			boolean restrictDamage = !isSectionNull(restrictions) && restrictions.getBoolean("damage");
 			Avoidance avoidance = setupChannelAvoidance(channelSection.getConfigurationSection("avoid"), pluginManager);
@@ -107,9 +107,6 @@ public class RtpManager {
 					type,
 					activeWorlds, 
 					teleportToFirstAllowedWorld,
-					teleportOnFirstJoin,
-					teleportOnVoid,
-					teleportOnRespawn,
 					minPlayersToUse,
 					teleportCost,
 					shape,
@@ -127,7 +124,7 @@ public class RtpManager {
 					channelActions,
 					messages);
 			namedChannels.put(channelId, newChannel);
-			assignChannelToSpecification(newChannel, channelId);
+			assignChannelToSpecification(channelSection.getConfigurationSection("specifications"), newChannel, channelId);
 		}
 		this.defaultChannel = getChannelByName(config.getString("main_settings.default_channel"));
 	}
@@ -140,14 +137,17 @@ public class RtpManager {
 		return worldList;
 	}
 
-	private void assignChannelToSpecification(Channel newChannel, String channelId) {
-		if (newChannel.isTeleportOnFirstJoin()) {
+	private void assignChannelToSpecification(ConfigurationSection specifications, Channel newChannel, String channelId) {
+		boolean teleportOnFirstJoin = !isSectionNull(specifications) && specifications.getBoolean("teleport_on_first_join", false);
+		boolean teleportOnVoid = !isSectionNull(specifications) && specifications.getBoolean("teleport_on_void", false);
+		boolean teleportOnRespawn = !isSectionNull(specifications) && specifications.getBoolean("teleport_on_respawn", false);
+		if (teleportOnFirstJoin) {
 			joinChannels.put(newChannel, channelId);
 		}
-		if (newChannel.isTeleportOnVoid()) {
+		if (teleportOnVoid) {
 			voidChannels.put(newChannel, channelId);
 		}
-		if (newChannel.isTeleportOnRespawn()) {
+		if (teleportOnRespawn) {
 			respawnChannels.put(newChannel, channelId);
 		}
 	}
