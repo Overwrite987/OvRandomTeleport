@@ -5,6 +5,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import ru.overwrite.rtp.channels.Avoidance;
 import ru.overwrite.rtp.channels.Channel;
+import ru.overwrite.rtp.channels.LocationGenOptions;
 
 import java.util.Random;
 
@@ -13,10 +14,11 @@ public class LocationUtils {
     private static final Random random = new Random();
 
     public static Location generateRandomSquareLocation(Player p, Channel channel, World world) {
-        int minX = channel.getMinX();
-        int maxX = channel.getMaxX();
-        int minZ = channel.getMinZ();
-        int maxZ = channel.getMaxZ();
+        LocationGenOptions locationGenOptions = channel.getLocationGenOptions();
+        int minX = locationGenOptions.minX();
+        int maxX = locationGenOptions.maxX();
+        int minZ = locationGenOptions.minZ();
+        int maxZ = locationGenOptions.maxZ();
 
         int x = random.nextInt((maxX - minX) + 1) + minX;
         int z = random.nextInt((maxZ - minZ) + 1) + minZ;
@@ -37,10 +39,11 @@ public class LocationUtils {
     }
 
     public static Location generateRandomRoundLocation(Player p, Channel channel, World world) {
-        int minX = channel.getMinX();
-        int maxX = channel.getMaxX();
-        int minZ = channel.getMinZ();
-        int maxZ = channel.getMaxZ();
+        LocationGenOptions locationGenOptions = channel.getLocationGenOptions();
+        int minX = locationGenOptions.minX();
+        int maxX = locationGenOptions.maxX();
+        int minZ = locationGenOptions.minZ();
+        int maxZ = locationGenOptions.maxZ();
 
         int centerX = (minX + maxX) / 2;
         int centerZ = (minZ + maxZ) / 2;
@@ -68,22 +71,22 @@ public class LocationUtils {
         }
     }
 
-    public static Location generateRandomLocationNearPoint(String shape, Player p, int centerX, int centerZ, Channel channel, World world) {
+    public static Location generateRandomLocationNearPoint(LocationGenOptions.Shape shape, Player p, int centerX, int centerZ, Channel channel, World world) {
         return switch (shape) {
-            case "SQUARE" -> generateRandomSquareLocationNearPoint(p, centerX, centerZ, channel, world);
-            case "ROUND" -> generateRandomRoundLocationNearPoint(p, centerX, centerZ, channel, world);
-            default -> null;
+            case SQUARE -> generateRandomSquareLocationNearPoint(p, centerX, centerZ, channel, world);
+            case ROUND -> generateRandomRoundLocationNearPoint(p, centerX, centerZ, channel, world);
         };
     }
 
     private static Location generateRandomSquareLocationNearPoint(Player p, int centerX, int centerZ, Channel channel, World world) {
-        int minX = channel.getMinX();
-        int maxX = channel.getMaxX();
-        int minZ = channel.getMinZ();
-        int maxZ = channel.getMaxZ();
+        LocationGenOptions locationGenOptions = channel.getLocationGenOptions();
+        int minX = locationGenOptions.minX();
+        int maxX = locationGenOptions.maxX();
+        int minZ = locationGenOptions.minZ();
+        int maxZ = locationGenOptions.maxZ();
 
-        int radiusMin = channel.getRadiusMin();
-        int radiusMax = channel.getRadiusMax();
+        int radiusMin = locationGenOptions.radiusMin();
+        int radiusMax = locationGenOptions.radiusMax();
 
         int x, z;
         do {
@@ -107,13 +110,14 @@ public class LocationUtils {
     }
 
     private static Location generateRandomRoundLocationNearPoint(Player p, int centerX, int centerZ, Channel channel, World world) {
-        int minX = channel.getMinX();
-        int maxX = channel.getMaxX();
-        int minZ = channel.getMinZ();
-        int maxZ = channel.getMaxZ();
+        LocationGenOptions locationGenOptions = channel.getLocationGenOptions();
+        int minX = locationGenOptions.minX();
+        int maxX = locationGenOptions.maxX();
+        int minZ = locationGenOptions.minZ();
+        int maxZ = locationGenOptions.maxZ();
 
-        int radiusMin = channel.getRadiusMin();
-        int radiusMax = channel.getRadiusMax();
+        int radiusMin = locationGenOptions.radiusMin();
+        int radiusMax = locationGenOptions.radiusMax();
 
         int x, z;
         do {

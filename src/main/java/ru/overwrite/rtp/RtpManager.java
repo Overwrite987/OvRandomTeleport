@@ -28,6 +28,9 @@ import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.channels.*;
 import ru.overwrite.rtp.utils.*;
 
+import static ru.overwrite.rtp.channels.LocationGenOptions.Shape.ROUND;
+import static ru.overwrite.rtp.channels.LocationGenOptions.Shape.SQUARE;
+
 public class RtpManager {
 	
 	private final Main plugin;
@@ -73,20 +76,10 @@ public class RtpManager {
 			boolean teleportToFirstAllowedWorld = channelSection.getBoolean("teleport_to_first_world", false);
 			int minPlayersToUse = channelSection.getInt("min_players_to_use", -1);
 			double teleportCost = plugin.getEconomy() != null ? channelSection.getDouble("teleport_cost", -1) : -1;
-			// locationGenOptions also should be moved to it's own record
-			ConfigurationSection locationGenOptions = channelSection.getConfigurationSection("location_generation_options");
+			LocationGenOptions locationGenOptions = setupChannelGenOptions(channelSection.getConfigurationSection("location_generation_options"));
 			if (locationGenOptions == null) {
 				continue;
 			}
-			String shape = locationGenOptions.getString("shape").toUpperCase();
-			int minX = locationGenOptions.getInt("min_x");
-			int maxX = locationGenOptions.getInt("max_x");
-			int minZ = locationGenOptions.getInt("min_z"); 
-			int maxZ = locationGenOptions.getInt("max_z");
-			int radiusMin = locationGenOptions.getInt("min_near_point_distance", 30);
-			int radiusMax = locationGenOptions.getInt("max_near_point_distance", 60);
-			// max_location_attemps should be a part of a locgenoptions
-			int maxLocationAttempts = channelSection.getInt("max_location_attemps", 50);
 			int invulnerableTicks = channelSection.getInt("invulnerable_after_teleport", 1);
 			int cooldown = channelSection.getInt("cooldown", 60);
 			int teleportCooldown = channelSection.getInt("teleport_cooldown", -1);
@@ -109,11 +102,7 @@ public class RtpManager {
 					teleportToFirstAllowedWorld,
 					minPlayersToUse,
 					teleportCost,
-					shape,
-					minX, maxX,
-					minZ, maxZ,
-					radiusMin, radiusMax,
-					maxLocationAttempts,
+					locationGenOptions,
 					invulnerableTicks,
 					cooldown,
 					teleportCooldown,
@@ -150,6 +139,22 @@ public class RtpManager {
 		if (teleportOnRespawn) {
 			respawnChannels.put(newChannel, channelId);
 		}
+	}
+
+	private LocationGenOptions setupChannelGenOptions(ConfigurationSection locationGenOptions) {
+		if (locationGenOptions == null) {
+			return null;
+		}
+		LocationGenOptions.Shape shape = LocationGenOptions.Shape.valueOf(locationGenOptions.getString("shape").toUpperCase());
+		int minX = locationGenOptions.getInt("min_x");
+		int maxX = locationGenOptions.getInt("max_x");
+		int minZ = locationGenOptions.getInt("min_z");
+		int maxZ = locationGenOptions.getInt("max_z");
+		int radiusMin = locationGenOptions.getInt("min_near_point_distance", 30);
+		int radiusMax = locationGenOptions.getInt("max_near_point_distance", 60);
+		int maxLocationAttempts = locationGenOptions.getInt("max_location_attemps", 50);
+
+		return new LocationGenOptions(shape, minX, maxX, minZ, maxZ, radiusMin, radiusMax, maxLocationAttempts);
 	}
 
 	public BossBar setupChannelBossBar(ConfigurationSection bossbar) {
@@ -307,16 +312,15 @@ public class RtpManager {
 		if (Utils.DEBUG) {
 			plugin.getPluginLogger().info("Iterations for player " + p.getName() + ": " + iterationsPerPlayer.getOrDefault(p.getName(), 0));
 		}
-	    if (iterationsPerPlayer.getOrDefault(p.getName(), 0) > channel.getMaxLocationAttempts()) {
+	    if (iterationsPerPlayer.getOrDefault(p.getName(), 0) > channel.getLocationGenOptions().maxLocationAttempts()) {
 	    	iterationsPerPlayer.remove(p.getName());
 	        return null;
 	    }
 	    
-	    String shape = channel.getShape();
+	    LocationGenOptions.Shape shape = channel.getLocationGenOptions().shape();
 	    Location location = switch (shape) {
-			case "SQUARE" -> LocationUtils.generateRandomSquareLocation(p, channel, world);
-			case "ROUND" -> LocationUtils.generateRandomRoundLocation(p, channel, world);
-			default -> null;
+			case SQUARE -> LocationUtils.generateRandomSquareLocation(p, channel, world);
+			case ROUND -> LocationUtils.generateRandomRoundLocation(p, channel, world);
 		};
 	    
 	    if (location == null) {
@@ -332,7 +336,7 @@ public class RtpManager {
 	}
 	
 	private Location generateRandomLocationNearPlayer(Player p, Channel channel, World world) {
-		if (iterationsPerPlayer.getOrDefault(p.getName(), 0) > channel.getMaxLocationAttempts()) {
+		if (iterationsPerPlayer.getOrDefault(p.getName(), 0) > channel.getLocationGenOptions().maxLocationAttempts()) {
 			iterationsPerPlayer.remove(p.getName());
 		    return null;
 		}
@@ -351,7 +355,7 @@ public class RtpManager {
 		int centerX = targetPlayer.getLocation().getBlockX();
 		int centerZ = targetPlayer.getLocation().getBlockZ();
 
-	    String shape = channel.getShape();
+		LocationGenOptions.Shape shape = channel.getLocationGenOptions().shape();
 	    Location location = LocationUtils.generateRandomLocationNearPoint(shape, p, centerX, centerZ, channel, world);
 
 	    if (location == null) {
@@ -368,10 +372,11 @@ public class RtpManager {
 
 	private List<Player> getNearbyPlayers(Player player, Channel channel, World world) {
 	    List<Player> nearbyPlayers = new ArrayList<>();
-	    int minX = channel.getMinX();
-	    int maxX = channel.getMaxX();
-	    int minZ = channel.getMinZ();
-	    int maxZ = channel.getMaxZ();
+		LocationGenOptions locationGenOptions = channel.getLocationGenOptions();
+	    int minX = locationGenOptions.minX();
+	    int maxX = locationGenOptions.maxX();
+	    int minZ = locationGenOptions.minZ();
+	    int maxZ = locationGenOptions.maxZ();
 
 	    for (Player p : world.getPlayers()) {
 	        if (!p.equals(player)) {

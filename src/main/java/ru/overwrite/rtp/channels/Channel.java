@@ -27,15 +27,7 @@ public class Channel {
 	
 	private final double teleportCost;
 	
-	private final String shape;
-	
-	private final int minX, maxX;
-	
-	private final int minZ, maxZ;
-
-	private final int radiusMin, radiusMax;
-	
-	private final int maxLocationAttempts;
+	private final LocationGenOptions locationGenOptions;
 	
 	private final int invulnerableTicks;
 	
@@ -62,11 +54,7 @@ public class Channel {
 			boolean teleportToFirstAllowedWorld,
 			int minPlayersToUse,
 			double teleportCost,
-			String shape,
-			int minX, int maxX,
-			int minZ, int maxZ,
-			int radiusMin, int radiusMax,
-			int maxLocationAttempts,
+			LocationGenOptions locationGenOptions,
 			int invulnerableTicks,
 			int cooldown,
 			int teleportCooldown,
@@ -83,14 +71,7 @@ public class Channel {
 		 this.teleportToFirstAllowedWorld = teleportToFirstAllowedWorld;
 		 this.minPlayersToUse = minPlayersToUse;
 		 this.teleportCost = teleportCost;
-		 this.shape = shape;
-		 this.minX = minX; 
-		 this.maxX = maxX;
-		 this.minZ = minZ; 
-		 this.maxZ = maxZ;
-		 this.radiusMin = radiusMin;
-		 this.radiusMax = radiusMax;
-		 this.maxLocationAttempts = maxLocationAttempts;
+		 this.locationGenOptions = locationGenOptions;
 		 this.invulnerableTicks = invulnerableTicks;
 		 this.cooldown = cooldown;
 		 this.playerCooldowns = new ExpiringMap<>(cooldown, TimeUnit.SECONDS);
