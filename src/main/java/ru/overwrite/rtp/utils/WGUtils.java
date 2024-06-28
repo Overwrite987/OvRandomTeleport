@@ -18,6 +18,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionType;
 
 import ru.overwrite.rtp.channels.Channel;
+import ru.overwrite.rtp.channels.LocationGenOptions;
 
 public class WGUtils {
 	
@@ -26,17 +27,18 @@ public class WGUtils {
 	private static final Map<String, Integer> iterationsPerPlayer = new HashMap<>();
 
 	public static Location generateRandomLocationNearRandomRegion(Player p, Channel channel, World world) {
-		if (iterationsPerPlayer.getOrDefault(p.getName(), 0) > channel.getMaxLocationAttempts()) {
+		LocationGenOptions locationGenOptions = channel.getLocationGenOptions();
+		if (iterationsPerPlayer.getOrDefault(p.getName(), 0) > locationGenOptions.maxLocationAttempts()) {
 	    	iterationsPerPlayer.remove(p.getName());
 	        return null;
 	    }
 	    RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer()
 				.get(BukkitAdapter.adapt(world));
 
-	    int minX = channel.getMinX();
-	    int maxX = channel.getMaxX();
-	    int minZ = channel.getMinZ();
-	    int maxZ = channel.getMaxZ();
+	    int minX = locationGenOptions.minX();
+	    int maxX = locationGenOptions.maxX();
+	    int minZ = locationGenOptions.minZ();
+	    int maxZ = locationGenOptions.maxZ();
 
 	    List<ProtectedRegion> regionsInRange = regionManager.getRegions().values().stream()
 	    	.filter(region -> region.getType() != RegionType.GLOBAL)
@@ -57,7 +59,7 @@ public class WGUtils {
 	    int centerX = (randomRegion.getMinimumPoint().getX() + randomRegion.getMaximumPoint().getX()) / 2;
 	    int centerZ = (randomRegion.getMinimumPoint().getZ() + randomRegion.getMaximumPoint().getZ()) / 2;
 
-	    String shape = channel.getShape();
+	    LocationGenOptions.Shape shape = locationGenOptions.shape();
 		Location location = LocationUtils.generateRandomLocationNearPoint(shape, p, centerX, centerZ, channel, world);
 
 	    if (location == null) {
