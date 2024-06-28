@@ -13,7 +13,9 @@ public class Config {
 			messages_cooldown,
 			messages_incorrect_channel,
 			messages_moved_on_teleport,
+			messages_teleported_on_teleport,
 			messages_damaged_on_teleport,
+			messages_damaged_other_on_teleport,
 			messages_fail_to_find_location,
 			messages_already_teleporting,
 			messages_reload,
@@ -33,7 +35,9 @@ public class Config {
 		messages_cooldown = getPrefixed(messages.getString("cooldown", "messages.cooldown"), messages_prefix);
 		messages_incorrect_channel = getPrefixed(messages.getString("incorrect_channel", "messages.incorrect_channel"), messages_prefix);
 		messages_moved_on_teleport = getPrefixed(messages.getString("moved_on_teleport", "messages.moved_on_teleport"), messages_prefix);
+		messages_teleported_on_teleport = getPrefixed(messages.getString("teleported_on_teleport", "messages.teleported_on_teleport"), messages_prefix);
 		messages_damaged_on_teleport = getPrefixed(messages.getString("damaged_on_teleport", "messages.damaged_on_teleport"), messages_prefix);
+		messages_damaged_other_on_teleport = getPrefixed(messages.getString("damaged_other_on_teleport", "messages.damaged_other_on_teleport"), messages_prefix);
 		messages_fail_to_find_location = getPrefixed(messages.getString("fail_to_find_location", "messages.fail_to_find_location"), messages_prefix);
 		messages_already_teleporting = getPrefixed(messages.getString("already_teleporting", "messages.already_teleporting"), messages_prefix);
 		ConfigurationSection admin = messages.getConfigurationSection("admin");

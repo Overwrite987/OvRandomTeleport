@@ -7,7 +7,9 @@ public record Messages(
         String notEnoughMoneyMessage,
         String cooldownMessage,
         String movedOnTeleportMessage,
+        String teleportedOnTeleportMessage,
         String damagedOnTeleportMessage,
+        String damagedOtherOnTeleportMessage,
         String failToFindLocationMessage,
         String alreadyTeleportingMessage) {
 }

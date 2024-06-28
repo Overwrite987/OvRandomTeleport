@@ -37,9 +37,7 @@ public class Channel {
 	
 	private final BossBar bossBar;
 	
-	private final boolean restrictMove;
-	
-	private final boolean restrictDamage;
+	private final Restrictions restrictions;
 
 	private final Avoidance avoidance;
 
@@ -59,8 +57,7 @@ public class Channel {
 			int cooldown,
 			int teleportCooldown,
 			BossBar bossBar,
-			boolean restrictMove,
-			boolean restrictDamage,
+			Restrictions restrictions,
 			Avoidance avoidance,
 			Actions actions,
 			Messages messages) {
@@ -77,8 +74,7 @@ public class Channel {
 		 this.playerCooldowns = new ExpiringMap<>(cooldown, TimeUnit.SECONDS);
 		 this.teleportCooldown = teleportCooldown;
 		 this.bossBar = bossBar;
-		 this.restrictMove = restrictMove;
-		 this.restrictDamage = restrictDamage;
+		 this.restrictions = restrictions;
 		 this.avoidance = avoidance;
 		 this.actions = actions;
 		 this.messages = messages;

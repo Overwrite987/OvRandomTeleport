@@ -84,10 +84,7 @@ public class RtpManager {
 			int cooldown = channelSection.getInt("cooldown", 60);
 			int teleportCooldown = channelSection.getInt("teleport_cooldown", -1);
 			BossBar bossBar = setupChannelBossBar(channelSection.getConfigurationSection("bossbar"));
-			ConfigurationSection restrictions = channelSection.getConfigurationSection("restrictions");
-			// more restrictions will be added, also will be another record
-			boolean restrictMove = !isSectionNull(restrictions) && restrictions.getBoolean("move");
-			boolean restrictDamage = !isSectionNull(restrictions) && restrictions.getBoolean("damage");
+			Restrictions restrictions = setupChannelRestrictions(channelSection.getConfigurationSection("restrictions"));
 			Avoidance avoidance = setupChannelAvoidance(channelSection.getConfigurationSection("avoid"), pluginManager);
 			Actions channelActions = setupChannelActions(channelSection.getConfigurationSection("actions"));
 			if (channelActions == null) {
@@ -107,8 +104,7 @@ public class RtpManager {
 					cooldown,
 					teleportCooldown,
 					bossBar,
-					restrictMove,
-					restrictDamage,
+					restrictions,
 					avoidance,
 					channelActions,
 					messages);
@@ -157,7 +153,7 @@ public class RtpManager {
 		return new LocationGenOptions(shape, minX, maxX, minZ, maxZ, radiusMin, radiusMax, maxLocationAttempts);
 	}
 
-	public BossBar setupChannelBossBar(ConfigurationSection bossbar) {
+	private BossBar setupChannelBossBar(ConfigurationSection bossbar) {
 		if (isSectionNull(bossbar)) {
 			return new BossBar(false, "", BarColor.PURPLE, BarStyle.SOLID);
 		}
@@ -169,7 +165,17 @@ public class RtpManager {
 		return new BossBar(enabled, title, color, style);
 	}
 
-	public Avoidance setupChannelAvoidance(ConfigurationSection avoid, PluginManager pluginManager) {
+	private Restrictions setupChannelRestrictions(ConfigurationSection restrictions) {
+		boolean restrictMove = !isSectionNull(restrictions) && restrictions.getBoolean("move", false);
+		boolean restrictTeleport = !isSectionNull(restrictions) && restrictions.getBoolean("teleport", false);
+		boolean restrictDamage = !isSectionNull(restrictions) && restrictions.getBoolean("damage", false);
+		boolean restrictDamageOthers = !isSectionNull(restrictions) && restrictions.getBoolean("damage_others", false);
+		boolean damageCheckOnlyPlayers = !isSectionNull(restrictions) && restrictions.getBoolean("damage_check_only_players", false);
+
+		return new Restrictions(restrictMove, restrictTeleport, restrictDamage, restrictDamageOthers, damageCheckOnlyPlayers);
+	}
+
+	private Avoidance setupChannelAvoidance(ConfigurationSection avoid, PluginManager pluginManager) {
 		boolean isNullSection = isSectionNull(avoid);
 		Set<Material> avoidBlocks = new ObjectOpenHashSet<>();
 		boolean avoidBlocksBlacklist = true;
@@ -193,7 +199,7 @@ public class RtpManager {
 		return new Avoidance(avoidBlocksBlacklist, avoidBlocks, avoidBiomesBlacklist, avoidBiomes, avoidRegions, avoidTowns);
 	}
 
-	public Actions setupChannelActions(ConfigurationSection actions) {
+	private Actions setupChannelActions(ConfigurationSection actions) {
 		if (isSectionNull(actions)) {
 			return null;
 		}
@@ -223,7 +229,7 @@ public class RtpManager {
 		return actions;
 	}
 
-	public Messages setupChannelMessages(ConfigurationSection messages) {
+	private Messages setupChannelMessages(ConfigurationSection messages) {
 		String prefix = isConfigValueExist(messages, "prefix") ? messages.getString("prefix") : pluginConfig.messages_prefix;
 		String noPermsMessage = getMessage(messages, "no_perms", pluginConfig.messages_no_perms, prefix);
 		String invalidWorldMessage = getMessage(messages, "invalid_world", pluginConfig.messages_invalid_world, prefix);
@@ -231,7 +237,9 @@ public class RtpManager {
 		String notEnoughMoneyMessage = getMessage(messages, "not_enough_money", pluginConfig.messages_not_enough_money, prefix);
 		String cooldownMessage = getMessage(messages, "cooldown", pluginConfig.messages_cooldown, prefix);
 		String movedOnTeleportMessage = getMessage(messages, "moved_on_teleport", pluginConfig.messages_moved_on_teleport, prefix);
+		String teleportedOnTeleportMessage = getMessage(messages, "teleported_on_teleport", pluginConfig.messages_teleported_on_teleport, prefix);
 		String damagedOnTeleportMessage = getMessage(messages, "damaged_on_teleport", pluginConfig.messages_damaged_on_teleport, prefix);
+		String damagedOtherOnTeleportMessage = getMessage(messages, "damaged_other_on_teleport", pluginConfig.messages_damaged_other_on_teleport, prefix);
 		String failToFindLocationMessage = getMessage(messages, "fail_to_find_location", pluginConfig.messages_fail_to_find_location, prefix);
 		String alreadyTeleportingMessage = getMessage(messages, "already_teleporting", pluginConfig.messages_already_teleporting, prefix);
 
@@ -242,7 +250,9 @@ public class RtpManager {
 				notEnoughMoneyMessage,
 				cooldownMessage,
 				movedOnTeleportMessage,
+				teleportedOnTeleportMessage,
 				damagedOnTeleportMessage,
+				damagedOtherOnTeleportMessage,
 				failToFindLocationMessage,
 				alreadyTeleportingMessage
 		);
