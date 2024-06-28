@@ -8,7 +8,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 
 public final class CaffeineFactory {
-    private CaffeineFactory() {}
+    private CaffeineFactory() {
+    }
 
     private static final ForkJoinPool loaderPool = new ForkJoinPool();
 

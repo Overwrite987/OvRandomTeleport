@@ -90,8 +90,8 @@ public class LocationUtils {
 
         int x, z;
         do {
-            x = centerX + random.nextInt(radiusMax+1) - radiusMin;
-            z = centerZ + random.nextInt(radiusMax+1) - radiusMin;
+            x = centerX + random.nextInt(radiusMax + 1) - radiusMin;
+            z = centerZ + random.nextInt(radiusMax + 1) - radiusMin;
         } while (x < minX || x > maxX || z < minZ || z > maxZ);
 
         int y = world.getEnvironment() != World.Environment.NETHER ? world.getHighestBlockYAt(x, z) : findSafeNetherYPoint(world, x, z);

@@ -21,62 +21,62 @@ import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.channels.LocationGenOptions;
 
 public class WGUtils {
-	
-	private static final Random random = new Random();
-	
-	private static final Map<String, Integer> iterationsPerPlayer = new HashMap<>();
 
-	public static Location generateRandomLocationNearRandomRegion(Player p, Channel channel, World world) {
-		LocationGenOptions locationGenOptions = channel.getLocationGenOptions();
-		if (iterationsPerPlayer.getOrDefault(p.getName(), 0) > locationGenOptions.maxLocationAttempts()) {
-	    	iterationsPerPlayer.remove(p.getName());
-	        return null;
-	    }
-	    RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer()
-				.get(BukkitAdapter.adapt(world));
+    private static final Random random = new Random();
 
-	    int minX = locationGenOptions.minX();
-	    int maxX = locationGenOptions.maxX();
-	    int minZ = locationGenOptions.minZ();
-	    int maxZ = locationGenOptions.maxZ();
+    private static final Map<String, Integer> iterationsPerPlayer = new HashMap<>();
 
-	    List<ProtectedRegion> regionsInRange = regionManager.getRegions().values().stream()
-	    	.filter(region -> region.getType() != RegionType.GLOBAL)
-	        .filter(region -> {
-	            BlockVector3 minPoint = region.getMinimumPoint();
-	            BlockVector3 maxPoint = region.getMaximumPoint();
-	            return minPoint.getX() >= minX && maxPoint.getX() <= maxX &&
-	                   minPoint.getZ() >= minZ && maxPoint.getZ() <= maxZ;
-	        })
-	        .toList();
+    public static Location generateRandomLocationNearRandomRegion(Player p, Channel channel, World world) {
+        LocationGenOptions locationGenOptions = channel.getLocationGenOptions();
+        if (iterationsPerPlayer.getOrDefault(p.getName(), 0) > locationGenOptions.maxLocationAttempts()) {
+            iterationsPerPlayer.remove(p.getName());
+            return null;
+        }
+        RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer()
+                .get(BukkitAdapter.adapt(world));
 
-	    if (regionsInRange.isEmpty()) {
-	        return null;
-	    }
+        int minX = locationGenOptions.minX();
+        int maxX = locationGenOptions.maxX();
+        int minZ = locationGenOptions.minZ();
+        int maxZ = locationGenOptions.maxZ();
 
-	    ProtectedRegion randomRegion = regionsInRange.get(random.nextInt(regionsInRange.size()));
+        List<ProtectedRegion> regionsInRange = regionManager.getRegions().values().stream()
+                .filter(region -> region.getType() != RegionType.GLOBAL)
+                .filter(region -> {
+                    BlockVector3 minPoint = region.getMinimumPoint();
+                    BlockVector3 maxPoint = region.getMaximumPoint();
+                    return minPoint.getX() >= minX && maxPoint.getX() <= maxX &&
+                            minPoint.getZ() >= minZ && maxPoint.getZ() <= maxZ;
+                })
+                .toList();
 
-	    int centerX = (randomRegion.getMinimumPoint().getX() + randomRegion.getMaximumPoint().getX()) / 2;
-	    int centerZ = (randomRegion.getMinimumPoint().getZ() + randomRegion.getMaximumPoint().getZ()) / 2;
+        if (regionsInRange.isEmpty()) {
+            return null;
+        }
 
-	    LocationGenOptions.Shape shape = locationGenOptions.shape();
-		Location location = LocationUtils.generateRandomLocationNearPoint(shape, p, centerX, centerZ, channel, world);
+        ProtectedRegion randomRegion = regionsInRange.get(random.nextInt(regionsInRange.size()));
 
-	    if (location == null) {
-	    	iterationsPerPlayer.put(p.getName(), iterationsPerPlayer.getOrDefault(p.getName(), 0)+1);
-	        return generateRandomLocationNearRandomRegion(p, channel, world);
-	    } else {
-	    	iterationsPerPlayer.remove(p.getName());
-	        return location;
-	    }
-	}
+        int centerX = (randomRegion.getMinimumPoint().getX() + randomRegion.getMaximumPoint().getX()) / 2;
+        int centerZ = (randomRegion.getMinimumPoint().getZ() + randomRegion.getMaximumPoint().getZ()) / 2;
 
-	public static ApplicableRegionSet getApplicableRegions(Location location) {
-		RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer()
-				.get(BukkitAdapter.adapt(location.getWorld()));
-		if (regionManager == null || regionManager.getRegions().isEmpty())
-			return null;
-		return regionManager.getApplicableRegions(BukkitAdapter.asBlockVector(location));
-	}
+        LocationGenOptions.Shape shape = locationGenOptions.shape();
+        Location location = LocationUtils.generateRandomLocationNearPoint(shape, p, centerX, centerZ, channel, world);
+
+        if (location == null) {
+            iterationsPerPlayer.put(p.getName(), iterationsPerPlayer.getOrDefault(p.getName(), 0) + 1);
+            return generateRandomLocationNearRandomRegion(p, channel, world);
+        } else {
+            iterationsPerPlayer.remove(p.getName());
+            return location;
+        }
+    }
+
+    public static ApplicableRegionSet getApplicableRegions(Location location) {
+        RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer()
+                .get(BukkitAdapter.adapt(location.getWorld()));
+        if (regionManager == null || regionManager.getRegions().isEmpty())
+            return null;
+        return regionManager.getApplicableRegions(BukkitAdapter.asBlockVector(location));
+    }
 
 }

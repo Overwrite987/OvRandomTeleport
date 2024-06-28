@@ -44,7 +44,7 @@ public class RtpTask {
             public void run() {
                 preTeleportCooldown--;
                 if (preTeleportCooldown <= 0) {
-                    if (bossBar!= null) {
+                    if (bossBar != null) {
                         bossBar.removeAll();
                     }
                     rtpManager.getPerPlayerActiveRtpTask().remove(playerName);
