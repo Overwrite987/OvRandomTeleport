@@ -389,7 +389,7 @@ public class RtpManager {
         int maxZ = locationGenOptions.maxZ();
 
         for (Player p : world.getPlayers()) {
-            if (!p.equals(player)) {
+            if (!p.equals(player) && !p.hasPermission("rtp.near.bypass")) {
                 int px = p.getLocation().getBlockX();
                 int pz = p.getLocation().getBlockZ();
                 if (px >= minX && px <= maxX && pz >= minZ && pz <= maxZ) {
