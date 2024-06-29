@@ -428,17 +428,17 @@ public class RtpManager {
         String z = Integer.toString(loc.getBlockZ());
         String[] replacementList = {p.getName(), name, cd, x, y, z};
         for (Action action : actions) {
-            switch (action.getType()) {
+            switch (action.type()) {
                 case MESSAGE: {
                     Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                        String message = Utils.colorize(StringUtils.replaceEach(action.getContext(), searchList, replacementList));
+                        String message = Utils.colorize(StringUtils.replaceEach(action.context(), searchList, replacementList));
                         p.sendMessage(message);
                     });
                     break;
                 }
                 case TITLE: {
                     Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                        String result = Utils.colorize(StringUtils.replaceEach(action.getContext(), searchList, replacementList));
+                        String result = Utils.colorize(StringUtils.replaceEach(action.context(), searchList, replacementList));
                         String[] titledMessage = result.split(";");
                         Utils.sendTitleMessage(titledMessage, p);
                     });
@@ -446,16 +446,16 @@ public class RtpManager {
                 }
                 case SOUND: {
                     Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                        Utils.sendSound(action.getContext().split(";"), p);
+                        Utils.sendSound(action.context().split(";"), p);
                     });
                     break;
                 }
                 case EFFECT: {
-                    Utils.giveEffect(action.getContext().split(";"), p);
+                    Utils.giveEffect(action.context().split(";"), p);
                     break;
                 }
                 case CONSOLE: {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), StringUtils.replaceEach(action.getContext(), searchList, replacementList));
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), StringUtils.replaceEach(action.context(), searchList, replacementList));
                     break;
                 }
                 default: {

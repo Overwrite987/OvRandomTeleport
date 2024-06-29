@@ -1,24 +1,11 @@
 package ru.overwrite.rtp.actions;
 
-import lombok.Getter;
-
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
-public class Action {
+public record Action(ActionType type, String context) {
 
     private static final Pattern ACTION_PATTERN = Pattern.compile("\\[(\\w+)](?: ?(.*))");
-
-    @Getter
-    private final ActionType type;
-
-    @Getter
-    private final String context;
-
-    public Action(ActionType type, String context) {
-        this.type = type;
-        this.context = context;
-    }
 
     public static Action fromString(String str) {
         Matcher matcher = ACTION_PATTERN.matcher(str);
