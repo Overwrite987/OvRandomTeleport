@@ -3,7 +3,7 @@ main_settings:
   # Команда рандомной телепортации (указывается без /)
   rtp_command: 'rtp'
   # Алиасы к команде рандомной телепортации
-  rtp_aliases: ['randomteleport', 'ovrandomteleport']
+  rtp_aliases: [ 'randomteleport', 'ovrandomteleport' ]
   # Название дефолтного канала.
   # Указанный канал будет использован в качестве основного при вводе команды /rtp
   default_channel: 'default'
@@ -70,7 +70,7 @@ channels:
     # Не активен, если кулдаун до телепортации < 0
     bossbar:
       # Включить ли босс-бар
-      enabled: true 
+      enabled: true
       # Настройки боссбара
       title: '&fТелепортация через: &5%time%'
       color: WHITE
@@ -129,11 +129,11 @@ channels:
         - '[MESSAGE] &7&l(&5&lOvRandomTeleport&7) &6» &fВы будете телепортированы через %time% Не двигайтесь и не получайте урона.'
         - '[SOUND] BLOCK_NOTE_BLOCK_PLING;1;1'
       on_cooldown:
-        3: 
+        3:
           - '[TITLE] &aТелепорт через &63..;&r;5;50;10'
         2:
           - '[TITLE] &aТелепорт через &62..;&r;5;50;10'
-        1: 
+        1:
           - '[TITLE] &aТелепорт через &61..;&r;5;50;10'
       after_teleport:
         - '[MESSAGE] &7&l(&5&lOvRandomTeleport&7) &6» &aУспешная телепортация! &fВы телепортировались на координаты: &2%x% %y% %z%.'
@@ -181,7 +181,7 @@ channels:
     teleport_cooldown: 5
     # Необязательные параметры
     bossbar:
-      enabled: true 
+      enabled: true
       title: '&fТелепортация через: &5%time%'
       color: WHITE
       style: SEGMENTED_12
@@ -198,7 +198,7 @@ channels:
           - 'WATER'
       biomes:
         blacklist: true
-        list: []
+        list: [ ]
       regions: true
       towns: false
     # Обязательный параметр
@@ -209,11 +209,11 @@ channels:
         - '[SOUND] BLOCK_NOTE_BLOCK_PLING;1;1'
       # Необязательный параметр
       on_cooldown:
-        3: 
+        3:
           - '[TITLE] &aТелепорт через &63..'
         2:
           - '[TITLE] &aТелепорт через &62..'
-        1: 
+        1:
           - '[TITLE] &aТелепорт через &61..'
       # Обязательный параметр. Укажите [] для отключения
       after_teleport:
@@ -245,7 +245,7 @@ channels:
       move: true
       damage: true
     actions:
-      pre_teleport: []
+      pre_teleport: [ ]
       after_teleport:
         - '[MESSAGE] &7&l(&5&lOvRandomTeleport&7) &6» &aУспешная телепортация! &fВы телепортировались на координаты: &2%x% %y% %z%.'
         - '[TITLE] &a&lУспех!;&fВы телепортировались на координаты: &2%x% %y% %z%.'
