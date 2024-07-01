@@ -2,12 +2,14 @@ package ru.overwrite.rtp;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.*;
 
+import org.bukkit.projectiles.ProjectileSource;
 import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.utils.Utils;
 
@@ -140,7 +142,17 @@ public class RtpListener implements Listener {
             if (rtpManager.hasActiveTasks(damagedName)) {
                 Channel activeChannel = rtpManager.getPerPlayerActiveRtpTask().get(damagedName).getActiveChannel();
                 if (activeChannel.getRestrictions().restrictDamage()) {
-                    if (activeChannel.getRestrictions().damageCheckOnlyPlayers() && !(e.getDamager() instanceof Player)) {
+                    Player damager = null;
+                    if (e.getDamager() instanceof Player p) {
+                        damager = p;
+                    }
+                    if (e.getDamager() instanceof Projectile projectile) {
+                        ProjectileSource projectileSource = projectile.getShooter();
+                        if (projectileSource instanceof Player p) {
+                            damager = p;
+                        }
+                    }
+                    if (damager != null && activeChannel.getRestrictions().damageCheckOnlyPlayers()) {
                         return;
                     }
                     damaged.sendMessage(activeChannel.getMessages().damagedOnTeleportMessage());
