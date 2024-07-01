@@ -1,6 +1,7 @@
 package ru.overwrite.rtp;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -123,13 +124,15 @@ public class RtpListener implements Listener {
     }
 
     @EventHandler
-    public void onDamageOther(EntityDamageByEntityEvent e) {
-        if (e.getDamager() instanceof Player damager) {
+    public void onDamage(EntityDamageByEntityEvent e) {
+        Entity damagerEntity = e.getDamager();
+        Entity damagedEntity = e.getEntity();
+        if (damagerEntity instanceof Player damager) {
             String damagerName = damager.getName();
             if (rtpManager.hasActiveTasks(damagerName)) {
                 Channel activeChannel = rtpManager.getPerPlayerActiveRtpTask().get(damagerName).getActiveChannel();
                 if (activeChannel.getRestrictions().restrictDamageOthers()) {
-                    if (activeChannel.getRestrictions().damageCheckOnlyPlayers() && !(e.getEntity() instanceof Player)) {
+                    if (activeChannel.getRestrictions().damageCheckOnlyPlayers() && !(damagedEntity instanceof Player)) {
                         return;
                     }
                     damager.sendMessage(activeChannel.getMessages().damagedOtherOnTeleportMessage());
@@ -137,16 +140,16 @@ public class RtpListener implements Listener {
                 }
             }
         }
-        if (e.getEntity() instanceof Player damaged) {
+        if (damagedEntity instanceof Player damaged) {
             String damagedName = damaged.getName();
             if (rtpManager.hasActiveTasks(damagedName)) {
                 Channel activeChannel = rtpManager.getPerPlayerActiveRtpTask().get(damagedName).getActiveChannel();
                 if (activeChannel.getRestrictions().restrictDamage()) {
                     Player damager = null;
-                    if (e.getDamager() instanceof Player p) {
+                    if (damagerEntity instanceof Player p) {
                         damager = p;
                     }
-                    if (e.getDamager() instanceof Projectile projectile) {
+                    if (damagerEntity instanceof Projectile projectile) {
                         ProjectileSource projectileSource = projectile.getShooter();
                         if (projectileSource instanceof Player p) {
                             damager = p;
