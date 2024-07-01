@@ -30,7 +30,7 @@ public class RtpListener implements Listener {
         }
         Player p = e.getPlayer();
         if (e.getTo().getBlockY() < Utils.VOID_LEVEL) {
-            Map<Channel, String> voidChannels = rtpManager.getVoidChannels();
+            Map<Channel, String> voidChannels = rtpManager.getSpecifications().voidChannels();
             for (Channel channel : voidChannels.keySet()) {
                 if (!p.hasPermission("rtp.channel." + voidChannels.get(channel))) {
                     continue;
@@ -71,7 +71,7 @@ public class RtpListener implements Listener {
         if (p.hasPlayedBefore()) {
             return;
         }
-        Map<Channel, String> joinChannels = rtpManager.getJoinChannels();
+        Map<Channel, String> joinChannels = rtpManager.getSpecifications().joinChannels();
         for (Channel channel : joinChannels.keySet()) {
             if (!p.hasPermission("rtp.channel." + joinChannels.get(channel))) {
                 continue;
@@ -84,7 +84,7 @@ public class RtpListener implements Listener {
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e) {
         Player p = e.getPlayer();
-        Map<Channel, String> respawnChannels = rtpManager.getRespawnChannels();
+        Map<Channel, String> respawnChannels = rtpManager.getSpecifications().respawnChannels();
         for (Channel channel : respawnChannels.keySet()) {
             if (!p.hasPermission("rtp.channel." + respawnChannels.get(channel))) {
                 continue;

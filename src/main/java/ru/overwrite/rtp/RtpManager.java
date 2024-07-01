@@ -40,13 +40,7 @@ public class RtpManager {
     private final Map<String, Channel> namedChannels = new HashMap<>();
 
     @Getter
-    public final Map<Channel, String> joinChannels = new HashMap<>();
-
-    @Getter
-    public final Map<Channel, String> voidChannels = new HashMap<>();
-
-    @Getter
-    public final Map<Channel, String> respawnChannels = new HashMap<>();
+    private final Specifications specifications = Specifications.createEmpty();
 
     @Getter
     private final Map<String, RtpTask> perPlayerActiveRtpTask = new ConcurrentHashMap<>();
@@ -119,19 +113,31 @@ public class RtpManager {
         return worldList;
     }
 
-    private void assignChannelToSpecification(ConfigurationSection specifications, Channel newChannel, String channelId) {
-        boolean teleportOnFirstJoin = !isSectionNull(specifications) && specifications.getBoolean("teleport_on_first_join", false);
-        boolean teleportOnVoid = !isSectionNull(specifications) && specifications.getBoolean("teleport_on_void", false);
-        boolean teleportOnRespawn = !isSectionNull(specifications) && specifications.getBoolean("teleport_on_respawn", false);
-        if (teleportOnFirstJoin) {
-            joinChannels.put(newChannel, channelId);
+    public record Specifications(Map<Channel, String> joinChannels,
+                                 Map<Channel, String> voidChannels,
+                                 Map<Channel, String> respawnChannels) {
+
+        public static Specifications createEmpty() {
+            return new Specifications(new HashMap<>(), new HashMap<>(), new HashMap<>());
         }
-        if (teleportOnVoid) {
-            voidChannels.put(newChannel, channelId);
+
+        public void assign(Channel newChannel, String channelId, ConfigurationSection section) {
+            if (section == null) return;
+
+            if (section.getBoolean("teleport_on_first_join", false)) {
+                joinChannels.put(newChannel, channelId);
+            }
+            if (section.getBoolean("teleport_on_void", false)) {
+                voidChannels.put(newChannel, channelId);
+            }
+            if (section.getBoolean("teleport_on_respawn", false)) {
+                respawnChannels.put(newChannel, channelId);
+            }
         }
-        if (teleportOnRespawn) {
-            respawnChannels.put(newChannel, channelId);
-        }
+    }
+
+    private void assignChannelToSpecification(ConfigurationSection specificationsSection, Channel newChannel, String channelId) {
+        specifications.assign(newChannel, channelId, specificationsSection);
     }
 
     private LocationGenOptions setupChannelGenOptions(ConfigurationSection locationGenOptions) {
