@@ -28,9 +28,6 @@ import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.channels.*;
 import ru.overwrite.rtp.utils.*;
 
-import static ru.overwrite.rtp.channels.LocationGenOptions.Shape.ROUND;
-import static ru.overwrite.rtp.channels.LocationGenOptions.Shape.SQUARE;
-
 public class RtpManager {
 
     private final Main plugin;
@@ -390,8 +387,9 @@ public class RtpManager {
 
         for (Player p : world.getPlayers()) {
             if (!p.equals(player) && !p.hasPermission("rtp.near.bypass")) {
-                int px = p.getLocation().getBlockX();
-                int pz = p.getLocation().getBlockZ();
+                Location loc = p.getLocation();
+                int px = loc.getBlockX();
+                int pz = loc.getBlockZ();
                 if (px >= minX && px <= maxX && pz >= minZ && pz <= maxZ) {
                     nearbyPlayers.add(p);
                 }

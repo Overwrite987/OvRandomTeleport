@@ -20,8 +20,8 @@ public class RtpTask {
     @Getter
     private final Channel activeChannel;
 
+    private int preTeleportCooldown;
     private BossBar bossBar;
-    private Integer preTeleportCooldown;
     private BukkitTask runnable;
 
     public RtpTask(Main plugin, RtpManager rtpManager, String playerName, Channel channel) {
