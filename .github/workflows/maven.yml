@@ -32,4 +32,4 @@ jobs:
       - uses: actions/upload-artifact@main
         with:
           name: OvRandomTeleport
-          path: OvRandomTeleport/target/OvRandomTeleport-*.jar
+          path: target/OvRandomTeleport-*.jar
