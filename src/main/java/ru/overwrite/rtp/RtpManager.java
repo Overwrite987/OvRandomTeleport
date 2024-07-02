@@ -286,6 +286,7 @@ public class RtpManager {
         }
         teleportingNow.add(p.getName());
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            LocationUtils.iterationsPerPlayer.put(p.getName(), 1);
             Location loc = switch (channel.getType()) {
                 case DEFAULT -> generateRandomLocation(p, channel, world);
                 case NEAR_PLAYER -> generateRandomLocationNearPlayer(p, channel, world);
@@ -307,14 +308,12 @@ public class RtpManager {
         });
     }
 
-    private final Map<String, Integer> iterationsPerPlayer = new HashMap<>();
-
     public Location generateRandomLocation(Player p, Channel channel, World world) {
         if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("Iterations for player " + p.getName() + ": " + iterationsPerPlayer.getOrDefault(p.getName(), 0));
+            plugin.getPluginLogger().info("Iterations for player " + p.getName() + ": " + LocationUtils.iterationsPerPlayer.getOrDefault(p.getName(), 0));
         }
-        if (iterationsPerPlayer.getOrDefault(p.getName(), 0) > channel.getLocationGenOptions().maxLocationAttempts()) {
-            iterationsPerPlayer.remove(p.getName());
+        if (LocationUtils.iterationsPerPlayer.getInt(p.getName()) >= channel.getLocationGenOptions().maxLocationAttempts()) {
+            LocationUtils.iterationsPerPlayer.removeInt(p.getName());
             return null;
         }
 
@@ -325,27 +324,23 @@ public class RtpManager {
         };
 
         if (location == null) {
-            iterationsPerPlayer.put(p.getName(), iterationsPerPlayer.getOrDefault(p.getName(), 0) + 1);
+            LocationUtils.iterationsPerPlayer.addTo(p.getName(), 1);
             return generateRandomLocation(p, channel, world);
         } else {
             if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Location for player " + p.getName() + " found in " + iterationsPerPlayer.get(p.getName()) + "iterations");
+                plugin.getPluginLogger().info("Location for player " + p.getName() + " found in " + LocationUtils.iterationsPerPlayer.get(p.getName()) + " iterations");
             }
-            iterationsPerPlayer.remove(p.getName());
+            LocationUtils.iterationsPerPlayer.removeInt(p.getName());
             return location;
         }
     }
 
     private Location generateRandomLocationNearPlayer(Player p, Channel channel, World world) {
-        if (iterationsPerPlayer.getOrDefault(p.getName(), 0) > channel.getLocationGenOptions().maxLocationAttempts()) {
-            iterationsPerPlayer.remove(p.getName());
+        if (LocationUtils.iterationsPerPlayer.getInt(p.getName()) >= channel.getLocationGenOptions().maxLocationAttempts()) {
+            LocationUtils.iterationsPerPlayer.removeInt(p.getName());
             return null;
         }
         List<Player> nearbyPlayers = getNearbyPlayers(p, channel, world);
-
-        nearbyPlayers = nearbyPlayers.stream()
-                .filter(player -> !player.hasPermission("rtpnear.unaffected"))
-                .toList();
 
         if (nearbyPlayers.isEmpty()) {
             return null;
@@ -360,13 +355,13 @@ public class RtpManager {
         Location location = LocationUtils.generateRandomLocationNearPoint(shape, p, centerX, centerZ, channel, world);
 
         if (location == null) {
-            iterationsPerPlayer.put(p.getName(), iterationsPerPlayer.getOrDefault(p.getName(), 0) + 1);
+            LocationUtils.iterationsPerPlayer.addTo(p.getName(), 1);
             return generateRandomLocationNearPlayer(p, channel, world);
         } else {
             if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Location for player " + p.getName() + " found in " + iterationsPerPlayer.get(p.getName()) + " iterations");
+                plugin.getPluginLogger().info("Location for player " + p.getName() + " found in " + LocationUtils.iterationsPerPlayer.get(p.getName()) + " iterations");
             }
-            iterationsPerPlayer.remove(p.getName());
+            LocationUtils.iterationsPerPlayer.removeInt(p.getName());
             return location;
         }
     }

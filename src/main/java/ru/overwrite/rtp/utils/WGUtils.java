@@ -1,8 +1,6 @@
 package ru.overwrite.rtp.utils;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import org.bukkit.Location;
@@ -24,16 +22,17 @@ public class WGUtils {
 
     private static final Random random = new Random();
 
-    private static final Map<String, Integer> iterationsPerPlayer = new HashMap<>();
-
     public static Location generateRandomLocationNearRandomRegion(Player p, Channel channel, World world) {
         LocationGenOptions locationGenOptions = channel.getLocationGenOptions();
-        if (iterationsPerPlayer.getOrDefault(p.getName(), 0) > locationGenOptions.maxLocationAttempts()) {
-            iterationsPerPlayer.remove(p.getName());
+        if (LocationUtils.iterationsPerPlayer.getInt(p.getName()) >= locationGenOptions.maxLocationAttempts()) {
+            LocationUtils.iterationsPerPlayer.removeInt(p.getName());
             return null;
         }
         RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer()
                 .get(BukkitAdapter.adapt(world));
+
+        if (regionManager == null || regionManager.getRegions().isEmpty())
+            return null;
 
         int minX = locationGenOptions.minX();
         int maxX = locationGenOptions.maxX();
@@ -63,10 +62,10 @@ public class WGUtils {
         Location location = LocationUtils.generateRandomLocationNearPoint(shape, p, centerX, centerZ, channel, world);
 
         if (location == null) {
-            iterationsPerPlayer.put(p.getName(), iterationsPerPlayer.getOrDefault(p.getName(), 0) + 1);
+            LocationUtils.iterationsPerPlayer.addTo(p.getName(), 1);
             return generateRandomLocationNearRandomRegion(p, channel, world);
         } else {
-            iterationsPerPlayer.remove(p.getName());
+            LocationUtils.iterationsPerPlayer.removeInt(p.getName());
             return location;
         }
     }

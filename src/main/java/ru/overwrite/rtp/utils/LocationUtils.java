@@ -1,5 +1,6 @@
 package ru.overwrite.rtp.utils;
 
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -12,6 +13,8 @@ import java.util.Random;
 public class LocationUtils {
 
     private static final Random random = new Random();
+
+    public static final Object2IntOpenHashMap<String> iterationsPerPlayer = new Object2IntOpenHashMap<>();
 
     public static Location generateRandomSquareLocation(Player p, Channel channel, World world) {
         LocationGenOptions locationGenOptions = channel.getLocationGenOptions();
