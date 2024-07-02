@@ -211,7 +211,7 @@ public class RtpManager {
         ConfigurationSection cdActions = actions.getConfigurationSection("on_cooldown");
         if (!isSectionNull(cdActions)) {
             for (String s : cdActions.getKeys(false)) {
-                if (!isNumber(s)) {
+                if (!StringUtils.isNumeric(s)) {
                     continue;
                 }
                 int time = Integer.parseInt(s);
@@ -259,18 +259,6 @@ public class RtpManager {
                 failToFindLocationMessage,
                 alreadyTeleportingMessage
         );
-    }
-
-    private boolean isNumber(String string) {
-        if (string.isEmpty() || string.isBlank()) {
-            return false;
-        }
-        for (char c : string.toCharArray()) {
-            if (!Character.isDigit(c)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     private String getMessage(ConfigurationSection messages, String key, String global, String prefix) {
