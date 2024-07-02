@@ -348,8 +348,9 @@ public class RtpManager {
 
         Player targetPlayer = nearbyPlayers.get(random.nextInt(nearbyPlayers.size()));
 
-        int centerX = targetPlayer.getLocation().getBlockX();
-        int centerZ = targetPlayer.getLocation().getBlockZ();
+        Location loc = targetPlayer.getLocation();
+        int centerX = loc.getBlockX();
+        int centerZ = loc.getBlockZ();
 
         LocationGenOptions.Shape shape = channel.getLocationGenOptions().shape();
         Location location = LocationUtils.generateRandomLocationNearPoint(shape, p, centerX, centerZ, channel, world);
