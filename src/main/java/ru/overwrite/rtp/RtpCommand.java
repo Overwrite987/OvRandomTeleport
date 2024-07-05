@@ -74,15 +74,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
                     .replace("%time%", Utils.getTime((int) (channel.getCooldown() - (System.currentTimeMillis() - channel.getPlayerCooldowns().get(p.getName())) / 1000))));
             return false;
         }
-        if (!channel.getActiveWorlds().contains(p.getWorld())) {
-            if (channel.isTeleportToFirstAllowedWorld()) {
-                rtpManager.preTeleport(p, channel, channel.getActiveWorlds().get(0));
-                return true;
-            }
-            p.sendMessage(channel.getMessages().invalidWorldMessage());
-            return false;
-        }
-        if (channel.getMinPlayersToUse() > 0 && channel.getMinPlayersToUse() < Bukkit.getOnlinePlayers().size()) {
+        if (channel.getMinPlayersToUse() > 0 && channel.getMinPlayersToUse() < (Bukkit.getOnlinePlayers().size() - 1)) {
             p.sendMessage(channel.getMessages().notEnoughPlayersMessage().replace("%required%", Integer.toString(channel.getMinPlayersToUse())));
             return false;
         }
@@ -92,6 +84,14 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
                 return false;
             }
             plugin.getEconomy().withdrawPlayer(p, channel.getTeleportCost());
+        }
+        if (!channel.getActiveWorlds().contains(p.getWorld())) {
+            if (channel.isTeleportToFirstAllowedWorld()) {
+                rtpManager.preTeleport(p, channel, channel.getActiveWorlds().get(0));
+                return true;
+            }
+            p.sendMessage(channel.getMessages().invalidWorldMessage());
+            return false;
         }
         rtpManager.preTeleport(p, channel, p.getWorld());
         return true;
