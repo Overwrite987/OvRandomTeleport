@@ -2,16 +2,24 @@ package ru.overwrite.rtp.channels;
 
 public record LocationGenOptions(
         Shape shape,
+        GenFormat genFormat,
         int minX,
         int maxX,
         int minZ,
         int maxZ,
-        int radiusMin,
-        int radiusMax,
+        int nearRadiusMin,
+        int nearRadiusMax,
+        int centerX,
+        int centerZ,
         int maxLocationAttempts) {
 
     public enum Shape {
         SQUARE,
         ROUND
+    }
+
+    public enum GenFormat {
+        RECTANGULAR,
+        RADIAL
     }
 }

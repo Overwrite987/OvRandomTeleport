@@ -22,11 +22,27 @@ public class LocationUtils {
         int maxX = locationGenOptions.maxX();
         int minZ = locationGenOptions.minZ();
         int maxZ = locationGenOptions.maxZ();
+        int x = 0, z = 0;
 
-        int x = random.nextInt((maxX - minX) + 1) + minX;
-        int z = random.nextInt((maxZ - minZ) + 1) + minZ;
+        switch (locationGenOptions.genFormat()) {
+            case RECTANGULAR -> {
+                x = random.nextInt((maxX - minX) + 1) + minX;
+                z = random.nextInt((maxZ - minZ) + 1) + minZ;
+            }
+            case RADIAL -> {
+                int centerX = locationGenOptions.centerX();
+                int centerZ = locationGenOptions.centerZ();
 
-        int y = world.getEnvironment() != World.Environment.NETHER ? world.getHighestBlockYAt(x, z) : findSafeNetherYPoint(world, x, z);
+                do {
+                    x = random.nextInt((maxX - minX) + 1) + minX;
+                    z = random.nextInt((maxZ - minZ) + 1) + minZ;
+                    x = (random.nextBoolean() ? centerX + x : centerX - x);
+                    z = (random.nextBoolean() ? centerZ + z : centerZ - z);
+                } while (isInsideRadiusSquare(x, z, minX, minZ, maxX, maxZ, centerX, centerZ));
+            }
+        }
+
+        int y = findSafeYPoint(world, x, z);
         if (y < 0) {
             return null;
         }
@@ -47,19 +63,38 @@ public class LocationUtils {
         int maxX = locationGenOptions.maxX();
         int minZ = locationGenOptions.minZ();
         int maxZ = locationGenOptions.maxZ();
+        int x = 0, z = 0;
 
-        int centerX = (minX + maxX) / 2;
-        int centerZ = (minZ + maxZ) / 2;
-        int radiusX = (maxX - minX) / 2;
-        int radiusZ = (maxZ - minZ) / 2;
+        switch (locationGenOptions.genFormat()) {
+            case RECTANGULAR -> {
+                int centerX = (minX + maxX) / 2;
+                int centerZ = (minZ + maxZ) / 2;
+                int radiusX = (maxX - minX) / 2;
+                int radiusZ = (maxZ - minZ) / 2;
 
-        double theta = random.nextDouble() * 2 * Math.PI;
-        double r = Math.sqrt(random.nextDouble());
+                double theta = random.nextDouble() * 2 * Math.PI;
+                double r = Math.sqrt(random.nextDouble());
 
-        int x = (int) (centerX + r * radiusX * Math.cos(theta));
-        int z = (int) (centerZ + r * radiusZ * Math.sin(theta));
+                x = (int) (centerX + r * radiusX * Math.cos(theta));
+                z = (int) (centerZ + r * radiusZ * Math.sin(theta));
+            }
+            case RADIAL -> {
+                int centerX = locationGenOptions.centerX();
+                int centerZ = locationGenOptions.centerZ();
 
-        int y = world.getEnvironment() != World.Environment.NETHER ? world.getHighestBlockYAt(x, z) : findSafeNetherYPoint(world, x, z);
+                double theta;
+                double rX, rZ;
+                do {
+                    theta = random.nextDouble() * 2 * Math.PI;
+                    rX = minX + (maxX - minX) * Math.sqrt(random.nextDouble());
+                    rZ = minZ + (maxZ - minZ) * Math.sqrt(random.nextDouble());
+                    x = (int) (centerX + rX * Math.cos(theta));
+                    z = (int) (centerZ + rZ * Math.sin(theta));
+                } while (isInsideRadiusCircle(x, z, minX, minZ, maxX, maxZ, centerX, centerZ));
+            }
+        }
+
+        int y = findSafeYPoint(world, x, z);
         if (y < 0) {
             return null;
         }
@@ -73,6 +108,7 @@ public class LocationUtils {
             return location;
         }
     }
+
 
     public static Location generateRandomLocationNearPoint(LocationGenOptions.Shape shape, Player p, int centerX, int centerZ, Channel channel, World world) {
         return switch (shape) {
@@ -88,16 +124,35 @@ public class LocationUtils {
         int minZ = locationGenOptions.minZ();
         int maxZ = locationGenOptions.maxZ();
 
-        int radiusMin = locationGenOptions.radiusMin();
-        int radiusMax = locationGenOptions.radiusMax();
+        int radiusMin = locationGenOptions.nearRadiusMin();
+        int radiusMax = locationGenOptions.nearRadiusMax();
 
-        int x, z;
-        do {
-            x = centerX + random.nextInt(radiusMax + 1) - radiusMin;
-            z = centerZ + random.nextInt(radiusMax + 1) - radiusMin;
-        } while (x < minX || x > maxX || z < minZ || z > maxZ);
+        int x = 0, z = 0;
 
-        int y = world.getEnvironment() != World.Environment.NETHER ? world.getHighestBlockYAt(x, z) : findSafeNetherYPoint(world, x, z);
+        switch (locationGenOptions.genFormat()) {
+            case RECTANGULAR -> {
+                do {
+                    x = centerX + (random.nextInt(radiusMax * 2 + 1) - radiusMax);
+                    System.out.println("x: " + x);
+                    z = centerZ + (random.nextInt(radiusMax * 2 + 1) - radiusMax);
+                    System.out.println("x: " + z);
+                } while ((x < minX || x > maxX) && (z < minZ || z > maxZ));
+            }
+            case RADIAL -> {
+                int genCenterX = locationGenOptions.centerX();
+                int genCenterZ = locationGenOptions.centerZ();
+
+                double theta, r;
+                do {
+                    theta = random.nextDouble() * 2 * Math.PI;
+                    r = radiusMin + (radiusMax - radiusMin) * Math.sqrt(random.nextDouble());
+                    x = (int) (centerX + r * Math.cos(theta));
+                    z = (int) (centerZ + r * Math.sin(theta));
+                } while (isInsideRadiusSquare(x, z, minX, minZ, maxX, maxZ, centerX, centerZ));
+            }
+        }
+
+        int y = findSafeYPoint(world, x, z);
         if (y < 0) {
             return null;
         }
@@ -119,18 +174,33 @@ public class LocationUtils {
         int minZ = locationGenOptions.minZ();
         int maxZ = locationGenOptions.maxZ();
 
-        int radiusMin = locationGenOptions.radiusMin();
-        int radiusMax = locationGenOptions.radiusMax();
+        int radiusMin = locationGenOptions.nearRadiusMin();
+        int radiusMax = locationGenOptions.nearRadiusMax();
 
-        int x, z;
-        do {
-            double theta = random.nextDouble() * 2 * Math.PI;
-            double r = radiusMin + (radiusMax - radiusMin) * Math.sqrt(random.nextDouble());
-            x = (int) (centerX + r * Math.cos(theta));
-            z = (int) (centerZ + r * Math.sin(theta));
-        } while (x < minX || x > maxX || z < minZ || z > maxZ);
+        int x = 0, z = 0;
 
-        int y = world.getEnvironment() != World.Environment.NETHER ? world.getHighestBlockYAt(x, z) : findSafeNetherYPoint(world, x, z);
+        switch (locationGenOptions.genFormat()) {
+            case RECTANGULAR -> {
+                do {
+                    x = centerX + (random.nextInt(radiusMax * 2 + 1) - radiusMax);
+                    z = centerZ + (random.nextInt(radiusMax * 2 + 1) - radiusMax);
+                } while ((x < minX || x > maxX) && (z < minZ || z > maxZ));
+            }
+            case RADIAL -> {
+                int genCenterX = locationGenOptions.centerX();
+                int genCenterZ = locationGenOptions.centerZ();
+
+                double theta, r;
+                do {
+                    theta = random.nextDouble() * 2 * Math.PI;
+                    r = radiusMin + (radiusMax - radiusMin) * Math.sqrt(random.nextDouble());
+                    x = (int) (centerX + r * Math.cos(theta));
+                    z = (int) (centerZ + r * Math.sin(theta));
+                } while (isInsideRadiusCircle(x, z, minX, minZ, maxX, maxZ, genCenterX, genCenterZ));
+            }
+        }
+
+        int y = findSafeYPoint(world, x, z);
         if (y < 0) {
             return null;
         }
@@ -143,6 +213,10 @@ public class LocationUtils {
             location.setY(y + 1);
             return location;
         }
+    }
+
+    private static int findSafeYPoint(World world, int x, int z) {
+        return world.getEnvironment() != World.Environment.NETHER ? world.getHighestBlockYAt(x, z) : findSafeNetherYPoint(world, x, z);
     }
 
     private static int findSafeNetherYPoint(World world, int x, int z) {
@@ -159,6 +233,26 @@ public class LocationUtils {
         }
 
         return -1;
+    }
+
+    public static boolean isInsideRadiusSquare(int x, int z, int minX, int minZ, int maxX, int maxZ, int centerX, int centerZ) {
+        int realMinX = centerX + minX;
+        int realMinZ = centerZ + minZ;
+        int realMaxX = centerX + maxX;
+        int realMaxZ = centerZ + maxZ;
+
+        return (x >= realMinX && x <= realMaxX && z >= realMinZ && z <= realMaxZ);
+    }
+
+    public static boolean isInsideRadiusCircle(int x, int z, int minX, int minZ, int maxX, int maxZ, int centerX, int centerZ) {
+        int deltaX = x - centerX;
+        int deltaZ = z - centerZ;
+        int distanceSquared = deltaX * deltaX + deltaZ * deltaZ;
+
+        int minRadius = Math.min(minX, minZ);
+        int maxRadius = Math.max(maxX, maxZ);
+
+        return (distanceSquared >= minRadius * minRadius && distanceSquared <= maxRadius * maxRadius);
     }
 
     private static boolean isDisallowedBlock(Location loc, Avoidance avoidance) {

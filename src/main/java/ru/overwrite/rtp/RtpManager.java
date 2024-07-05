@@ -144,16 +144,20 @@ public class RtpManager {
         if (locationGenOptions == null) {
             return null;
         }
-        LocationGenOptions.Shape shape = LocationGenOptions.Shape.valueOf(locationGenOptions.getString("shape").toUpperCase());
+        LocationGenOptions.Shape shape = LocationGenOptions.Shape.valueOf(locationGenOptions.getString("shape", "SQUARE").toUpperCase());
+        LocationGenOptions.GenFormat genFormat = LocationGenOptions.GenFormat.valueOf(locationGenOptions.getString("gen_format", "RECTANGULAR").toUpperCase());
         int minX = locationGenOptions.getInt("min_x");
         int maxX = locationGenOptions.getInt("max_x");
         int minZ = locationGenOptions.getInt("min_z");
         int maxZ = locationGenOptions.getInt("max_z");
-        int radiusMin = locationGenOptions.getInt("min_near_point_distance", 30);
-        int radiusMax = locationGenOptions.getInt("max_near_point_distance", 60);
+        int centerX = locationGenOptions.getInt("center_x", 0);
+        int centerZ = locationGenOptions.getInt("center_z", 0);
+        plugin.getPluginLogger().info(String.valueOf(locationGenOptions.getInt("min_near_point_distance", 30)));
+        int nearRadiusMin = locationGenOptions.getInt("min_near_point_distance", 30);
+        int nearRadiusMax = locationGenOptions.getInt("max_near_point_distance", 60);
         int maxLocationAttempts = locationGenOptions.getInt("max_location_attemps", 50);
 
-        return new LocationGenOptions(shape, minX, maxX, minZ, maxZ, radiusMin, radiusMax, maxLocationAttempts);
+        return new LocationGenOptions(shape, genFormat, minX, maxX, minZ, maxZ, nearRadiusMin, nearRadiusMax, centerX, centerZ, maxLocationAttempts);
     }
 
     private BossBar setupChannelBossBar(ConfigurationSection bossbar) {
