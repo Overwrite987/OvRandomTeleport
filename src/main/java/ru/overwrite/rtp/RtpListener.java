@@ -12,6 +12,7 @@ import org.bukkit.event.player.*;
 
 import org.bukkit.projectiles.ProjectileSource;
 import ru.overwrite.rtp.channels.Channel;
+import ru.overwrite.rtp.utils.LocationUtils;
 import ru.overwrite.rtp.utils.Utils;
 
 import java.util.Map;
@@ -183,6 +184,7 @@ public class RtpListener implements Listener {
             if (rtpManager.hasActiveTasks(playerName)) {
                 cancelTeleportation(playerName);
             }
+            LocationUtils.iterationsPerPlayer.removeInt(playerName);
         });
     }
 
@@ -190,5 +192,6 @@ public class RtpListener implements Listener {
         rtpManager.getPerPlayerActiveRtpTask().get(playerName).cancel();
         rtpManager.teleportingNow.remove(playerName);
         rtpManager.getPerPlayerActiveRtpTask().remove(playerName);
+        LocationUtils.iterationsPerPlayer.removeInt(playerName);
     }
 }
