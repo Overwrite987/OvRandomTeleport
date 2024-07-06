@@ -313,7 +313,7 @@ public class RtpManager {
 
     public Location generateRandomLocation(Player p, Channel channel, World world) {
         if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("Iterations for player " + p.getName() + ": " + LocationUtils.iterationsPerPlayer.getOrDefault(p.getName(), 0));
+            plugin.getPluginLogger().info("Iterations for player " + p.getName() + ": " + LocationUtils.iterationsPerPlayer.getInt(p.getName()));
         }
         if (LocationUtils.iterationsPerPlayer.getInt(p.getName()) >= channel.getLocationGenOptions().maxLocationAttempts()) {
             LocationUtils.iterationsPerPlayer.removeInt(p.getName());
@@ -331,7 +331,7 @@ public class RtpManager {
             return generateRandomLocation(p, channel, world);
         } else {
             if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Location for player " + p.getName() + " found in " + LocationUtils.iterationsPerPlayer.get(p.getName()) + " iterations");
+                plugin.getPluginLogger().info("Location for player " + p.getName() + " found in " + LocationUtils.iterationsPerPlayer.getInt(p.getName()) + " iterations");
             }
             LocationUtils.iterationsPerPlayer.removeInt(p.getName());
             return location;
