@@ -152,7 +152,6 @@ public class RtpManager {
         int maxZ = locationGenOptions.getInt("max_z");
         int centerX = locationGenOptions.getInt("center_x", 0);
         int centerZ = locationGenOptions.getInt("center_z", 0);
-        plugin.getPluginLogger().info(String.valueOf(locationGenOptions.getInt("min_near_point_distance", 30)));
         int nearRadiusMin = locationGenOptions.getInt("min_near_point_distance", 30);
         int nearRadiusMax = locationGenOptions.getInt("max_near_point_distance", 60);
         int maxLocationAttempts = locationGenOptions.getInt("max_location_attemps", 50);
