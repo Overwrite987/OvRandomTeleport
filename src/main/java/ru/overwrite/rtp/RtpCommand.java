@@ -74,7 +74,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
                     .replace("%time%", Utils.getTime((int) (channel.getCooldown() - (System.currentTimeMillis() - channel.getPlayerCooldowns().get(p.getName())) / 1000))));
             return false;
         }
-        if (channel.getMinPlayersToUse() > 0 && channel.getMinPlayersToUse() < (Bukkit.getOnlinePlayers().size() - 1)) {
+        if (channel.getMinPlayersToUse() > 0 && (Bukkit.getOnlinePlayers().size() - 1) < channel.getMinPlayersToUse()) {
             p.sendMessage(channel.getMessages().notEnoughPlayersMessage().replace("%required%", Integer.toString(channel.getMinPlayersToUse())));
             return false;
         }
