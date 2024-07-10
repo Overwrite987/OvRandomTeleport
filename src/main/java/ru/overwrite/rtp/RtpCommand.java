@@ -69,7 +69,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
             p.sendMessage(channel.getMessages().noPermsMessage());
             return false;
         }
-        if (channel.getPlayerCooldowns().containsKey(p.getName())) {
+        if (channel.getPlayerCooldowns() != null && channel.getPlayerCooldowns().containsKey(p.getName())) {
             p.sendMessage(channel.getMessages().cooldownMessage()
                     .replace("%time%", Utils.getTime((int) (channel.getCooldown() - (System.currentTimeMillis() - channel.getPlayerCooldowns().get(p.getName())) / 1000))));
             return false;
