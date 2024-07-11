@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import org.apache.commons.lang3.StringUtils;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -214,7 +214,7 @@ public class RtpManager {
         ConfigurationSection cdActions = actions.getConfigurationSection("on_cooldown");
         if (!isSectionNull(cdActions)) {
             for (String s : cdActions.getKeys(false)) {
-                if (!StringUtils.isNumeric(s)) {
+                if (!Utils.isNumeric(s)) {
                     continue;
                 }
                 int time = Integer.parseInt(s);
@@ -422,14 +422,14 @@ public class RtpManager {
             switch (action.type()) {
                 case MESSAGE: {
                     Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                        String message = Utils.colorize(StringUtils.replaceEach(action.context(), searchList, replacementList));
+                        String message = Utils.colorize(Utils.replaceEach(action.context(), searchList, replacementList));
                         p.sendMessage(message);
                     });
                     break;
                 }
                 case TITLE: {
                     Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                        String result = Utils.colorize(StringUtils.replaceEach(action.context(), searchList, replacementList));
+                        String result = Utils.colorize(Utils.replaceEach(action.context(), searchList, replacementList));
                         String[] titledMessage = result.split(";");
                         Utils.sendTitleMessage(titledMessage, p);
                     });
@@ -446,7 +446,7 @@ public class RtpManager {
                     break;
                 }
                 case CONSOLE: {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), StringUtils.replaceEach(action.context(), searchList, replacementList));
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Utils.replaceEach(action.context(), searchList, replacementList));
                     break;
                 }
                 default: {

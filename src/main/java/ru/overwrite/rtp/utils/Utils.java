@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.Main;
 
 import static net.md_5.bungee.api.ChatColor.COLOR_CHAR;
@@ -124,6 +125,54 @@ public class Utils {
 
         if (seconds > 0 || (minutes == 0 && hours == 0)) {
             result.append(seconds).append(Config.time_seconds);
+        }
+
+        return result.toString();
+    }
+
+    // Original - org.apache.commons.lang3.StringUtils#isEmpty
+    public static boolean isNumeric(CharSequence cs) {
+        if (cs == null || cs.isEmpty()) {
+            return false;
+        } else {
+            int sz = cs.length();
+
+            for(int i = 0; i < sz; ++i) {
+                if (!Character.isDigit(cs.charAt(i))) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
+
+    public static String replaceEach(@NotNull String text, @NotNull String[] searchSet, @NotNull String[] replacementSet) {
+        if (text.isEmpty() || searchSet.length == 0 || replacementSet.length == 0) {
+            return text;
+        }
+
+        if (searchSet.length != replacementSet.length) {
+            throw new IllegalArgumentException("Search and replacement arrays must have the same length.");
+        }
+
+        // Используем StringBuilder для сборки строки
+        StringBuilder result = new StringBuilder(text);
+
+        // Проходим по всем парам поиска и замены
+        for (int i = 0; i < searchSet.length; i++) {
+            String search = searchSet[i];
+            String replacement = replacementSet[i];
+
+            // Позиция текущего поиска
+            int start = 0;
+
+            while ((start = result.indexOf(search, start)) != -1) {
+                // Заменяем найденное вхождение
+                result.replace(start, start + search.length(), replacement);
+                // Сдвигаем позицию дальше
+                start += replacement.length();
+            }
         }
 
         return result.toString();
