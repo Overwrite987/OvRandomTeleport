@@ -148,7 +148,7 @@ public class LocationUtils {
                     r = radiusMin + (radiusMax - radiusMin) * Math.sqrt(random.nextDouble());
                     x = (int) (centerX + r * Math.cos(theta));
                     z = (int) (centerZ + r * Math.sin(theta));
-                } while (isInsideRadiusSquare(x, z, minX, minZ, maxX, maxZ, centerX, centerZ));
+                } while (isInsideRadiusSquare(x, z, minX, minZ, maxX, maxZ, genCenterX, genCenterZ));
             }
         }
 
