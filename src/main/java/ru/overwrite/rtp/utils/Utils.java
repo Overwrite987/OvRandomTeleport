@@ -137,7 +137,7 @@ public class Utils {
         } else {
             int sz = cs.length();
 
-            for(int i = 0; i < sz; ++i) {
+            for (int i = 0; i < sz; ++i) {
                 if (!Character.isDigit(cs.charAt(i))) {
                     return false;
                 }
@@ -156,21 +156,16 @@ public class Utils {
             throw new IllegalArgumentException("Search and replacement arrays must have the same length.");
         }
 
-        // Используем StringBuilder для сборки строки
         StringBuilder result = new StringBuilder(text);
 
-        // Проходим по всем парам поиска и замены
         for (int i = 0; i < searchSet.length; i++) {
             String search = searchSet[i];
             String replacement = replacementSet[i];
 
-            // Позиция текущего поиска
             int start = 0;
 
             while ((start = result.indexOf(search, start)) != -1) {
-                // Заменяем найденное вхождение
                 result.replace(start, start + search.length(), replacement);
-                // Сдвигаем позицию дальше
                 start += replacement.length();
             }
         }
