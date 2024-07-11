@@ -133,9 +133,7 @@ public class LocationUtils {
             case RECTANGULAR -> {
                 do {
                     x = centerX + (random.nextInt(radiusMax * 2 + 1) - radiusMax);
-                    System.out.println("x: " + x);
                     z = centerZ + (random.nextInt(radiusMax * 2 + 1) - radiusMax);
-                    System.out.println("x: " + z);
                 } while ((x < minX || x > maxX) && (z < minZ || z > maxZ));
             }
             case RADIAL -> {
