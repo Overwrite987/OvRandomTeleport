@@ -147,20 +147,20 @@ public class Utils {
         }
     }
 
-    public static String replaceEach(@NotNull String text, @NotNull String[] searchSet, @NotNull String[] replacementSet) {
-        if (text.isEmpty() || searchSet.length == 0 || replacementSet.length == 0) {
+    public static String replaceEach(@NotNull String text, @NotNull String[] searchList, @NotNull String[] replacementList) {
+        if (text.isEmpty() || searchList.length == 0 || replacementList.length == 0) {
             return text;
         }
 
-        if (searchSet.length != replacementSet.length) {
+        if (searchList.length != replacementList.length) {
             throw new IllegalArgumentException("Search and replacement arrays must have the same length.");
         }
 
         StringBuilder result = new StringBuilder(text);
 
-        for (int i = 0; i < searchSet.length; i++) {
-            String search = searchSet[i];
-            String replacement = replacementSet[i];
+        for (int i = 0; i < searchList.length; i++) {
+            String search = searchList[i];
+            String replacement = replacementList[i];
 
             int start = 0;
 
