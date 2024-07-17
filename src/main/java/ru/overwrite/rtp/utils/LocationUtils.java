@@ -245,12 +245,18 @@ public class LocationUtils {
     public static boolean isInsideRadiusCircle(int x, int z, int minX, int minZ, int maxX, int maxZ, int centerX, int centerZ) {
         int deltaX = x - centerX;
         int deltaZ = z - centerZ;
-        int distanceSquared = deltaX * deltaX + deltaZ * deltaZ;
 
-        int minRadius = Math.min(minX, minZ);
-        int maxRadius = Math.max(maxX, maxZ);
+        double maxDistanceRatioX = (double) deltaX / maxX;
+        double maxDistanceRatioZ = (double) deltaZ / maxZ;
+        double maxDistance = maxDistanceRatioX * maxDistanceRatioX + maxDistanceRatioZ * maxDistanceRatioZ;
+        System.out.println(maxDistance);
 
-        return (distanceSquared >= minRadius * minRadius && distanceSquared <= maxRadius * maxRadius);
+        double minDistanceRatioX = (double) deltaX / minX;
+        double minDistanceRatioZ = (double) deltaZ / minZ;
+        double minDistance = minDistanceRatioX * minDistanceRatioX + minDistanceRatioZ * minDistanceRatioZ;
+        System.out.println(minDistance);
+
+        return maxDistance <= 1 && minDistance >= 2;
     }
 
     private static boolean isOutsideWorldBorder(Location loc) {
