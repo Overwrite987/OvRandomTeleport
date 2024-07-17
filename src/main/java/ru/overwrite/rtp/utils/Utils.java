@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -74,7 +75,7 @@ public class Utils {
 
     public static void sendTitleMessage(String[] titleMessages, Player p) {
         if (titleMessages.length > 5) {
-            Bukkit.getConsoleSender().sendMessage("Unable to send title. " + titleMessages.toString());
+            Bukkit.getConsoleSender().sendMessage("Unable to send title. " + Arrays.toString(titleMessages));
             return;
         }
         String title = titleMessages[0];
@@ -87,7 +88,7 @@ public class Utils {
 
     public static void sendSound(String[] soundArgs, Player p) {
         if (soundArgs.length > 3) {
-            Bukkit.getConsoleSender().sendMessage("Unable to send sound. " + soundArgs.toString());
+            Bukkit.getConsoleSender().sendMessage("Unable to send sound. " + Arrays.toString(soundArgs));
             return;
         }
         Sound sound = Sound.valueOf(soundArgs[0]);
@@ -98,7 +99,7 @@ public class Utils {
 
     public static void giveEffect(String[] effectArgs, Player p) {
         if (effectArgs.length > 3) {
-            Bukkit.getConsoleSender().sendMessage("Unable to give effect. " + effectArgs.toString());
+            Bukkit.getConsoleSender().sendMessage("Unable to give effect. " + Arrays.toString(effectArgs));
             return;
         }
         PotionEffectType effectType = PotionEffectType.getByName(effectArgs[0]);
