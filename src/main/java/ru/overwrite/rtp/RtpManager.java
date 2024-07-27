@@ -9,6 +9,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 import org.bukkit.Bukkit;
@@ -72,8 +74,7 @@ public class RtpManager {
                 continue;
             }
             int invulnerableTicks = channelSection.getInt("invulnerable_after_teleport", 1);
-            int cooldown = channelSection.getInt("cooldown", 60);
-            int teleportCooldown = channelSection.getInt("teleport_cooldown", -1);
+            Cooldown cooldown = setupCooldown(channelSection.getConfigurationSection("cooldown"));
             BossBar bossBar = setupChannelBossBar(channelSection.getConfigurationSection("bossbar"));
             Restrictions restrictions = setupChannelRestrictions(channelSection.getConfigurationSection("restrictions"));
             Avoidance avoidance = setupChannelAvoidance(channelSection.getConfigurationSection("avoid"), pluginManager);
@@ -93,7 +94,6 @@ public class RtpManager {
                     locationGenOptions,
                     invulnerableTicks,
                     cooldown,
-                    teleportCooldown,
                     bossBar,
                     restrictions,
                     avoidance,
@@ -157,6 +157,25 @@ public class RtpManager {
         int maxLocationAttempts = locationGenOptions.getInt("max_location_attemps", 50);
 
         return new LocationGenOptions(shape, genFormat, minX, maxX, minZ, maxZ, nearRadiusMin, nearRadiusMax, centerX, centerZ, maxLocationAttempts);
+    }
+
+    private Cooldown setupCooldown(ConfigurationSection cooldown) {
+        Object2IntLinkedOpenHashMap<String> cooldownsMap = new Object2IntLinkedOpenHashMap<>();
+        if (isSectionNull(cooldown)) {
+            return new Cooldown(-1, cooldownsMap, false, -1);
+        }
+        int defaultCooldown = cooldown.getInt("default_cooldown", -1);
+        ConfigurationSection groupCooldowns = cooldown.getConfigurationSection("group_cooldowns");
+        boolean useLastGroupCooldown = false;
+        if (!isSectionNull(groupCooldowns) && plugin.getPerms() != null) {
+            for (String groupName : groupCooldowns.getKeys(false)) {
+                int cd = groupCooldowns.getInt(groupName);
+                cooldownsMap.put(groupName, cd);
+            }
+            useLastGroupCooldown = cooldown.getBoolean("use_last_group_cooldown", false);
+        }
+        int teleportCooldown = cooldown.getInt("teleport_cooldown", -1);
+        return new Cooldown(defaultCooldown, cooldownsMap, useLastGroupCooldown, teleportCooldown);
     }
 
     private BossBar setupChannelBossBar(ConfigurationSection bossbar) {
@@ -300,7 +319,7 @@ public class RtpManager {
                 p.sendMessage(pluginConfig.messages_fail_to_find_location);
                 return;
             }
-            if (channel.getTeleportCooldown() > 0) {
+            if (channel.getCooldown().teleportCooldown() > 0) {
                 this.executeActions(p, channel, channel.getActions().preTeleportActions(), p.getLocation());
                 RtpTask rtpTask = new RtpTask(plugin, this, p.getName(), channel);
                 perPlayerActiveRtpTask.put(p.getName(), rtpTask);
@@ -399,11 +418,21 @@ public class RtpManager {
             }
             p.teleport(loc);
             teleportingNow.remove(p.getName());
-            if (channel.getCooldown() > 0 && !p.hasPermission("rtp.bypasscooldown")) {
-                channel.getPlayerCooldowns().put(p.getName(), System.currentTimeMillis());
+            if (getChannelCooldown(p, channel.getCooldown()) > 0 && !p.hasPermission("rtp.bypasscooldown")) {
+                channel.getPlayerCooldowns().put(p.getName(), System.currentTimeMillis(), getChannelCooldown(p, channel.getCooldown()));
             }
             this.executeActions(p, channel, channel.getActions().afterTeleportActions(), loc);
         });
+    }
+
+    public int getChannelCooldown(Player p, Cooldown cooldown) {
+        Object2IntLinkedOpenHashMap<String> groupCooldowns = cooldown.groupCooldowns();
+        if (groupCooldowns.isEmpty()) {
+            return cooldown.defaultCooldown();
+        }
+        String playerGroup = plugin.getPerms().getPrimaryGroup(p);
+        int defaultCooldown = cooldown.useLastGroupCooldown() ? groupCooldowns.getInt(groupCooldowns.keySet().getLast()) : cooldown.defaultCooldown();
+        return groupCooldowns.getOrDefault(playerGroup, defaultCooldown);
     }
 
     private final String[] searchList = {"%player%", "%name%", "%time%", "%x%", "%y%", "%z%"};
@@ -413,7 +442,7 @@ public class RtpManager {
             return;
         }
         String name = channel.getName();
-        String cd = Utils.getTime(channel.getTeleportCooldown());
+        String cd = Utils.getTime(channel.getCooldown().teleportCooldown());
         String x = Integer.toString(loc.getBlockX());
         String y = Integer.toString(loc.getBlockY());
         String z = Integer.toString(loc.getBlockZ());

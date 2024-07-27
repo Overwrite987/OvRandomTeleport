@@ -12,6 +12,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import net.milkbowl.vault.permission.Permission;
 import net.milkbowl.vault.economy.Economy;
 
 import lombok.Getter;
@@ -38,6 +39,9 @@ public class Main extends JavaPlugin {
     @Getter
     private Economy economy;
 
+    @Getter
+    private Permission perms;
+
     @Override
     public void onEnable() {
         if (!isPaper()) {
@@ -53,6 +57,7 @@ public class Main extends JavaPlugin {
             new Metrics(this, 22021);
         }
         setupEconomy(pluginManager);
+        setupPerms(pluginManager);
         pluginManager.registerEvents(new RtpListener(this), this);
         checkForUpdates(mainSettings);
         server.getScheduler().runTaskAsynchronously(this, () -> rtpManager.setupChannels(config, pluginManager));
@@ -99,6 +104,17 @@ public class Main extends JavaPlugin {
             return;
         }
         economy = rsp.getProvider();
+    }
+
+    private void setupPerms(PluginManager pluginManager) {
+        if (!pluginManager.isPluginEnabled("Vault")) {
+            return;
+        }
+        RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(Permission.class);
+        if (permissionProvider == null) {
+            return;
+        }
+        perms = permissionProvider.getProvider();
     }
 
     private void registerCommand(PluginManager pluginManager, ConfigurationSection mainSettings) {

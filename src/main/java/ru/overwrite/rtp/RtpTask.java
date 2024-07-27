@@ -9,6 +9,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.channels.Actions;
+import ru.overwrite.rtp.channels.Cooldown;
 import ru.overwrite.rtp.utils.Utils;
 
 public class RtpTask {
@@ -33,9 +34,10 @@ public class RtpTask {
 
     public void startPreTeleportTimer(Player p, Channel channel, Location loc) {
         String playerName = p.getName();
-        preTeleportCooldown = channel.getTeleportCooldown();
+        Cooldown cooldown = channel.getCooldown();
+        preTeleportCooldown = cooldown.teleportCooldown();
         if (channel.getBossBar().bossbarEnabled()) {
-            String barTitle = Utils.colorize(channel.getBossBar().bossbarTitle().replace("%time%", Utils.getTime(channel.getTeleportCooldown())));
+            String barTitle = Utils.colorize(channel.getBossBar().bossbarTitle().replace("%time%", Utils.getTime(cooldown.teleportCooldown())));
             bossBar = Bukkit.createBossBar(barTitle, channel.getBossBar().bossbarColor(), channel.getBossBar().bossbarType());
             bossBar.addPlayer(p);
         }
@@ -53,8 +55,8 @@ public class RtpTask {
                     return;
                 }
                 if (channel.getBossBar().bossbarEnabled()) {
-                    double percents = (channel.getTeleportCooldown() - (channel.getTeleportCooldown() - preTeleportCooldown))
-                            / (double) channel.getTeleportCooldown();
+                    double percents = (cooldown.teleportCooldown() - (cooldown.teleportCooldown() - preTeleportCooldown))
+                            / (double) cooldown.teleportCooldown();
                     if (percents < 1 && percents > 0) {
                         bossBar.setProgress(percents);
                     }

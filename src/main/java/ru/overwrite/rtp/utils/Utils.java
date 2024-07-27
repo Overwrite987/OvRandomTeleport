@@ -131,7 +131,7 @@ public class Utils {
         return result.toString();
     }
 
-    // Original - org.apache.commons.lang3.StringUtils#isEmpty
+    // Original - org.apache.commons.lang3.StringUtils#isNumeric
     public static boolean isNumeric(CharSequence cs) {
         if (cs == null || cs.isEmpty()) {
             return false;

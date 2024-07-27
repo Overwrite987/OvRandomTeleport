@@ -3,6 +3,7 @@ package ru.overwrite.rtp.channels;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 import lombok.Getter;
 import ru.overwrite.rtp.utils.ExpiringMap;
 
@@ -31,9 +32,7 @@ public class Channel {
 
     private final int invulnerableTicks;
 
-    private final int cooldown;
-
-    private final int teleportCooldown;
+    private final Cooldown cooldown;
 
     private final BossBar bossBar;
 
@@ -54,8 +53,7 @@ public class Channel {
                    double teleportCost,
                    LocationGenOptions locationGenOptions,
                    int invulnerableTicks,
-                   int cooldown,
-                   int teleportCooldown,
+                   Cooldown cooldown,
                    BossBar bossBar,
                    Restrictions restrictions,
                    Avoidance avoidance,
@@ -71,8 +69,7 @@ public class Channel {
         this.locationGenOptions = locationGenOptions;
         this.invulnerableTicks = invulnerableTicks;
         this.cooldown = cooldown;
-        this.playerCooldowns = cooldown > 0 ? new ExpiringMap<>(cooldown, TimeUnit.SECONDS) : null;
-        this.teleportCooldown = teleportCooldown;
+        this.playerCooldowns = !cooldown.groupCooldowns().isEmpty() ? new ExpiringMap<>(TimeUnit.SECONDS) : null;
         this.bossBar = bossBar;
         this.restrictions = restrictions;
         this.avoidance = avoidance;

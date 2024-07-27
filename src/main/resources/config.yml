@@ -69,10 +69,18 @@ channels:
       max_location_attemps: 50
     # Сколько тиков игрок должен быть неуязвим после телепортации через канал RTP (-1 чтобы отключить)
     invulnerable_after_teleport: 3
-    # Кулдаун на телепортации в секундах (-1 чтобы отключить)
-    cooldown: 60
-    # Кулдаун до телепортации в секундах (-1 чтобы отключить)
-    teleport_cooldown: 5
+    # Настройки кулдаунов
+    cooldown:
+      # Дефолтный кулдаун для телепортации
+      default_cooldown: 60
+      # Кулдауны на телепортации в секундах для каждой группы ([] чтобы отключить кулдауны вообще, -1 чтобы отключить кулдаун для группы)
+      group_cooldowns:
+        vip: 30
+        premium: 10
+      # Если группа игрока не указана в списке, то будет браться кулдаун для самой последней группы из списка, вместо дефолтного
+      use_last_group_cooldown: true
+      # Кулдаун до телепортации в секундах (-1 чтобы отключить)
+      teleport_cooldown: 5
     # Настройка боссбара обратного отсчета
     # Не активен, если кулдаун до телепортации < 0
     bossbar:
@@ -182,8 +190,14 @@ channels:
       max_location_attemps: 50
     # Необязательный параметр
     invulnerable_after_teleport: 3
-    # Необязательный параметр
-    cooldown: 60
+    # Необязательные параметры
+    cooldown:
+      default_cooldown: 60
+      group_cooldowns:
+        vip: 30
+        premium: 10
+      use_last_group_cooldown: true
+      teleport_cooldown: 5
     # Необязательный параметр
     teleport_cooldown: 5
     # Необязательные параметры
@@ -205,7 +219,7 @@ channels:
           - 'WATER'
       biomes:
         blacklist: true
-        list: [ ]
+        list: []
       regions: true
       towns: false
     # Обязательный параметр
@@ -247,12 +261,13 @@ channels:
       max_x: 1000
       min_z: -1000
       max_z: 1000
-    cooldown: 60
+    cooldown:
+      default_cooldown: 300
     restrictions:
       move: true
       damage: true
     actions:
-      pre_teleport: [ ]
+      pre_teleport: []
       after_teleport:
         - '[MESSAGE] &7&l(&5&lOvRandomTeleport&7) &6» &aУспешная телепортация! &fВы телепортировались на координаты: &2%x% %y% %z%.'
         - '[TITLE] &a&lУспех!;&fВы телепортировались на координаты: &2%x% %y% %z%.'
