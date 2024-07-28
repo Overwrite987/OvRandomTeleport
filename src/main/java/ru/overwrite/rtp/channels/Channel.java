@@ -69,7 +69,7 @@ public class Channel {
         this.locationGenOptions = locationGenOptions;
         this.invulnerableTicks = invulnerableTicks;
         this.cooldown = cooldown;
-        this.playerCooldowns = !cooldown.groupCooldowns().isEmpty() ? new ExpiringMap<>(TimeUnit.SECONDS) : null;
+        this.playerCooldowns = cooldown.defaultCooldown() > 0 ? new ExpiringMap<>(TimeUnit.SECONDS) : null;
         this.bossBar = bossBar;
         this.restrictions = restrictions;
         this.avoidance = avoidance;

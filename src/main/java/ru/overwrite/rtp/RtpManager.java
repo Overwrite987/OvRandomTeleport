@@ -426,6 +426,9 @@ public class RtpManager {
     }
 
     public int getChannelCooldown(Player p, Cooldown cooldown) {
+        if (cooldown.defaultCooldown() < 0) {
+            return -1;
+        }
         Object2IntLinkedOpenHashMap<String> groupCooldowns = cooldown.groupCooldowns();
         if (groupCooldowns.isEmpty()) {
             return cooldown.defaultCooldown();
