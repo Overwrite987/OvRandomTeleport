@@ -1,11 +1,6 @@
 package ru.overwrite.rtp;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -246,7 +241,7 @@ public class RtpManager {
     }
 
     private List<Action> getActionList(List<String> actionStrings) {
-        List<Action> actions = new ArrayList<>(actionStrings.size());
+        List<Action> actions = new LinkedList<>();
         for (String actionString : actionStrings) {
             actions.add(Action.fromString(actionString));
         }
