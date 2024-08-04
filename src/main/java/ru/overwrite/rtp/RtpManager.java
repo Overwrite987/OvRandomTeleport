@@ -447,10 +447,8 @@ public class RtpManager {
         for (Action action : actions) {
             switch (action.type()) {
                 case MESSAGE: {
-                    Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                        String message = Utils.colorize(Utils.replaceEach(action.context(), searchList, replacementList));
-                        p.sendMessage(message);
-                    });
+                    String message = Utils.colorize(Utils.replaceEach(action.context(), searchList, replacementList));
+                    p.sendMessage(message);
                     break;
                 }
                 case TITLE: {
