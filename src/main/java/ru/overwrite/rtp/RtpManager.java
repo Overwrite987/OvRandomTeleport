@@ -241,7 +241,7 @@ public class RtpManager {
     }
 
     private List<Action> getActionList(List<String> actionStrings) {
-        List<Action> actions = new LinkedList<>();
+        List<Action> actions = new ArrayList<>(actionStrings.size());
         for (String actionString : actionStrings) {
             actions.add(Action.fromString(actionString));
         }
