@@ -14,6 +14,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.md_5.bungee.api.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
@@ -43,22 +46,38 @@ public class Utils {
 
     public static final int VOID_LEVEL = SUB_VERSION >= 18 ? -60 : 0;
 
-    public static String colorize(String message) {
-        Matcher matcher = HEX_PATTERN.matcher(message);
-        StringBuilder builder = new StringBuilder(message.length() + 32);
-        while (matcher.find()) {
-            String group = matcher.group(1);
-            matcher.appendReplacement(builder,
-                    COLOR_CHAR + "x" +
-                            COLOR_CHAR + group.charAt(0) +
-                            COLOR_CHAR + group.charAt(1) +
-                            COLOR_CHAR + group.charAt(2) +
-                            COLOR_CHAR + group.charAt(3) +
-                            COLOR_CHAR + group.charAt(4) +
-                            COLOR_CHAR + group.charAt(5));
-        }
-        message = matcher.appendTail(builder).toString();
-        return ChatColor.translateAlternateColorCodes('&', message);
+    public enum SerializerType {
+        LEGACY,
+        MINIMESSAGE
+    }
+
+    public static String colorize(String message, SerializerType serializer) {
+        return switch (serializer) {
+            case LEGACY -> {
+                if (SUB_VERSION >= 16) {
+                    Matcher matcher = HEX_PATTERN.matcher(message);
+                    StringBuilder builder = new StringBuilder(message.length() + 32);
+                    while (matcher.find()) {
+                        String group = matcher.group(1);
+                        matcher.appendReplacement(builder,
+                                COLOR_CHAR + "x" +
+                                        COLOR_CHAR + group.charAt(0) +
+                                        COLOR_CHAR + group.charAt(1) +
+                                        COLOR_CHAR + group.charAt(2) +
+                                        COLOR_CHAR + group.charAt(3) +
+                                        COLOR_CHAR + group.charAt(4) +
+                                        COLOR_CHAR + group.charAt(5));
+                    }
+                    message = matcher.appendTail(builder).toString();
+                }
+                yield ChatColor.translateAlternateColorCodes('&', message);
+            }
+            case MINIMESSAGE -> {
+                Component component = MiniMessage.miniMessage().deserialize(message);
+                yield LegacyComponentSerializer.legacySection().serialize(component);
+            }
+            default -> message;
+        };
     }
 
     public static void checkUpdates(Main plugin, Consumer<String> consumer) {

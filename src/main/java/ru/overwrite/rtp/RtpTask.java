@@ -12,6 +12,8 @@ import ru.overwrite.rtp.channels.Actions;
 import ru.overwrite.rtp.channels.Cooldown;
 import ru.overwrite.rtp.utils.Utils;
 
+import static ru.overwrite.rtp.utils.Config.serializer;
+
 public class RtpTask {
 
     private final Main plugin;
@@ -37,7 +39,7 @@ public class RtpTask {
         Cooldown cooldown = channel.getCooldown();
         preTeleportCooldown = cooldown.teleportCooldown();
         if (channel.getBossBar().bossbarEnabled()) {
-            String barTitle = Utils.colorize(channel.getBossBar().bossbarTitle().replace("%time%", Utils.getTime(cooldown.teleportCooldown())));
+            String barTitle = Utils.colorize(channel.getBossBar().bossbarTitle().replace("%time%", Utils.getTime(cooldown.teleportCooldown())), serializer);
             bossBar = Bukkit.createBossBar(barTitle, channel.getBossBar().bossbarColor(), channel.getBossBar().bossbarType());
             bossBar.addPlayer(p);
         }
@@ -60,7 +62,7 @@ public class RtpTask {
                     if (percents < 1 && percents > 0) {
                         bossBar.setProgress(percents);
                     }
-                    String barTitle = Utils.colorize(channel.getBossBar().bossbarTitle().replace("%time%", Utils.getTime(preTeleportCooldown)));
+                    String barTitle = Utils.colorize(channel.getBossBar().bossbarTitle().replace("%time%", Utils.getTime(preTeleportCooldown)), serializer);
                     bossBar.setTitle(barTitle);
                 }
                 Actions actions = channel.getActions();

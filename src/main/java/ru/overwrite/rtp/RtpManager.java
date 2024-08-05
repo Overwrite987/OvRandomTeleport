@@ -24,6 +24,8 @@ import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.channels.*;
 import ru.overwrite.rtp.utils.*;
 
+import static ru.overwrite.rtp.utils.Config.serializer;
+
 public class RtpManager {
 
     private final Main plugin;
@@ -177,7 +179,7 @@ public class RtpManager {
             return new BossBar(false, "", BarColor.PURPLE, BarStyle.SOLID);
         }
         boolean enabled = bossbar.getBoolean("enabled", false);
-        String title = Utils.colorize(bossbar.getString("title"));
+        String title = Utils.colorize(bossbar.getString("title"), serializer);
         BarColor color = BarColor.valueOf(bossbar.getString("color").toUpperCase());
         BarStyle style = BarStyle.valueOf(bossbar.getString("style").toUpperCase());
 
@@ -447,13 +449,13 @@ public class RtpManager {
         for (Action action : actions) {
             switch (action.type()) {
                 case MESSAGE: {
-                    String message = Utils.colorize(Utils.replaceEach(action.context(), searchList, replacementList));
+                    String message = Utils.colorize(Utils.replaceEach(action.context(), searchList, replacementList), serializer);
                     p.sendMessage(message);
                     break;
                 }
                 case TITLE: {
                     Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                        String result = Utils.colorize(Utils.replaceEach(action.context(), searchList, replacementList));
+                        String result = Utils.colorize(Utils.replaceEach(action.context(), searchList, replacementList), serializer);
                         String[] titledMessage = result.split(";");
                         Utils.sendTitleMessage(titledMessage, p);
                     });
