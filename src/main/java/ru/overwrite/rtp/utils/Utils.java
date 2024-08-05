@@ -13,7 +13,6 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.md_5.bungee.api.ChatColor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -21,8 +20,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.Main;
-
-import static net.md_5.bungee.api.ChatColor.COLOR_CHAR;
 
 public class Utils {
 
@@ -51,6 +48,8 @@ public class Utils {
         MINIMESSAGE
     }
 
+    private static final char COLOR_CHAR = '§';
+
     public static String colorize(String message, SerializerType serializer) {
         return switch (serializer) {
             case LEGACY -> {
@@ -70,14 +69,28 @@ public class Utils {
                     }
                     message = matcher.appendTail(builder).toString();
                 }
-                yield ChatColor.translateAlternateColorCodes('&', message);
+                yield translateAlternateColorCodes('&', message);
             }
             case MINIMESSAGE -> {
                 Component component = MiniMessage.miniMessage().deserialize(message);
                 yield LegacyComponentSerializer.legacySection().serialize(component);
             }
-            default -> message;
         };
+    }
+
+    public static String translateAlternateColorCodes(char altColorChar, String textToTranslate) {
+        char[] b = textToTranslate.toCharArray();
+
+        int length = b.length - 1;
+
+        for(int i = 0; i < length; ++i) {
+            if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRrXx".indexOf(b[i + 1]) > -1) {
+                b[i] = 167;
+                b[i + 1] = Character.toLowerCase(b[i + 1]);
+            }
+        }
+
+        return new String(b);
     }
 
     public static void checkUpdates(Main plugin, Consumer<String> consumer) {
