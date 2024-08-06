@@ -430,7 +430,9 @@ public class RtpManager {
             return cooldown.defaultCooldown();
         }
         String playerGroup = plugin.getPerms().getPrimaryGroup(p);
-        int defaultCooldown = cooldown.useLastGroupCooldown() ? groupCooldowns.getInt(groupCooldowns.keySet().getLast()) : cooldown.defaultCooldown();
+        int defaultCooldown = cooldown.useLastGroupCooldown()
+                ? groupCooldowns.getInt(new ArrayList<>(groupCooldowns.keySet()).get(groupCooldowns.size() - 1))
+                : cooldown.defaultCooldown();
         return groupCooldowns.getOrDefault(playerGroup, defaultCooldown);
     }
 

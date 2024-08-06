@@ -100,7 +100,7 @@ public class Utils {
 
         return new String(b);
     }
-    
+
     public static void checkUpdates(Main plugin, Consumer<String> consumer) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(
