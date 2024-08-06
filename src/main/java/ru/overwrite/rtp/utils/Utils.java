@@ -88,7 +88,7 @@ public class Utils {
             'K', 'L', 'M', 'N', 'O', 'R', 'X'
     );
 
-    private static String translateAlternateColorCodes(char altColorChar, String textToTranslate) {
+    public static String translateAlternateColorCodes(char altColorChar, String textToTranslate) {
         char[] b = textToTranslate.toCharArray();
 
         for (int i = 0, length = b.length - 1; i < length - 1; ++i) {
