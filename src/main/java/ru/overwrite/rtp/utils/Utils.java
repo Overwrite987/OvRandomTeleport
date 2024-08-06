@@ -78,15 +78,13 @@ public class Utils {
         };
     }
 
-    public static String translateAlternateColorCodes(char altColorChar, String textToTranslate) {
+    private static String translateAlternateColorCodes(char altColorChar, String textToTranslate) {
         char[] b = textToTranslate.toCharArray();
 
-        int length = b.length - 1;
-
-        for(int i = 0; i < length; ++i) {
+        for(int i = 0, length = b.length - 1; i < length - 1; ++i) {
             if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRrXx".indexOf(b[i + 1]) > -1) {
-                b[i] = 167;
-                b[i + 1] = Character.toLowerCase(b[i + 1]);
+                b[i++] = '§';
+                b[i] = Character.toLowerCase(b[i]);
             }
         }
 
