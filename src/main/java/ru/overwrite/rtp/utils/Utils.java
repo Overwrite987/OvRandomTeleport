@@ -1,5 +1,7 @@
 package ru.overwrite.rtp.utils;
 
+import it.unimi.dsi.fastutil.chars.CharOpenHashSet;
+import it.unimi.dsi.fastutil.chars.CharSet;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -78,11 +80,19 @@ public class Utils {
         };
     }
 
+    private static final CharSet CODES = CharOpenHashSet.of(
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+            'a', 'b', 'c', 'd', 'e', 'f',
+            'A', 'B', 'C', 'D', 'E', 'F',
+            'k', 'l', 'm', 'n', 'o', 'r', 'x',
+            'K', 'L', 'M', 'N', 'O', 'R', 'X'
+    );
+
     private static String translateAlternateColorCodes(char altColorChar, String textToTranslate) {
         char[] b = textToTranslate.toCharArray();
 
-        for(int i = 0, length = b.length - 1; i < length - 1; ++i) {
-            if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRrXx".indexOf(b[i + 1]) > -1) {
+        for (int i = 0, length = b.length - 1; i < length - 1; ++i) {
+            if (b[i] == altColorChar && CODES.contains(b[i + 1])) {
                 b[i++] = '§';
                 b[i] = Character.toLowerCase(b[i]);
             }
@@ -90,7 +100,7 @@ public class Utils {
 
         return new String(b);
     }
-
+    
     public static void checkUpdates(Main plugin, Consumer<String> consumer) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(
