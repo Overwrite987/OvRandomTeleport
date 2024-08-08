@@ -28,7 +28,7 @@ public class Main extends JavaPlugin {
     private final Server server = getServer();
 
     @Getter
-    private final Logger pluginLogger = Utils.FOLIA ? new PaperLogger(this) : new BukkitLogger(this);
+    private final Logger pluginLogger = Utils.SUB_VERSION >= 19 ? new PaperLogger(this) : new BukkitLogger(this);
 
     @Getter
     private final Config pluginConfig = new Config();

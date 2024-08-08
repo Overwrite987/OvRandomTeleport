@@ -25,19 +25,6 @@ import ru.overwrite.rtp.Main;
 
 public class Utils {
 
-    public static final boolean FOLIA;
-
-    static {
-        boolean folia;
-        try {
-            Class.forName("io.papermc.paper.threadedregions.scheduler.AsyncScheduler");
-            folia = true;
-        } catch (ClassNotFoundException e) {
-            folia = false;
-        }
-        FOLIA = folia;
-    }
-
     public static boolean DEBUG = false;
 
     private static final Pattern HEX_PATTERN = Pattern.compile("&#([a-fA-F\\d]{6})");
