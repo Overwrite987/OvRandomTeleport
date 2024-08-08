@@ -80,13 +80,14 @@ public class Utils {
         };
     }
 
-    private static final CharSet CODES = CharOpenHashSet.of(
-            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-            'a', 'b', 'c', 'd', 'e', 'f',
-            'A', 'B', 'C', 'D', 'E', 'F',
-            'k', 'l', 'm', 'n', 'o', 'r', 'x',
-            'K', 'L', 'M', 'N', 'O', 'R', 'X'
-    );
+    private static final CharSet CODES = new CharOpenHashSet(
+            new char[]{
+                    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+                    'a', 'b', 'c', 'd', 'e', 'f',
+                    'A', 'B', 'C', 'D', 'E', 'F',
+                    'k', 'l', 'm', 'n', 'o', 'r', 'x',
+                    'K', 'L', 'M', 'N', 'O', 'R', 'X'}
+    ); // FUCK YOU 1.16 USERS!
 
     public static String translateAlternateColorCodes(char altColorChar, String textToTranslate) {
         char[] b = textToTranslate.toCharArray();
