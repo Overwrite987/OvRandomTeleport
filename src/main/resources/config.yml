@@ -45,8 +45,18 @@ channels:
       teleport_on_void: false
       # Телепортировать ли игрока на РТП при респавне?
       teleport_on_respawn: false
-    # Цена телепортации по данному каналу (используется vault api, -1 чтобы отключить)
-    teleport_cost: -1
+    # Настройка цены телепортации по данному каналу
+    costs:
+      # Тип используемой валюты
+      # VAULT - будет использован vault api (предполагает наличие менеджера экономики, по типу EssentialsX или CMI)
+      # PLAYERPOINTS - будет использован апи плагина PlayerPoints
+      money_type: VAULT
+      # Цена телепортации в монетах (-1 чтобы отключить)
+      money_cost: -1
+      # Цена телепортации в единицах голода
+      hunger_cost: -1
+      # Цена телепортации в единицах опыта
+      experience_cost: -1
     # Принцип выбора локации
     location_generation_options:
       # Форма заготовки для поиска локации
@@ -178,11 +188,18 @@ channels:
       teleport_on_first_join: false
       teleport_on_void: false
       teleport_on_respawn: false
-    # Необязательный параметр
-    teleport_cost: 1000
+    # Необязательные параметры
+    costs:
+      # По умолчанию - VAULT
+      money_type: VAULT
+      money_cost: 1000
+      hunger_cost: 5
+      experience_cost: 10
     # Обязательные параметры
     location_generation_options:
       shape: SQUARE
+      # Необязательный параметр. По умолчанию - RECTANGULAR
+      gen_format: RECTANGULAR
       min_x: -1000
       max_x: 1000
       min_z: -1000
@@ -259,6 +276,10 @@ channels:
     type: NEAR_REGION
     active_worlds:
       - 'world'
+    costs:
+      # По умолчанию - VAULT
+      money_type: PLAYERPOINTS
+      money_cost: 100
     location_generation_options:
       shape: SQUARE
       min_x: -1000
@@ -288,6 +309,8 @@ messages:
   invalid_world: '%prefix% &fВы не можете использовать данный канал рандомной телепортации в этом мире.'
   not_enough_players: '%prefix% &cНа сервере не достаточно игроков чтобы телепортироваться по данному каналу. Нужно: &6%required% игроков.'
   not_enough_money: '%prefix% &cУ вас не достаточно денег чтобы телепортироваться по данному каналу. Стоимость: &6%required% монет.'
+  not_enough_hunger: '%prefix% &cУ вас не достаточно очков голода чтобы телепортироваться по данному каналу. Необходимо: &6%required%.'
+  not_enough_experience: '%prefix% &cУ вас не достаточно очков опыта чтобы телепортироваться по данному каналу. Необходимо: &6%required%.'
   cooldown: '%prefix% &fВы еще не можете телепортироваться по данному каналу. Подождите еще &6%time%.'
   moved_on_teleport: '%prefix% &cВы двинулись! Телепортация отменена.'
   teleported_on_teleport: '%prefix% &cВы телепортировались в процессе РТП! Телепортация отменена.'

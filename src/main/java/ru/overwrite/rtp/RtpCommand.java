@@ -78,12 +78,8 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
             p.sendMessage(channel.getMessages().notEnoughPlayersMessage().replace("%required%", Integer.toString(channel.getMinPlayersToUse())));
             return false;
         }
-        if (plugin.getEconomy() != null && channel.getTeleportCost() > 0) {
-            if (plugin.getEconomy().getBalance(p) < channel.getTeleportCost()) {
-                p.sendMessage(channel.getMessages().notEnoughMoneyMessage().replace("%required%", Double.toString(channel.getTeleportCost())));
-                return false;
-            }
-            plugin.getEconomy().withdrawPlayer(p, channel.getTeleportCost());
+        if (!rtpManager.takeCost(p, channel)) {
+            return false;
         }
         if (!channel.getActiveWorlds().contains(p.getWorld())) {
             if (channel.isTeleportToFirstAllowedWorld()) {

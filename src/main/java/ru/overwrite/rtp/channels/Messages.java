@@ -5,6 +5,8 @@ public record Messages(
         String invalidWorldMessage,
         String notEnoughPlayersMessage,
         String notEnoughMoneyMessage,
+        String notEnoughHungerMessage,
+        String notEnoughExpMessage,
         String cooldownMessage,
         String movedOnTeleportMessage,
         String teleportedOnTeleportMessage,

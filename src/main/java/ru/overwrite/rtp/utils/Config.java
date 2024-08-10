@@ -10,6 +10,8 @@ public class Config {
             messages_invalid_world,
             messages_not_enough_players,
             messages_not_enough_money,
+            messages_not_enough_hunger,
+            messages_not_enough_exp,
             messages_cooldown,
             messages_incorrect_channel,
             messages_moved_on_teleport,
@@ -35,6 +37,8 @@ public class Config {
         messages_invalid_world = getPrefixed(messages.getString("invalid_world", "messages.invalid_world"), messages_prefix);
         messages_not_enough_players = getPrefixed(messages.getString("not_enough_players", "messages.not_enough_players"), messages_prefix);
         messages_not_enough_money = getPrefixed(messages.getString("not_enough_money", "messages.not_enough_money"), messages_prefix);
+        messages_not_enough_hunger = getPrefixed(messages.getString("not_enough_hunger", "messages.not_enough_hunger"), messages_prefix);
+        messages_not_enough_exp = getPrefixed(messages.getString("not_enough_experience", "messages.not_enough_experience"), messages_prefix);
         messages_cooldown = getPrefixed(messages.getString("cooldown", "messages.cooldown"), messages_prefix);
         messages_incorrect_channel = getPrefixed(messages.getString("incorrect_channel", "messages.incorrect_channel"), messages_prefix);
         messages_moved_on_teleport = getPrefixed(messages.getString("moved_on_teleport", "messages.moved_on_teleport"), messages_prefix);

@@ -6,7 +6,7 @@
 
     <groupId>ru.overwrite</groupId>
     <artifactId>OvRandomTeleport</artifactId>
-    <version>1.5.2</version>
+    <version>1.6.0</version>
     <packaging>jar</packaging>
 
     <name>OvRandomTeleport</name>
@@ -105,6 +105,10 @@
             <id>glaremasters repo</id>
             <url>https://repo.glaremasters.me/repository/towny/</url>
         </repository>
+        <repository>
+            <id>rosewood-repo</id>
+            <url>https://repo.rosewooddev.io/repository/public/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -126,6 +130,12 @@
             <artifactId>VaultAPI</artifactId>
             <version>1.7.1</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+        <groupId>org.black_ixx</groupId>
+        <artifactId>playerpoints</artifactId>
+        <version>3.2.7</version>
+        <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sk89q.worldedit</groupId>

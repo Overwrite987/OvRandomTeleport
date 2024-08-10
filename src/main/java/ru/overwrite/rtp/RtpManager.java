@@ -64,7 +64,7 @@ public class RtpManager {
             List<World> activeWorlds = getWorldList(channelSection.getStringList("active_worlds"));
             boolean teleportToFirstAllowedWorld = channelSection.getBoolean("teleport_to_first_world", false);
             int minPlayersToUse = channelSection.getInt("min_players_to_use", -1);
-            double teleportCost = plugin.getEconomy() != null ? channelSection.getDouble("teleport_cost", -1) : -1;
+            Costs costs = setupChannelCosts(channelSection.getConfigurationSection("costs"));
             LocationGenOptions locationGenOptions = setupChannelGenOptions(channelSection.getConfigurationSection("location_generation_options"));
             if (locationGenOptions == null) {
                 continue;
@@ -86,7 +86,7 @@ public class RtpManager {
                     activeWorlds,
                     teleportToFirstAllowedWorld,
                     minPlayersToUse,
-                    teleportCost,
+                    costs,
                     locationGenOptions,
                     invulnerableTicks,
                     cooldown,
@@ -134,6 +134,14 @@ public class RtpManager {
 
     private void assignChannelToSpecification(ConfigurationSection specificationsSection, Channel newChannel, String channelId) {
         specifications.assign(newChannel, channelId, specificationsSection);
+    }
+
+    private Costs setupChannelCosts(ConfigurationSection channelCosts) {
+        Costs.MoneyType moneyType = Costs.MoneyType.valueOf(channelCosts.getString("money_type", "VAULT").toUpperCase());
+        double moneyCost = channelCosts.getDouble("money_cost", -1);
+        int hungerCost = channelCosts.getInt("hunger_cost", -1);
+        float expCost = (float) channelCosts.getDouble("money_cost", -1);
+        return new Costs(moneyType, moneyCost, hungerCost, expCost);
     }
 
     private LocationGenOptions setupChannelGenOptions(ConfigurationSection locationGenOptions) {
@@ -256,6 +264,8 @@ public class RtpManager {
         String invalidWorldMessage = getMessage(messages, "invalid_world", pluginConfig.messages_invalid_world, prefix);
         String notEnoughPlayersMessage = getMessage(messages, "not_enough_players", pluginConfig.messages_not_enough_players, prefix);
         String notEnoughMoneyMessage = getMessage(messages, "not_enough_money", pluginConfig.messages_not_enough_money, prefix);
+        String notEnoughHungerMessage = getMessage(messages, "not_enough_hunger", pluginConfig.messages_not_enough_hunger, prefix);
+        String notEnoughExpMessage = getMessage(messages, "not_enough_experience", pluginConfig.messages_not_enough_exp, prefix);
         String cooldownMessage = getMessage(messages, "cooldown", pluginConfig.messages_cooldown, prefix);
         String movedOnTeleportMessage = getMessage(messages, "moved_on_teleport", pluginConfig.messages_moved_on_teleport, prefix);
         String teleportedOnTeleportMessage = getMessage(messages, "teleported_on_teleport", pluginConfig.messages_teleported_on_teleport, prefix);
@@ -269,6 +279,8 @@ public class RtpManager {
                 invalidWorldMessage,
                 notEnoughPlayersMessage,
                 notEnoughMoneyMessage,
+                notEnoughHungerMessage,
+                notEnoughExpMessage,
                 cooldownMessage,
                 movedOnTeleportMessage,
                 teleportedOnTeleportMessage,
@@ -313,6 +325,7 @@ public class RtpManager {
             if (loc == null) {
                 teleportingNow.remove(p.getName());
                 p.sendMessage(pluginConfig.messages_fail_to_find_location);
+                returnCost(p, channel); // return what we took
                 return;
             }
             if (channel.getCooldown().teleportCooldown() > 0) {
@@ -324,6 +337,71 @@ public class RtpManager {
             }
             teleportPlayer(p, channel, loc);
         });
+    }
+
+    public boolean takeCost(Player p, Channel channel) {
+        Costs costs = channel.getCosts();
+        double moneyCost = costs.moneyCost();
+        switch (costs.moneyType()) {
+            case VAULT: {
+                if (plugin.getEconomy() != null && moneyCost > 0) {
+                    if (plugin.getEconomy().getBalance(p) < moneyCost) {
+                        p.sendMessage(channel.getMessages().notEnoughMoneyMessage().replace("%required%", Double.toString(moneyCost)));
+                        return false;
+                    }
+                    plugin.getEconomy().withdrawPlayer(p, moneyCost);
+                }
+            }
+            case PLAYERPOINTS: {
+                if (PlayerPointsUtils.getBalance(p) < moneyCost) {
+                    p.sendMessage(channel.getMessages().notEnoughMoneyMessage().replace("%required%", Double.toString(moneyCost)));
+                    return false;
+                }
+                PlayerPointsUtils.withdraw(p, (int) moneyCost);
+            }
+            default: {
+                break;
+            }
+        }
+        if (costs.hungerCost() > 0) {
+            if (p.getFoodLevel() < costs.hungerCost()) {
+                p.sendMessage(channel.getMessages().notEnoughHungerMessage().replace("%required%", Integer.toString(costs.hungerCost())));
+                return false;
+            }
+            p.setFoodLevel(p.getFoodLevel() - costs.hungerCost());
+        }
+        if (costs.expCost() > 0) {
+            if (p.getExp() < costs.expCost()) {
+                p.sendMessage(channel.getMessages().notEnoughExpMessage().replace("%required%", Float.toString(costs.expCost())));
+                return false;
+            }
+            p.setExp(p.getExp() - costs.expCost());
+        }
+        return true;
+    }
+
+    private void returnCost(Player p, Channel channel) {
+        Costs costs = channel.getCosts();
+        double moneyCost = costs.moneyCost();
+        switch (costs.moneyType()) {
+            case VAULT: {
+                if (plugin.getEconomy() != null && moneyCost > 0) {
+                    plugin.getEconomy().depositPlayer(p, moneyCost);
+                }
+            }
+            case PLAYERPOINTS: {
+                PlayerPointsUtils.deposit(p, (int) moneyCost);
+            }
+            default: {
+                break;
+            }
+        }
+        if (costs.hungerCost() > 0) {
+            p.setFoodLevel(p.getFoodLevel() + costs.hungerCost());
+        }
+        if (costs.expCost() > 0) {
+            p.setExp(p.getExp() + costs.expCost());
+        }
     }
 
     public Location generateRandomLocation(Player p, Channel channel, World world) {

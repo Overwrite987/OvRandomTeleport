@@ -3,7 +3,6 @@ package ru.overwrite.rtp.channels;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 import lombok.Getter;
 import ru.overwrite.rtp.utils.ExpiringMap;
 
@@ -26,7 +25,7 @@ public class Channel {
 
     private final int minPlayersToUse;
 
-    private final double teleportCost;
+    private final Costs costs;
 
     private final LocationGenOptions locationGenOptions;
 
@@ -50,7 +49,7 @@ public class Channel {
                    List<World> activeWorlds,
                    boolean teleportToFirstAllowedWorld,
                    int minPlayersToUse,
-                   double teleportCost,
+                   Costs costs,
                    LocationGenOptions locationGenOptions,
                    int invulnerableTicks,
                    Cooldown cooldown,
@@ -65,7 +64,7 @@ public class Channel {
         this.activeWorlds = activeWorlds;
         this.teleportToFirstAllowedWorld = teleportToFirstAllowedWorld;
         this.minPlayersToUse = minPlayersToUse;
-        this.teleportCost = teleportCost;
+        this.costs = costs;
         this.locationGenOptions = locationGenOptions;
         this.invulnerableTicks = invulnerableTicks;
         this.cooldown = cooldown;
