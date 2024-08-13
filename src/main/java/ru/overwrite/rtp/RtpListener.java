@@ -47,7 +47,7 @@ public class RtpListener implements Listener {
         if (rtpManager.hasActiveTasks(playerName)) {
             Channel activeChannel = rtpManager.getPerPlayerActiveRtpTask().get(playerName).getActiveChannel();
             if (activeChannel.getRestrictions().restrictMove()) {
-                p.sendMessage(activeChannel.getMessages().movedOnTeleportMessage());
+                Utils.sendMessage(activeChannel.getMessages().movedOnTeleportMessage(), p);
                 cancelTeleportation(playerName);
             }
         }
@@ -63,7 +63,7 @@ public class RtpListener implements Listener {
         if (rtpManager.hasActiveTasks(playerName)) {
             Channel activeChannel = rtpManager.getPerPlayerActiveRtpTask().get(playerName).getActiveChannel();
             if (activeChannel.getRestrictions().restrictTeleport()) {
-                p.sendMessage(activeChannel.getMessages().teleportedOnTeleportMessage());
+                Utils.sendMessage(activeChannel.getMessages().teleportedOnTeleportMessage(), p);
                 cancelTeleportation(playerName);
             }
         }
@@ -118,7 +118,7 @@ public class RtpListener implements Listener {
         if (rtpManager.hasActiveTasks(playerName)) {
             Channel activeChannel = rtpManager.getPerPlayerActiveRtpTask().get(playerName).getActiveChannel();
             if (activeChannel.getRestrictions().restrictDamage() && !activeChannel.getRestrictions().damageCheckOnlyPlayers()) {
-                p.sendMessage(activeChannel.getMessages().damagedOnTeleportMessage());
+                Utils.sendMessage(activeChannel.getMessages().damagedOnTeleportMessage(), p);
                 cancelTeleportation(playerName);
             }
         }

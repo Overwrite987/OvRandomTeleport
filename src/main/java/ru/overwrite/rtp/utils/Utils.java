@@ -101,7 +101,17 @@ public class Utils {
         });
     }
 
+    public static void sendMessage(String message, Player p) {
+        if (message.isEmpty() || message.isBlank()) {
+            return;
+        }
+        p.sendMessage(message);
+    }
+
     public static void sendTitleMessage(String[] titleMessages, Player p) {
+        if (titleMessages.length == 0) {
+            return;
+        }
         if (titleMessages.length > 5) {
             Bukkit.getConsoleSender().sendMessage("Unable to send title. " + Arrays.toString(titleMessages));
             return;
@@ -115,6 +125,9 @@ public class Utils {
     }
 
     public static void sendSound(String[] soundArgs, Player p) {
+        if (soundArgs.length == 0) {
+            return;
+        }
         if (soundArgs.length > 3) {
             Bukkit.getConsoleSender().sendMessage("Unable to send sound. " + Arrays.toString(soundArgs));
             return;
@@ -126,6 +139,9 @@ public class Utils {
     }
 
     public static void giveEffect(String[] effectArgs, Player p) {
+        if (effectArgs.length == 0) {
+            return;
+        }
         if (effectArgs.length > 3) {
             Bukkit.getConsoleSender().sendMessage("Unable to give effect. " + Arrays.toString(effectArgs));
             return;

@@ -311,7 +311,7 @@ public class RtpManager {
 
     public void preTeleport(Player p, Channel channel, World world) {
         if (teleportingNow.contains(p.getName())) {
-            p.sendMessage(channel.getMessages().alreadyTeleportingMessage());
+            Utils.sendMessage(channel.getMessages().alreadyTeleportingMessage(), p);
             return;
         }
         teleportingNow.add(p.getName());
@@ -324,7 +324,7 @@ public class RtpManager {
             };
             if (loc == null) {
                 teleportingNow.remove(p.getName());
-                p.sendMessage(pluginConfig.messages_fail_to_find_location);
+                Utils.sendMessage(pluginConfig.messages_fail_to_find_location, p);
                 returnCost(p, channel); // return what we took
                 return;
             }
@@ -346,7 +346,7 @@ public class RtpManager {
             case VAULT: {
                 if (plugin.getEconomy() != null && moneyCost > 0) {
                     if (plugin.getEconomy().getBalance(p) < moneyCost) {
-                        p.sendMessage(channel.getMessages().notEnoughMoneyMessage().replace("%required%", Double.toString(moneyCost)));
+                        Utils.sendMessage(channel.getMessages().notEnoughMoneyMessage().replace("%required%", Double.toString(moneyCost)), p);
                         return false;
                     }
                     plugin.getEconomy().withdrawPlayer(p, moneyCost);
@@ -354,7 +354,7 @@ public class RtpManager {
             }
             case PLAYERPOINTS: {
                 if (PlayerPointsUtils.getBalance(p) < moneyCost) {
-                    p.sendMessage(channel.getMessages().notEnoughMoneyMessage().replace("%required%", Double.toString(moneyCost)));
+                    Utils.sendMessage(channel.getMessages().notEnoughMoneyMessage().replace("%required%", Double.toString(moneyCost)), p);
                     return false;
                 }
                 PlayerPointsUtils.withdraw(p, (int) moneyCost);
@@ -365,14 +365,14 @@ public class RtpManager {
         }
         if (costs.hungerCost() > 0) {
             if (p.getFoodLevel() < costs.hungerCost()) {
-                p.sendMessage(channel.getMessages().notEnoughHungerMessage().replace("%required%", Integer.toString(costs.hungerCost())));
+                Utils.sendMessage(channel.getMessages().notEnoughHungerMessage().replace("%required%", Integer.toString(costs.hungerCost())), p);
                 return false;
             }
             p.setFoodLevel(p.getFoodLevel() - costs.hungerCost());
         }
         if (costs.expCost() > 0) {
             if (p.getExp() < costs.expCost()) {
-                p.sendMessage(channel.getMessages().notEnoughExpMessage().replace("%required%", Float.toString(costs.expCost())));
+                Utils.sendMessage(channel.getMessages().notEnoughExpMessage().replace("%required%", Float.toString(costs.expCost())), p);
                 return false;
             }
             p.setExp(p.getExp() - costs.expCost());
@@ -530,7 +530,7 @@ public class RtpManager {
             switch (action.type()) {
                 case MESSAGE: {
                     String message = Utils.colorize(Utils.replaceEach(action.context(), searchList, replacementList), serializer);
-                    p.sendMessage(message);
+                    Utils.sendMessage(message, p);
                     break;
                 }
                 case TITLE: {

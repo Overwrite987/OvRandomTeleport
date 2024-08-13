@@ -53,7 +53,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
                 return false;
             }
             if (!rtpManager.getNamedChannels().containsKey(args[0])) {
-                p.sendMessage(pluginConfig.messages_incorrect_channel);
+                Utils.sendMessage(pluginConfig.messages_incorrect_channel, p);
                 return false;
             }
             Channel channel = rtpManager.getChannelByName(args[0]);
@@ -66,16 +66,17 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 
     private boolean processTeleport(Player p, Channel channel) {
         if (!p.hasPermission("rtp.channel." + channel.getId())) {
-            p.sendMessage(channel.getMessages().noPermsMessage());
+            Utils.sendMessage(channel.getMessages().noPermsMessage(), p);
             return false;
         }
         if (channel.getPlayerCooldowns() != null && channel.getPlayerCooldowns().containsKey(p.getName())) {
-            p.sendMessage(channel.getMessages().cooldownMessage()
-                    .replace("%time%", Utils.getTime((int) (rtpManager.getChannelCooldown(p, channel.getCooldown()) - (System.currentTimeMillis() - channel.getPlayerCooldowns().get(p.getName())) / 1000))));
+            Utils.sendMessage(channel.getMessages().cooldownMessage()
+                    .replace("%time%",
+                            Utils.getTime((int) (rtpManager.getChannelCooldown(p, channel.getCooldown()) - (System.currentTimeMillis() - channel.getPlayerCooldowns().get(p.getName())) / 1000))), p);
             return false;
         }
         if (channel.getMinPlayersToUse() > 0 && (Bukkit.getOnlinePlayers().size() - 1) < channel.getMinPlayersToUse()) {
-            p.sendMessage(channel.getMessages().notEnoughPlayersMessage().replace("%required%", Integer.toString(channel.getMinPlayersToUse())));
+            Utils.sendMessage(channel.getMessages().notEnoughPlayersMessage().replace("%required%", Integer.toString(channel.getMinPlayersToUse())), p);
             return false;
         }
         if (!rtpManager.takeCost(p, channel)) {
@@ -92,7 +93,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
                 rtpManager.preTeleport(p, channel, channel.getActiveWorlds().get(0));
                 return true;
             }
-            p.sendMessage(channel.getMessages().invalidWorldMessage());
+            Utils.sendMessage(channel.getMessages().invalidWorldMessage(), p);
             return false;
         }
         rtpManager.preTeleport(p, channel, p.getWorld());
