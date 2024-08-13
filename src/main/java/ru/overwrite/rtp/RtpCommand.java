@@ -82,7 +82,13 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
             return false;
         }
         if (!channel.getActiveWorlds().contains(p.getWorld())) {
+            if (Utils.DEBUG) {
+                plugin.getPluginLogger().info("Active worlds for channel " + channel.getName() + " does not includes player's world: " + p.getWorld().getName());
+            }
             if (channel.isTeleportToFirstAllowedWorld()) {
+                if (Utils.DEBUG) {
+                    plugin.getPluginLogger().info("Teleporting to first allowed world: " + channel.getActiveWorlds().get(0));
+                }
                 rtpManager.preTeleport(p, channel, channel.getActiveWorlds().get(0));
                 return true;
             }
@@ -217,5 +223,4 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
         }
         return result;
     }
-
 }
