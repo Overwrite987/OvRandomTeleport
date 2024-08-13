@@ -74,7 +74,7 @@ public class Utils {
                     'A', 'B', 'C', 'D', 'E', 'F',
                     'k', 'l', 'm', 'n', 'o', 'r', 'x',
                     'K', 'L', 'M', 'N', 'O', 'R', 'X'}
-    ); // FUCK YOU 1.16 USERS!
+    );
 
     public static String translateAlternateColorCodes(char altColorChar, String textToTranslate) {
         char[] b = textToTranslate.toCharArray();
