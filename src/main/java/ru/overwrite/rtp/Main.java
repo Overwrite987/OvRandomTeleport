@@ -18,6 +18,7 @@ import net.milkbowl.vault.economy.Economy;
 import lombok.Getter;
 import ru.overwrite.rtp.utils.Config;
 import ru.overwrite.rtp.utils.Utils;
+import ru.overwrite.rtp.utils.WGUtils;
 import ru.overwrite.rtp.utils.logging.BukkitLogger;
 import ru.overwrite.rtp.utils.logging.PaperLogger;
 
@@ -59,6 +60,10 @@ public class Main extends JavaPlugin {
         setupEconomy(pluginManager);
         setupPerms(pluginManager);
         pluginManager.registerEvents(new RtpListener(this), this);
+        if (pluginManager.isPluginEnabled("WorldGuard")) {
+            WGUtils.setupRtpFlag();
+            pluginLogger.info("§5WorldGuard подключён!");
+        }
         checkForUpdates(mainSettings);
         server.getScheduler().runTaskAsynchronously(this, () -> rtpManager.setupChannels(config, pluginManager));
     }
@@ -104,6 +109,7 @@ public class Main extends JavaPlugin {
             return;
         }
         economy = rsp.getProvider();
+        pluginLogger.info("§6Экономика подключена!");
     }
 
     private void setupPerms(PluginManager pluginManager) {
@@ -115,6 +121,7 @@ public class Main extends JavaPlugin {
             return;
         }
         perms = permissionProvider.getProvider();
+        pluginLogger.info("§aМенеджер прав подключён!");
     }
 
     private void registerCommand(PluginManager pluginManager, ConfigurationSection mainSettings) {
