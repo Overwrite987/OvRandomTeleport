@@ -19,7 +19,7 @@ public class SoundActionType implements ActionType {
     private static final int PITCH_INDEX = 2;
 
     @Override
-    public @NotNull Action instance(@NotNull String context, @NotNull Main rtpPlugin) {
+    public @NotNull Action instance(@NotNull String context, @NotNull Main plugin) {
         String[] soundArgs = context.split(";");
         int length = soundArgs.length;
 

@@ -11,19 +11,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ActionRegistry {
+
     private static final Pattern ACTION_PATTERN = Pattern.compile("\\[(\\w+)] ?(.*)");
 
-    private final Main rtpPlugin;
+    private final Main plugin;
     private final Map<String, ActionType> types;
 
-    public ActionRegistry(Main rtpPlugin) {
-        this.rtpPlugin = rtpPlugin;
+    public ActionRegistry(Main plugin) {
+        this.plugin = plugin;
         this.types = new HashMap<>();
     }
 
     public void register(@NotNull ActionType type) {
         if (types.put(type.key().toString(), type) != null) {
-            rtpPlugin.getSLF4JLogger().warn("Type '{}' was overridden with '{}'", type.key(), type.getClass().getName());
+            plugin.getSLF4JLogger().warn("Type '{}' was overridden with '{}'", type.key(), type.getClass().getName());
         }
         types.putIfAbsent(type.key().value(), type);
     }
@@ -37,6 +38,6 @@ public class ActionRegistry {
         if (!matcher.matches()) return null;
         ActionType type = getType(matcher.group(1));
         if (type == null) return null;
-        return type.instance(matcher.group(2), rtpPlugin);
+        return type.instance(matcher.group(2), plugin);
     }
 }

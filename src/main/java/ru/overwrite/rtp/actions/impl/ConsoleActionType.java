@@ -16,7 +16,7 @@ public class ConsoleActionType implements ActionType {
     private static final Key KEY = Key.key("ovrandomteleport:console");
 
     @Override
-    public @NotNull Action instance(@NotNull String context, @NotNull Main rtpPlugin) {
+    public @NotNull Action instance(@NotNull String context, @NotNull Main plugin) {
         return new Instance(context);
     }
 

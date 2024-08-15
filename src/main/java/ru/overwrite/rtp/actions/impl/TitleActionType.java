@@ -22,7 +22,7 @@ public class TitleActionType implements ActionType {
     private static final int FADE_OUT_INDEX = 4;
 
     @Override
-    public @NotNull Action instance(@NotNull String context, @NotNull Main rtpPlugin) {
+    public @NotNull Action instance(@NotNull String context, @NotNull Main plugin) {
         String[] titleMessages = context.split(";");
         int length = titleMessages.length;
 

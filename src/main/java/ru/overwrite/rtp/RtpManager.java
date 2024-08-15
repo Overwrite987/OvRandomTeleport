@@ -269,9 +269,7 @@ public class RtpManager {
         List<Action> actions = new ArrayList<>(actionStrings.size());
         for (String actionStr : actionStrings) {
             try {
-                actions.add(
-                        Objects.requireNonNull(actionRegistry.resolveAction(actionStr), "Type doesn't exist")
-                );
+                actions.add(Objects.requireNonNull(actionRegistry.resolveAction(actionStr), "Type doesn't exist"));
             } catch (Exception ex) {
                 plugin.getSLF4JLogger().warn("Couldn't create action for string '{}'", actionStr, ex);
             }

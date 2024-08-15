@@ -7,5 +7,7 @@ import ru.overwrite.rtp.channels.Channel;
 import java.util.function.UnaryOperator;
 
 public interface Action {
+
     void perform(@NotNull Channel channel, @NotNull Player player, @NotNull UnaryOperator<String> placeholders);
+
 }

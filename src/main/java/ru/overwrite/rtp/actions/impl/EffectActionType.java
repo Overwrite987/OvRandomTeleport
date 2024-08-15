@@ -20,7 +20,7 @@ public class EffectActionType implements ActionType {
     private static final int AMPLIFIER_INDEX = 2;
 
     @Override
-    public @NotNull Action instance(@NotNull String context, @NotNull Main rtpPlugin) {
+    public @NotNull Action instance(@NotNull String context, @NotNull Main plugin) {
         String[] effectArgs = context.split(";");
         int length = effectArgs.length;
 
