@@ -1,6 +1,7 @@
 package ru.overwrite.rtp.actions.impl;
 
 import net.kyori.adventure.key.Key;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.Main;
@@ -23,7 +24,9 @@ public class SoundActionType implements ActionType {
         int length = soundArgs.length;
 
         return new Instance(
-                soundArgs[SOUND_INDEX],
+                Key.parseable(soundArgs[SOUND_INDEX])
+                        ? soundArgs[SOUND_INDEX]
+                        : Sound.valueOf(soundArgs[SOUND_INDEX]).key().toString(),
                 (length > VOLUME_INDEX) ? Float.parseFloat(soundArgs[VOLUME_INDEX]) : 1.0f,
                 (length > PITCH_INDEX) ? Float.parseFloat(soundArgs[PITCH_INDEX]) : 1.0f
         );
