@@ -1,0 +1,59 @@
+package ru.overwrite.rtp.actions.impl;
+
+import net.kyori.adventure.key.Key;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import ru.overwrite.rtp.Main;
+import ru.overwrite.rtp.actions.Action;
+import ru.overwrite.rtp.actions.ActionType;
+import ru.overwrite.rtp.channels.Channel;
+import ru.overwrite.rtp.utils.Config;
+import ru.overwrite.rtp.utils.Utils;
+
+import java.util.function.UnaryOperator;
+
+public class TitleActionType implements ActionType {
+    private static final Key KEY = Key.key("ovrandomteleport:title");
+
+    private static final int TITLE_INDEX = 0;
+    private static final int SUBTITLE_INDEX = 1;
+    private static final int FADE_IN_INDEX = 2;
+    private static final int STAY_INDEX = 3;
+    private static final int FADE_OUT_INDEX = 4;
+
+    @Override
+    public @NotNull Action instance(@NotNull String context, @NotNull Main rtpPlugin) {
+        String[] titleMessages = context.split(";");
+        int length = titleMessages.length;
+
+        return new Instance(
+                Utils.colorize(titleMessages[TITLE_INDEX], Config.serializer),
+                (length > SUBTITLE_INDEX) ? Utils.colorize(titleMessages[SUBTITLE_INDEX], Config.serializer) : "",
+                (length > FADE_IN_INDEX) ? Integer.parseInt(titleMessages[FADE_IN_INDEX]) : 10,
+                (length > STAY_INDEX) ? Integer.parseInt(titleMessages[STAY_INDEX]) : 70,
+                (length > FADE_OUT_INDEX) ? Integer.parseInt(titleMessages[FADE_OUT_INDEX]) : 20
+        );
+    }
+
+    @Override
+    public @NotNull Key key() {
+        return KEY;
+    }
+
+    private record Instance(
+            @NotNull String title,
+            @NotNull String subtitle,
+            int fadeIn,
+            int stay,
+            int fadeOut
+    ) implements Action {
+        @Override
+        public void perform(@NotNull Channel channel, @NotNull Player player, @NotNull UnaryOperator<String> placeholders) {
+            player.sendTitle(
+                    Utils.replacePlaceholders(title, placeholders),
+                    Utils.replacePlaceholders(subtitle, placeholders),
+                    fadeIn, stay, fadeOut
+            );
+        }
+    }
+}

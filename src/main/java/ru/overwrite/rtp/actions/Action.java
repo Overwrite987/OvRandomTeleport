@@ -1,18 +1,11 @@
 package ru.overwrite.rtp.actions;
 
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import ru.overwrite.rtp.channels.Channel;
 
-public record Action(ActionType type, String context) {
+import java.util.function.UnaryOperator;
 
-    private static final Pattern ACTION_PATTERN = Pattern.compile("\\[(\\w+)](?: ?(.*))");
-
-    public static Action fromString(String str) {
-        Matcher matcher = ACTION_PATTERN.matcher(str);
-        if (!matcher.matches()) return null;
-        ActionType type = ActionType.fromString(matcher.group(1));
-        if (type == null) return null;
-        return new Action(type, matcher.group(2));
-    }
-
+public interface Action {
+    void perform(@NotNull Channel channel, @NotNull Player player, @NotNull UnaryOperator<String> placeholders);
 }

@@ -1,12 +1,10 @@
 package ru.overwrite.rtp;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,11 +16,15 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
-
-import lombok.Getter;
 import ru.overwrite.rtp.actions.Action;
+import ru.overwrite.rtp.actions.ActionRegistry;
+import ru.overwrite.rtp.actions.impl.*;
 import ru.overwrite.rtp.channels.*;
 import ru.overwrite.rtp.utils.*;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.UnaryOperator;
 
 import static ru.overwrite.rtp.utils.Config.serializer;
 
@@ -30,6 +32,9 @@ public class RtpManager {
 
     private final Main plugin;
     private final Config pluginConfig;
+
+    @Getter
+    private final ActionRegistry actionRegistry;
 
     @Getter
     private Channel defaultChannel;
@@ -48,6 +53,16 @@ public class RtpManager {
     public RtpManager(Main plugin) {
         this.plugin = plugin;
         this.pluginConfig = plugin.getPluginConfig();
+        this.actionRegistry = new ActionRegistry(plugin);
+        registerDefaultActions();
+    }
+
+    private void registerDefaultActions() {
+        actionRegistry.register(new ConsoleActionType());
+        actionRegistry.register(new EffectActionType());
+        actionRegistry.register(new MessageActionType());
+        actionRegistry.register(new SoundActionType());
+        actionRegistry.register(new TitleActionType());
     }
 
     public void setupChannels(FileConfiguration config, PluginManager pluginManager) {
@@ -233,7 +248,7 @@ public class RtpManager {
             return null;
         }
         List<Action> preTeleportActions = getActionList(actions.getStringList("pre_teleport"));
-        Map<Integer, List<Action>> onCooldownActions = new Int2ObjectOpenHashMap<>();
+        Int2ObjectMap<List<Action>> onCooldownActions = new Int2ObjectOpenHashMap<>();
         ConfigurationSection cdActions = actions.getConfigurationSection("on_cooldown");
         if (!isSectionNull(cdActions)) {
             for (String s : cdActions.getKeys(false)) {
@@ -252,8 +267,14 @@ public class RtpManager {
 
     private List<Action> getActionList(List<String> actionStrings) {
         List<Action> actions = new ArrayList<>(actionStrings.size());
-        for (String actionString : actionStrings) {
-            actions.add(Action.fromString(actionString));
+        for (String actionStr : actionStrings) {
+            try {
+                actions.add(
+                        Objects.requireNonNull(actionRegistry.resolveAction(actionStr), "Type doesn't exist")
+                );
+            } catch (Exception ex) {
+                plugin.getSLF4JLogger().warn("Couldn't create action for string '{}'", actionStr, ex);
+            }
         }
         return actions;
     }
@@ -514,51 +535,20 @@ public class RtpManager {
         return groupCooldowns.getOrDefault(playerGroup, defaultCooldown);
     }
 
-    private final String[] searchList = {"%player%", "%name%", "%time%", "%x%", "%y%", "%z%"};
-
     public void executeActions(Player p, Channel channel, List<Action> actions, Location loc) {
         if (actions.isEmpty()) {
             return;
         }
-        String name = channel.getName();
-        String cd = Utils.getTime(channel.getCooldown().teleportCooldown());
-        String x = Integer.toString(loc.getBlockX());
-        String y = Integer.toString(loc.getBlockY());
-        String z = Integer.toString(loc.getBlockZ());
-        String[] replacementList = {p.getName(), name, cd, x, y, z};
+        UnaryOperator<String> placeholders = Map.of(
+                "player", p.getName(),
+                "name", channel.getName(),
+                "time", Utils.getTime(channel.getCooldown().teleportCooldown()),
+                "x", Integer.toString(loc.getBlockX()),
+                "y", Integer.toString(loc.getBlockY()),
+                "z", Integer.toString(loc.getBlockZ())
+        )::get;
         for (Action action : actions) {
-            switch (action.type()) {
-                case MESSAGE: {
-                    String message = Utils.colorize(Utils.replaceEach(action.context(), searchList, replacementList), serializer);
-                    Utils.sendMessage(message, p);
-                    break;
-                }
-                case TITLE: {
-                    Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                        String result = Utils.colorize(Utils.replaceEach(action.context(), searchList, replacementList), serializer);
-                        String[] titledMessage = result.split(";");
-                        Utils.sendTitleMessage(titledMessage, p);
-                    });
-                    break;
-                }
-                case SOUND: {
-                    Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                        Utils.sendSound(action.context().split(";"), p);
-                    });
-                    break;
-                }
-                case EFFECT: {
-                    Utils.giveEffect(action.context().split(";"), p);
-                    break;
-                }
-                case CONSOLE: {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Utils.replaceEach(action.context(), searchList, replacementList));
-                    break;
-                }
-                default: {
-                    break;
-                }
-            }
+            action.perform(channel, p, placeholders);
         }
     }
 

@@ -1,7 +1,9 @@
 package ru.overwrite.rtp;
 
+import lombok.Getter;
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.permission.Permission;
 import org.bstats.bukkit.Metrics;
-
 import org.bukkit.Server;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.PluginCommand;
@@ -11,13 +13,9 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import net.milkbowl.vault.permission.Permission;
-import net.milkbowl.vault.economy.Economy;
-
-import lombok.Getter;
 import ru.overwrite.rtp.utils.Config;
 import ru.overwrite.rtp.utils.Utils;
+import ru.overwrite.rtp.utils.VersionUtils;
 import ru.overwrite.rtp.utils.WGUtils;
 import ru.overwrite.rtp.utils.logging.BukkitLogger;
 import ru.overwrite.rtp.utils.logging.PaperLogger;
@@ -29,7 +27,7 @@ public class Main extends JavaPlugin {
     private final Server server = getServer();
 
     @Getter
-    private final Logger pluginLogger = Utils.SUB_VERSION >= 19 ? new PaperLogger(this) : new BukkitLogger(this);
+    private final Logger pluginLogger = VersionUtils.SUB_VERSION >= 19 ? new PaperLogger(this) : new BukkitLogger(this);
 
     @Getter
     private final Config pluginConfig = new Config();
