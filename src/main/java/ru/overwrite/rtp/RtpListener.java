@@ -9,11 +9,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.*;
-
 import org.bukkit.projectiles.ProjectileSource;
 import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.utils.LocationUtils;
 import ru.overwrite.rtp.utils.Utils;
+import ru.overwrite.rtp.utils.VersionUtils;
 
 import java.util.Map;
 
@@ -33,7 +33,7 @@ public class RtpListener implements Listener {
             return;
         }
         Player p = e.getPlayer();
-        if (e.getTo().getBlockY() < Utils.VOID_LEVEL) {
+        if (e.getTo().getBlockY() < VersionUtils.VOID_LEVEL) {
             Map<Channel, String> voidChannels = rtpManager.getSpecifications().voidChannels();
             for (Channel channel : voidChannels.keySet()) {
                 if (!p.hasPermission("rtp.channel." + voidChannels.get(channel))) {
