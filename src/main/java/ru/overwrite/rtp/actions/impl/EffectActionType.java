@@ -6,13 +6,13 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.Main;
-import ru.overwrite.rtp.actions.ActionInstance;
+import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.actions.ActionType;
 import ru.overwrite.rtp.channels.Channel;
 
 import java.util.function.UnaryOperator;
 
-public class EffectAction implements ActionType {
+public class EffectActionType implements ActionType {
     private static final Key KEY = Key.key("ovrandomteleport:effect");
 
     private static final int POTION_INDEX = 0;
@@ -20,7 +20,7 @@ public class EffectAction implements ActionType {
     private static final int AMPLIFIER_INDEX = 2;
 
     @Override
-    public @NotNull ActionInstance instance(@NotNull String context, @NotNull Main rtpPlugin) {
+    public @NotNull Action instance(@NotNull String context, @NotNull Main rtpPlugin) {
         String[] effectArgs = context.split(";");
         int length = effectArgs.length;
 
@@ -38,7 +38,7 @@ public class EffectAction implements ActionType {
 
     private record Instance(
             @NotNull PotionEffect effect
-    ) implements ActionInstance {
+    ) implements Action {
         @Override
         public void perform(@NotNull Channel channel, @NotNull Player player, @NotNull UnaryOperator<String> placeholders) {
             player.addPotionEffect(effect);

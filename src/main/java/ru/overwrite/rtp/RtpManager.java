@@ -16,7 +16,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
-import ru.overwrite.rtp.actions.ActionInstance;
+import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.actions.ActionRegistry;
 import ru.overwrite.rtp.actions.impl.*;
 import ru.overwrite.rtp.channels.*;
@@ -58,11 +58,11 @@ public class RtpManager {
     }
 
     private void registerDefaultActions() {
-        actionRegistry.register(new ConsoleAction());
-        actionRegistry.register(new EffectAction());
-        actionRegistry.register(new MessageAction());
-        actionRegistry.register(new SoundAction());
-        actionRegistry.register(new TitleAction());
+        actionRegistry.register(new ConsoleActionType());
+        actionRegistry.register(new EffectActionType());
+        actionRegistry.register(new MessageActionType());
+        actionRegistry.register(new SoundActionType());
+        actionRegistry.register(new TitleActionType());
     }
 
     public void setupChannels(FileConfiguration config, PluginManager pluginManager) {
@@ -247,8 +247,8 @@ public class RtpManager {
         if (isSectionNull(actions)) {
             return null;
         }
-        List<ActionInstance> preTeleportActions = getActionList(actions.getStringList("pre_teleport"));
-        Int2ObjectMap<List<ActionInstance>> onCooldownActions = new Int2ObjectOpenHashMap<>();
+        List<Action> preTeleportActions = getActionList(actions.getStringList("pre_teleport"));
+        Int2ObjectMap<List<Action>> onCooldownActions = new Int2ObjectOpenHashMap<>();
         ConfigurationSection cdActions = actions.getConfigurationSection("on_cooldown");
         if (!isSectionNull(cdActions)) {
             for (String s : cdActions.getKeys(false)) {
@@ -256,17 +256,17 @@ public class RtpManager {
                     continue;
                 }
                 int time = Integer.parseInt(s);
-                List<ActionInstance> actionList = getActionList(cdActions.getStringList(s));
+                List<Action> actionList = getActionList(cdActions.getStringList(s));
                 onCooldownActions.put(time, actionList);
             }
         }
-        List<ActionInstance> afterTeleportActions = getActionList(actions.getStringList("after_teleport"));
+        List<Action> afterTeleportActions = getActionList(actions.getStringList("after_teleport"));
 
         return new Actions(preTeleportActions, onCooldownActions, afterTeleportActions);
     }
 
-    private List<ActionInstance> getActionList(List<String> actionStrings) {
-        List<ActionInstance> actions = new ArrayList<>(actionStrings.size());
+    private List<Action> getActionList(List<String> actionStrings) {
+        List<Action> actions = new ArrayList<>(actionStrings.size());
         for (String actionStr : actionStrings) {
             try {
                 actions.add(
@@ -537,7 +537,7 @@ public class RtpManager {
 
     private final String[] searchList = {"%player%", "%name%", "%time%", "%x%", "%y%", "%z%"};
 
-    public void executeActions(Player p, Channel channel, List<ActionInstance> actions, Location loc) {
+    public void executeActions(Player p, Channel channel, List<Action> actions, Location loc) {
         if (actions.isEmpty()) {
             return;
         }
@@ -549,7 +549,7 @@ public class RtpManager {
                 "y", Integer.toString(loc.getBlockY()),
                 "z", Integer.toString(loc.getBlockZ())
         )::get;
-        for (ActionInstance action : actions) {
+        for (Action action : actions) {
             action.perform(channel, p, placeholders);
         }
     }

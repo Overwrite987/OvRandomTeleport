@@ -32,7 +32,7 @@ public class ActionRegistry {
         return types.get(typeStr.toLowerCase(Locale.ROOT));
     }
 
-    public @Nullable ActionInstance resolveAction(@NotNull String actionStr) {
+    public @Nullable Action resolveAction(@NotNull String actionStr) {
         Matcher matcher = ACTION_PATTERN.matcher(actionStr);
         if (!matcher.matches()) return null;
         ActionType type = getType(matcher.group(1));

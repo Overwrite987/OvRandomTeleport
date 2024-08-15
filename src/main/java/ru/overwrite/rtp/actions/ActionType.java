@@ -5,5 +5,5 @@ import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.Main;
 
 public interface ActionType extends Keyed {
-    @NotNull ActionInstance instance(@NotNull String context, @NotNull Main rtpPlugin);
+    @NotNull Action instance(@NotNull String context, @NotNull Main rtpPlugin);
 }

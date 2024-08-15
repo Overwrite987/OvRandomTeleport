@@ -4,7 +4,7 @@ import net.kyori.adventure.key.Key;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.Main;
-import ru.overwrite.rtp.actions.ActionInstance;
+import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.actions.ActionType;
 import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.utils.Config;
@@ -12,7 +12,7 @@ import ru.overwrite.rtp.utils.Utils;
 
 import java.util.function.UnaryOperator;
 
-public class TitleAction implements ActionType {
+public class TitleActionType implements ActionType {
     private static final Key KEY = Key.key("ovrandomteleport:title");
 
     private static final int TITLE_INDEX = 0;
@@ -22,7 +22,7 @@ public class TitleAction implements ActionType {
     private static final int FADE_OUT_INDEX = 4;
 
     @Override
-    public @NotNull ActionInstance instance(@NotNull String context, @NotNull Main rtpPlugin) {
+    public @NotNull Action instance(@NotNull String context, @NotNull Main rtpPlugin) {
         String[] titleMessages = context.split(";");
         int length = titleMessages.length;
 
@@ -46,7 +46,7 @@ public class TitleAction implements ActionType {
             int fadeIn,
             int stay,
             int fadeOut
-    ) implements ActionInstance {
+    ) implements Action {
         @Override
         public void perform(@NotNull Channel channel, @NotNull Player player, @NotNull UnaryOperator<String> placeholders) {
             player.sendTitle(
