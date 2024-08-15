@@ -535,8 +535,6 @@ public class RtpManager {
         return groupCooldowns.getOrDefault(playerGroup, defaultCooldown);
     }
 
-    private final String[] searchList = {"%player%", "%name%", "%time%", "%x%", "%y%", "%z%"};
-
     public void executeActions(Player p, Channel channel, List<Action> actions, Location loc) {
         if (actions.isEmpty()) {
             return;
