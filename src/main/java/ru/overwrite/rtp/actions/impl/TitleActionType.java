@@ -50,7 +50,8 @@ public class TitleActionType implements ActionType {
         @Override
         public void perform(@NotNull Channel channel, @NotNull Player player, @NotNull UnaryOperator<String> placeholders) {
             player.sendTitle(
-                    title, subtitle,
+                    Utils.replacePlaceholders(title, placeholders),
+                    Utils.replacePlaceholders(subtitle, placeholders),
                     fadeIn, stay, fadeOut
             );
         }

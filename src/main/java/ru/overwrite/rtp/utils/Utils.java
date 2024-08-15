@@ -87,7 +87,7 @@ public class Utils {
     public static String translateAlternateColorCodes(char altColorChar, String textToTranslate) {
         char[] b = textToTranslate.toCharArray();
 
-        for (int i = 0, length = b.length - 1; i < length - 1; ++i) {
+        for (int i = 0, length = b.length - 1; i < length; ++i) {
             if (b[i] == altColorChar && CODES.contains(b[i + 1])) {
                 b[i++] = '§';
                 b[i] = Character.toLowerCase(b[i]);
