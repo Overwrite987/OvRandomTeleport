@@ -65,6 +65,7 @@ public class RtpManager {
     }
 
     public void setupChannels(FileConfiguration config, PluginManager pluginManager) {
+        long startTime = System.currentTimeMillis();
         for (String channelId : config.getConfigurationSection("channels").getKeys(false)) {
             if (Utils.DEBUG) {
                 plugin.getPluginLogger().info("Id: " + channelId);
@@ -113,6 +114,10 @@ public class RtpManager {
             assignChannelToSpecification(channelSection.getConfigurationSection("specifications"), newChannel, channelId);
         }
         this.defaultChannel = getChannelByName(config.getString("main_settings.default_channel"));
+        long endTime = System.currentTimeMillis();
+        if (Utils.DEBUG) {
+            plugin.getLogger().info("Channels setup done in " + (endTime - startTime) + " ms");
+        }
     }
 
     private List<World> getWorldList(List<String> worldNames) {
