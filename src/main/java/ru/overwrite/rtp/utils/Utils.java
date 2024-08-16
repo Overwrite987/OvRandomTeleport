@@ -25,7 +25,6 @@ public class Utils {
     public static boolean DEBUG = false;
 
     private static final Pattern HEX_PATTERN = Pattern.compile("&#([a-fA-F\\d]{6})");
-    private static final Pattern PH_PATTERN = Pattern.compile("%(\\w+)%");
 
     public enum SerializerType {
         LEGACY,
@@ -33,20 +32,6 @@ public class Utils {
     }
 
     private static final char COLOR_CHAR = '§';
-
-    public static @NotNull String replacePlaceholders(@NotNull String text, @NotNull UnaryOperator<String> placeholders) {
-        Matcher matcher = PH_PATTERN.matcher(text);
-        StringBuilder builder = new StringBuilder(text.length());
-        while (matcher.find()) {
-            String group = matcher.group(1).toLowerCase(Locale.ROOT);
-            String replacement = placeholders.apply(group);
-            if (replacement != null) {
-                matcher.appendReplacement(builder, "");
-                builder.append(replacement);
-            }
-        }
-        return matcher.appendTail(builder).toString();
-    }
 
     public static String colorize(String message, SerializerType serializer) {
         return switch (serializer) {
@@ -153,5 +138,31 @@ public class Utils {
 
             return true;
         }
+    }
+
+    public static String replaceEach(@NotNull String text, @NotNull String[] searchList, @NotNull String[] replacementList) {
+        if (text.isEmpty() || searchList.length == 0 || replacementList.length == 0) {
+            return text;
+        }
+
+        if (searchList.length != replacementList.length) {
+            throw new IllegalArgumentException("Search and replacement arrays must have the same length.");
+        }
+
+        StringBuilder result = new StringBuilder(text);
+
+        for (int i = 0; i < searchList.length; i++) {
+            String search = searchList[i];
+            String replacement = replacementList[i];
+
+            int start = 0;
+
+            while ((start = result.indexOf(search, start)) != -1) {
+                result.replace(start, start + search.length(), replacement);
+                start += replacement.length();
+            }
+        }
+
+        return result.toString();
     }
 }

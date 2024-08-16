@@ -10,8 +10,6 @@ import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.utils.Config;
 import ru.overwrite.rtp.utils.Utils;
 
-import java.util.function.UnaryOperator;
-
 public class TitleActionType implements ActionType {
 
     private static final Key KEY = Key.key("ovrandomteleport:title");
@@ -27,7 +25,7 @@ public class TitleActionType implements ActionType {
         String[] titleMessages = context.split(";");
         int length = titleMessages.length;
 
-        return new Instance(
+        return new TitleAction(
                 Utils.colorize(titleMessages[TITLE_INDEX], Config.serializer),
                 (length > SUBTITLE_INDEX) ? Utils.colorize(titleMessages[SUBTITLE_INDEX], Config.serializer) : "",
                 (length > FADE_IN_INDEX) ? Integer.parseInt(titleMessages[FADE_IN_INDEX]) : 10,
@@ -41,7 +39,7 @@ public class TitleActionType implements ActionType {
         return KEY;
     }
 
-    private record Instance(
+    private record TitleAction(
             @NotNull String title,
             @NotNull String subtitle,
             int fadeIn,
@@ -49,10 +47,10 @@ public class TitleActionType implements ActionType {
             int fadeOut
     ) implements Action {
         @Override
-        public void perform(@NotNull Channel channel, @NotNull Player player, @NotNull UnaryOperator<String> placeholders) {
+        public void perform(@NotNull Channel channel, @NotNull Player player, @NotNull String[] searchList, @NotNull String[] replacementList) {
             player.sendTitle(
-                    Utils.replacePlaceholders(title, placeholders),
-                    Utils.replacePlaceholders(subtitle, placeholders),
+                    Utils.replaceEach(title, searchList, replacementList),
+                    Utils.replaceEach(subtitle, searchList, replacementList),
                     fadeIn, stay, fadeOut
             );
         }

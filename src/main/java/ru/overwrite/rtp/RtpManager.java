@@ -24,7 +24,6 @@ import ru.overwrite.rtp.utils.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.UnaryOperator;
 
 import static ru.overwrite.rtp.utils.Config.serializer;
 
@@ -533,20 +532,20 @@ public class RtpManager {
         return groupCooldowns.getOrDefault(playerGroup, defaultCooldown);
     }
 
+    final String[] searchList = {"%player%", "%name%", "%time%", "%x%", "%y%", "%z%"};
+
     public void executeActions(Player p, Channel channel, List<Action> actions, Location loc) {
         if (actions.isEmpty()) {
             return;
         }
-        UnaryOperator<String> placeholders = Map.of(
-                "player", p.getName(),
-                "name", channel.getName(),
-                "time", Utils.getTime(channel.getCooldown().teleportCooldown()),
-                "x", Integer.toString(loc.getBlockX()),
-                "y", Integer.toString(loc.getBlockY()),
-                "z", Integer.toString(loc.getBlockZ())
-        )::get;
+        String name = channel.getName();
+        String cd = Utils.getTime(channel.getCooldown().teleportCooldown());
+        String x = Integer.toString(loc.getBlockX());
+        String y = Integer.toString(loc.getBlockY());
+        String z = Integer.toString(loc.getBlockZ());
+        String[] replacementList = {p.getName(), name, cd, x, y, z};
         for (Action action : actions) {
-            action.perform(channel, p, placeholders);
+            action.perform(channel, p, searchList, replacementList);
         }
     }
 

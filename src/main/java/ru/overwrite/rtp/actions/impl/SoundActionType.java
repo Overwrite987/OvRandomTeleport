@@ -9,8 +9,6 @@ import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.actions.ActionType;
 import ru.overwrite.rtp.channels.Channel;
 
-import java.util.function.UnaryOperator;
-
 public class SoundActionType implements ActionType {
 
     private static final Key KEY = Key.key("ovrandomteleport:sound");
@@ -24,10 +22,8 @@ public class SoundActionType implements ActionType {
         String[] soundArgs = context.split(";");
         int length = soundArgs.length;
 
-        return new Instance(
-                Key.parseable(soundArgs[SOUND_INDEX])
-                        ? soundArgs[SOUND_INDEX]
-                        : Sound.valueOf(soundArgs[SOUND_INDEX]).key().toString(),
+        return new SoundAction(
+                Sound.valueOf(soundArgs[SOUND_INDEX]).key().toString(),
                 (length > VOLUME_INDEX) ? Float.parseFloat(soundArgs[VOLUME_INDEX]) : 1.0f,
                 (length > PITCH_INDEX) ? Float.parseFloat(soundArgs[PITCH_INDEX]) : 1.0f
         );
@@ -38,13 +34,13 @@ public class SoundActionType implements ActionType {
         return KEY;
     }
 
-    private record Instance(
+    private record SoundAction(
             @NotNull String sound,
             float volume,
             float pitch
     ) implements Action {
         @Override
-        public void perform(@NotNull Channel channel, @NotNull Player player, @NotNull UnaryOperator<String> placeholders) {
+        public void perform(@NotNull Channel channel, @NotNull Player player, @NotNull String[] searchList, @NotNull String[] replacementList) {
             player.playSound(player.getLocation(), sound, volume, pitch);
         }
     }
