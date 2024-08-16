@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 public class ActionRegistry {
 
-    private static final Pattern ACTION_PATTERN = Pattern.compile("\\[(\\w+)] ?(.*)");
+    private static final Pattern ACTION_PATTERN = Pattern.compile("\\[(\\S+)] ?(.*)");
 
     private final Main plugin;
     private final Map<String, ActionType> types;
