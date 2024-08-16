@@ -13,6 +13,7 @@ import ru.overwrite.rtp.channels.Channel;
 import java.util.function.UnaryOperator;
 
 public class EffectActionType implements ActionType {
+
     private static final Key KEY = Key.key("ovrandomteleport:effect");
 
     private static final int POTION_INDEX = 0;
@@ -26,8 +27,8 @@ public class EffectActionType implements ActionType {
 
         return new Instance(new PotionEffect(
                 PotionEffectType.getByName(effectArgs[POTION_INDEX]),
-                (effectArgs.length > DURATION_INDEX) ? Integer.parseInt(effectArgs[DURATION_INDEX]) : 1,
-                (effectArgs.length > AMPLIFIER_INDEX) ? Integer.parseInt(effectArgs[AMPLIFIER_INDEX]) : 1
+                (length > DURATION_INDEX) ? Integer.parseInt(effectArgs[DURATION_INDEX]) : 1,
+                (length > AMPLIFIER_INDEX) ? Integer.parseInt(effectArgs[AMPLIFIER_INDEX]) : 1
         ));
     }
 

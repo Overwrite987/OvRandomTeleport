@@ -12,6 +12,7 @@ import ru.overwrite.rtp.channels.Channel;
 import java.util.function.UnaryOperator;
 
 public class SoundActionType implements ActionType {
+
     private static final Key KEY = Key.key("ovrandomteleport:sound");
 
     private static final int SOUND_INDEX = 0;

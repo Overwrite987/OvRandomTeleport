@@ -13,6 +13,7 @@ import ru.overwrite.rtp.utils.Utils;
 import java.util.function.UnaryOperator;
 
 public class TitleActionType implements ActionType {
+
     private static final Key KEY = Key.key("ovrandomteleport:title");
 
     private static final int TITLE_INDEX = 0;
