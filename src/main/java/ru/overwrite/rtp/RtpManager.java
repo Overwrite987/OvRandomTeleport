@@ -159,7 +159,7 @@ public class RtpManager {
         Costs.MoneyType moneyType = Costs.MoneyType.valueOf(channelCosts.getString("money_type", "VAULT").toUpperCase());
         double moneyCost = channelCosts.getDouble("money_cost", -1);
         int hungerCost = channelCosts.getInt("hunger_cost", -1);
-        float expCost = (float) channelCosts.getDouble("money_cost", -1);
+        float expCost = (float) channelCosts.getDouble("experience_cost", -1);
         return new Costs(moneyType, moneyCost, hungerCost, expCost);
     }
 
@@ -177,7 +177,7 @@ public class RtpManager {
         int centerZ = locationGenOptions.getInt("center_z", 0);
         int nearRadiusMin = locationGenOptions.getInt("min_near_point_distance", 30);
         int nearRadiusMax = locationGenOptions.getInt("max_near_point_distance", 60);
-        int maxLocationAttempts = locationGenOptions.getInt("max_location_attemps", 50);
+        int maxLocationAttempts = locationGenOptions.getInt("max_location_attempts", 50);
 
         return new LocationGenOptions(shape, genFormat, minX, maxX, minZ, maxZ, nearRadiusMin, nearRadiusMax, centerX, centerZ, maxLocationAttempts);
     }

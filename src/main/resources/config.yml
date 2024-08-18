@@ -80,7 +80,7 @@ channels:
       min_near_point_distance: 30
       max_near_point_distance: 60
       # Максимальное кол-во попыток найти локацию для телепорта (нужно, чтобы не застрять в бесконечном цикле поиска локации)
-      max_location_attemps: 50
+      max_location_attempts: 50
     # Сколько тиков игрок должен быть неуязвим после телепортации через канал RTP (-1 чтобы отключить)
     invulnerable_after_teleport: 3
     # Настройки кулдаунов
@@ -208,7 +208,7 @@ channels:
       min_near_point_distance: 30
       max_near_point_distance: 90
       # Необязательный параметр
-      max_location_attemps: 50
+      max_location_attempts: 50
     # Необязательный параметр
     invulnerable_after_teleport: 3
     # Необязательные параметры
