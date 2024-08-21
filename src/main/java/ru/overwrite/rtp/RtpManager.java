@@ -555,9 +555,11 @@ public class RtpManager {
         String y = Integer.toString(loc.getBlockY());
         String z = Integer.toString(loc.getBlockZ());
         String[] replacementList = {p.getName(), name, cd, x, y, z};
-        for (Action action : actions) {
-            action.perform(channel, p, searchList, replacementList);
-        }
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            for (Action action : actions) {
+                action.perform(channel, p, searchList, replacementList);
+            }
+        });
     }
 
     public boolean hasActiveTasks(String playerName) {

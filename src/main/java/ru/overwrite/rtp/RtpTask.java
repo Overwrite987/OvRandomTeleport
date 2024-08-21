@@ -74,7 +74,7 @@ public class RtpTask {
                     }
                 }
             }
-        }).runTaskTimer(plugin, 20L, 20L);
+        }).runTaskTimerAsynchronously(plugin, 20L, 20L);
         rtpManager.getPerPlayerActiveRtpTask().put(playerName, this);
     }
 
