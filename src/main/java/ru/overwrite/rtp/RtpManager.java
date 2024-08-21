@@ -433,6 +433,9 @@ public class RtpManager {
         }
         if (LocationUtils.iterationsPerPlayer.getInt(p.getName()) >= channel.getLocationGenOptions().maxLocationAttempts()) {
             LocationUtils.iterationsPerPlayer.removeInt(p.getName());
+            if (Utils.DEBUG) {
+                plugin.getPluginLogger().info("Max iterations reached for player " + p.getName());
+            }
             return null;
         }
 
@@ -462,6 +465,9 @@ public class RtpManager {
         List<Player> nearbyPlayers = getNearbyPlayers(p, channel, world);
 
         if (nearbyPlayers.isEmpty()) {
+            if (Utils.DEBUG) {
+                plugin.getPluginLogger().info("No players to generate location near player");
+            }
             return null;
         }
 
