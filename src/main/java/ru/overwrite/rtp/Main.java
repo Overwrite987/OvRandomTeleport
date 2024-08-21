@@ -134,8 +134,7 @@ public class Main extends JavaPlugin {
             command.setTabCompleter(rtpCommand);
             commandMap.register(getDescription().getName(), command);
         } catch (Exception ex) {
-            pluginLogger.info("Unable to register password command!");
-            ex.printStackTrace();
+            pluginLogger.info("Unable to register RTP command!" + ex);
             pluginManager.disablePlugin(this);
         }
     }
