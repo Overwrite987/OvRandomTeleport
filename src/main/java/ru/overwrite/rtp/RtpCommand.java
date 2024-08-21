@@ -65,6 +65,10 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean processTeleport(Player p, Channel channel) {
+        if (Utils.DEBUG) {
+            plugin.getPluginLogger().info("Channel name: " + channel.getName() + " Channel permission: " + "rtp.channel." + channel.getName());
+            plugin.getPluginLogger().info("Player permission status: " + p.hasPermission("rtp.channel." + channel.getId()));
+        }
         if (!p.hasPermission("rtp.channel." + channel.getId())) {
             Utils.sendMessage(channel.getMessages().noPermsMessage(), p);
             return false;
