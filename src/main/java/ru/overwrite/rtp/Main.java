@@ -43,6 +43,9 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onLoad() {
+        if (server.getPluginManager().isPluginEnabled("PlugManX") || server.getPluginManager().isPluginEnabled("PlugMan")) {
+            return;
+        }
         boolean worldguard;
         try {
             Class.forName("com.sk89q.worldguard.protection.flags.registry.FlagConflictException");
