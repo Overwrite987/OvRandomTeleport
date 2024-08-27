@@ -14,7 +14,7 @@ main_settings:
   # Отправлять ли анонимную статистику (советую не отключать)
   enable_metrics: true
   # Проверять ли на наличие обновлений (советую не отключать)
-  update-checker: true
+  update_checker: true
 
 # Каналы рандомной телепортации
 channels:
