@@ -42,6 +42,21 @@ public class Main extends JavaPlugin {
     private Permission perms;
 
     @Override
+    public void onLoad() {
+        boolean worldguard;
+        try {
+            Class.forName("com.sk89q.worldguard.protection.flags.registry.FlagConflictException");
+            worldguard = true;
+        } catch (ClassNotFoundException e) {
+            worldguard = false;
+        }
+        if (worldguard) {
+            WGUtils.setupRtpFlag();
+            pluginLogger.info("§5WorldGuard подключён!");
+        }
+    }
+
+    @Override
     public void onEnable() {
         if (!isPaper()) {
             return;
@@ -58,10 +73,6 @@ public class Main extends JavaPlugin {
         setupEconomy(pluginManager);
         setupPerms(pluginManager);
         pluginManager.registerEvents(new RtpListener(this), this);
-        if (pluginManager.isPluginEnabled("WorldGuard")) {
-            WGUtils.setupRtpFlag();
-            pluginLogger.info("§5WorldGuard подключён!");
-        }
         checkForUpdates(mainSettings);
         server.getScheduler().runTaskAsynchronously(this, () -> rtpManager.setupChannels(config, pluginManager));
     }
