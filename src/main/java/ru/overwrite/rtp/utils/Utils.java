@@ -34,22 +34,20 @@ public class Utils {
     public static String colorize(String message, SerializerType serializer) {
         return switch (serializer) {
             case LEGACY -> {
-                if (VersionUtils.SUB_VERSION >= 16) {
-                    Matcher matcher = HEX_PATTERN.matcher(message);
-                    StringBuilder builder = new StringBuilder(message.length() + 32);
-                    while (matcher.find()) {
-                        String group = matcher.group(1);
-                        matcher.appendReplacement(builder,
-                                COLOR_CHAR + "x" +
-                                        COLOR_CHAR + group.charAt(0) +
-                                        COLOR_CHAR + group.charAt(1) +
-                                        COLOR_CHAR + group.charAt(2) +
-                                        COLOR_CHAR + group.charAt(3) +
-                                        COLOR_CHAR + group.charAt(4) +
-                                        COLOR_CHAR + group.charAt(5));
-                    }
-                    message = matcher.appendTail(builder).toString();
+                Matcher matcher = HEX_PATTERN.matcher(message);
+                StringBuilder builder = new StringBuilder(message.length() + 32);
+                while (matcher.find()) {
+                    String group = matcher.group(1);
+                    matcher.appendReplacement(builder,
+                            COLOR_CHAR + "x" +
+                                    COLOR_CHAR + group.charAt(0) +
+                                    COLOR_CHAR + group.charAt(1) +
+                                    COLOR_CHAR + group.charAt(2) +
+                                    COLOR_CHAR + group.charAt(3) +
+                                    COLOR_CHAR + group.charAt(4) +
+                                    COLOR_CHAR + group.charAt(5));
                 }
+                message = matcher.appendTail(builder).toString();
                 yield translateAlternateColorCodes('&', message);
             }
             case MINIMESSAGE -> {
@@ -104,7 +102,7 @@ public class Utils {
         final int minutes = (time % 3600) / 60;
         final int seconds = time % 60;
 
-        final StringBuilder result= new StringBuilder();
+        final StringBuilder result = new StringBuilder();
 
         if (hours > 0) {
             result.append(hours).append(Config.time_hours);
