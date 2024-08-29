@@ -377,7 +377,7 @@ public class RtpManager {
                 break;
             }
             case PLAYERPOINTS: {
-                if (PlayerPointsUtils.getBalance(p) < moneyCost) {
+                if (PlayerPointsUtils.getBalance(p) < moneyCost && moneyCost > 0) {
                     Utils.sendMessage(channel.getMessages().notEnoughMoneyMessage().replace("%required%", Double.toString(moneyCost)), p);
                     return false;
                 }
@@ -413,9 +413,13 @@ public class RtpManager {
                 if (plugin.getEconomy() != null && moneyCost > 0) {
                     plugin.getEconomy().depositPlayer(p, moneyCost);
                 }
+                break;
             }
             case PLAYERPOINTS: {
-                PlayerPointsUtils.deposit(p, (int) moneyCost);
+                if (moneyCost > 0) {
+                    PlayerPointsUtils.deposit(p, (int) moneyCost);
+                }
+                break;
             }
             default: {
                 break;
