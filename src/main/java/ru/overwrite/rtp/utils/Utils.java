@@ -100,23 +100,21 @@ public class Utils {
     }
 
     public static String getTime(int time) {
-        int hours = time / 3600;
-        int minutes = (time % 3600) / 60;
-        int seconds = time % 60;
+        final int hours = time / 3600;
+        final int minutes = (time % 3600) / 60;
+        final int seconds = time % 60;
 
-        StringBuilder result = new StringBuilder();
+        final StringBuilder result= new StringBuilder();
 
         if (hours > 0) {
             result.append(hours).append(Config.time_hours);
         }
 
-        if (minutes > 0 || (hours > 0 && seconds == 0)) {
+        if (minutes > 0 || hours > 0) {
             result.append(minutes).append(Config.time_minutes);
         }
 
-        if (seconds > 0 || (minutes == 0 && hours == 0)) {
-            result.append(seconds).append(Config.time_seconds);
-        }
+        result.append(seconds).append(Config.time_seconds);
 
         return result.toString();
     }
