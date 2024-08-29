@@ -374,6 +374,7 @@ public class RtpManager {
                     }
                     plugin.getEconomy().withdrawPlayer(p, moneyCost);
                 }
+                break;
             }
             case PLAYERPOINTS: {
                 if (PlayerPointsUtils.getBalance(p) < moneyCost) {
@@ -381,6 +382,7 @@ public class RtpManager {
                     return false;
                 }
                 PlayerPointsUtils.withdraw(p, (int) moneyCost);
+                break;
             }
             default: {
                 break;
