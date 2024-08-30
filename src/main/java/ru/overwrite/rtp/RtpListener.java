@@ -36,7 +36,7 @@ public class RtpListener implements Listener {
         if (e.getTo().getBlockY() < VersionUtils.VOID_LEVEL) {
             Map<Channel, String> voidChannels = rtpManager.getSpecifications().voidChannels();
             for (Channel channel : voidChannels.keySet()) {
-                if (!rtpManager.getSpecifications().voidWorlds().contains(p.getWorld())) {
+                if (rtpManager.getSpecifications().voidWorlds().isEmpty() || !rtpManager.getSpecifications().voidWorlds().contains(p.getWorld())) {
                     continue;
                 }
                 if (!p.hasPermission("rtp.channel." + voidChannels.get(channel))) {
