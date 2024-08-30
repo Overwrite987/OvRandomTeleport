@@ -347,7 +347,7 @@ public class RtpManager {
             };
             if (loc == null) {
                 teleportingNow.remove(p.getName());
-                Utils.sendMessage(pluginConfig.messages_fail_to_find_location, p);
+                Utils.sendMessage(channel.getMessages().failToFindLocationMessage(), p);
                 returnCost(p, channel); // return what we took
                 return;
             }
