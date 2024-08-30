@@ -6,6 +6,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.Main;
@@ -14,6 +15,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -76,6 +79,14 @@ public class Utils {
         }
 
         return new String(b);
+    }
+
+    public static List<World> getWorldList(List<String> worldNames) {
+        List<World> worldList = new ArrayList<>();
+        for (String w : worldNames) {
+            worldList.add(Bukkit.getWorld(w));
+        }
+        return worldList;
     }
 
     public static void checkUpdates(Main plugin, Consumer<String> consumer) {

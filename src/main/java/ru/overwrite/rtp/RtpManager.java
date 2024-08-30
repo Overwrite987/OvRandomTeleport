@@ -76,7 +76,7 @@ public class RtpManager {
             if (type == ChannelType.NEAR_REGION && !pluginManager.isPluginEnabled("WorldGuard")) {
                 type = ChannelType.DEFAULT;
             }
-            List<World> activeWorlds = getWorldList(channelSection.getStringList("active_worlds"));
+            List<World> activeWorlds = Utils.getWorldList(channelSection.getStringList("active_worlds"));
             boolean teleportToFirstAllowedWorld = channelSection.getBoolean("teleport_to_first_world", false);
             int minPlayersToUse = channelSection.getInt("min_players_to_use", -1);
             Costs costs = setupChannelCosts(channelSection.getConfigurationSection("costs"));
@@ -120,20 +120,13 @@ public class RtpManager {
         }
     }
 
-    private List<World> getWorldList(List<String> worldNames) {
-        List<World> worldList = new ArrayList<>();
-        for (String w : worldNames) {
-            worldList.add(Bukkit.getWorld(w));
-        }
-        return worldList;
-    }
-
     public record Specifications(Map<Channel, String> joinChannels,
                                  Map<Channel, String> voidChannels,
+                                 Set<World> voidWorlds,
                                  Map<Channel, String> respawnChannels) {
 
         public static Specifications createEmpty() {
-            return new Specifications(new HashMap<>(), new HashMap<>(), new HashMap<>());
+            return new Specifications(new HashMap<>(), new HashMap<>(), new HashSet<>(), new HashMap<>());
         }
 
         public void assign(Channel newChannel, String channelId, ConfigurationSection section) {
@@ -142,7 +135,8 @@ public class RtpManager {
             if (section.getBoolean("teleport_on_first_join", false)) {
                 joinChannels.put(newChannel, channelId);
             }
-            if (section.getBoolean("teleport_on_void", false)) {
+            voidWorlds.addAll(Utils.getWorldList(section.getStringList("active_worlds")));
+            if (!voidWorlds.isEmpty()) {
                 voidChannels.put(newChannel, channelId);
             }
             if (section.getBoolean("teleport_on_respawn", false)) {
