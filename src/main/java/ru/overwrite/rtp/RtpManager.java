@@ -122,11 +122,11 @@ public class RtpManager {
 
     public record Specifications(Map<Channel, String> joinChannels,
                                  Map<Channel, String> voidChannels,
-                                 Set<World> voidWorlds,
+                                 List<World> voidWorlds,
                                  Map<Channel, String> respawnChannels) {
 
         public static Specifications createEmpty() {
-            return new Specifications(new HashMap<>(), new HashMap<>(), new HashSet<>(), new HashMap<>());
+            return new Specifications(new HashMap<>(), new HashMap<>(), new ArrayList<>(), new HashMap<>());
         }
 
         public void assign(Channel newChannel, String channelId, ConfigurationSection section) {
