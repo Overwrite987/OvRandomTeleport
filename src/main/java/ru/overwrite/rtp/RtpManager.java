@@ -111,7 +111,7 @@ public class RtpManager {
                     channelActions,
                     messages);
             namedChannels.put(channelId, newChannel);
-            assignChannelToSpecification(channelSection.getConfigurationSection("specifications"), newChannel, channelId);
+            assignChannelToSpecification(channelSection.getConfigurationSection("specifications"), newChannel);
         }
         this.defaultChannel = getChannelByName(config.getString("main_settings.default_channel"));
         long endTime = System.currentTimeMillis();
@@ -120,33 +120,33 @@ public class RtpManager {
         }
     }
 
-    public record Specifications(Map<Channel, String> joinChannels,
-                                 Map<Channel, String> voidChannels,
-                                 List<World> voidWorlds,
-                                 Map<Channel, String> respawnChannels) {
+    public record Specifications(Set<Channel> joinChannels,
+                                 Map<Channel, List<World>> voidChannels,
+                                 Map<Channel, List<World>> respawnChannels) {
 
         public static Specifications createEmpty() {
-            return new Specifications(new HashMap<>(), new HashMap<>(), new ArrayList<>(), new HashMap<>());
+            return new Specifications(new HashSet<>(), new HashMap<>(),new HashMap<>());
         }
 
-        public void assign(Channel newChannel, String channelId, ConfigurationSection section) {
+        public void assign(Channel newChannel, ConfigurationSection section) {
             if (section == null) return;
 
             if (section.getBoolean("teleport_on_first_join", false)) {
-                joinChannels.put(newChannel, channelId);
+                joinChannels.add(newChannel);
             }
-            voidWorlds.addAll(Utils.getWorldList(section.getStringList("active_worlds")));
+            List<World> voidWorlds = Utils.getWorldList(section.getStringList("void_worlds"));
             if (!voidWorlds.isEmpty()) {
-                voidChannels.put(newChannel, channelId);
+                voidChannels.put(newChannel, voidWorlds);
             }
-            if (section.getBoolean("teleport_on_respawn", false)) {
-                respawnChannels.put(newChannel, channelId);
+            List<World> respawnWorlds = Utils.getWorldList(section.getStringList("respawn_worlds"));
+            if (!respawnWorlds.isEmpty()) {
+                respawnChannels.put(newChannel, respawnWorlds);
             }
         }
     }
 
-    private void assignChannelToSpecification(ConfigurationSection specificationsSection, Channel newChannel, String channelId) {
-        specifications.assign(newChannel, channelId, specificationsSection);
+    private void assignChannelToSpecification(ConfigurationSection specificationsSection, Channel newChannel) {
+        specifications.assign(newChannel, specificationsSection);
     }
 
     private Costs setupChannelCosts(ConfigurationSection channelCosts) {

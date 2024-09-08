@@ -1,6 +1,7 @@
 package ru.overwrite.rtp;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -15,7 +16,9 @@ import ru.overwrite.rtp.utils.LocationUtils;
 import ru.overwrite.rtp.utils.Utils;
 import ru.overwrite.rtp.utils.VersionUtils;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class RtpListener implements Listener {
 
@@ -34,12 +37,15 @@ public class RtpListener implements Listener {
         }
         Player p = e.getPlayer();
         if (e.getTo().getBlockY() < VersionUtils.VOID_LEVEL) {
-            Map<Channel, String> voidChannels = rtpManager.getSpecifications().voidChannels();
+            Map<Channel, List<World>> voidChannels = rtpManager.getSpecifications().voidChannels();
+            if (voidChannels.isEmpty()) {
+                return;
+            }
             for (Channel channel : voidChannels.keySet()) {
-                if (rtpManager.getSpecifications().voidWorlds().isEmpty() || !rtpManager.getSpecifications().voidWorlds().contains(p.getWorld())) {
+                if (!voidChannels.get(channel).contains(p.getWorld())) {
                     continue;
                 }
-                if (!p.hasPermission("rtp.channel." + voidChannels.get(channel))) {
+                if (!p.hasPermission("rtp.channel." + channel.getId())) {
                     continue;
                 }
                 processTeleport(p, channel);
@@ -78,9 +84,9 @@ public class RtpListener implements Listener {
         if (p.hasPlayedBefore()) {
             return;
         }
-        Map<Channel, String> joinChannels = rtpManager.getSpecifications().joinChannels();
-        for (Channel channel : joinChannels.keySet()) {
-            if (!p.hasPermission("rtp.channel." + joinChannels.get(channel))) {
+        Set<Channel> joinChannels = rtpManager.getSpecifications().joinChannels();
+        for (Channel channel : joinChannels) {
+            if (!p.hasPermission("rtp.channel." + channel.getId())) {
                 continue;
             }
             processTeleport(p, channel);
@@ -91,9 +97,15 @@ public class RtpListener implements Listener {
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e) {
         Player p = e.getPlayer();
-        Map<Channel, String> respawnChannels = rtpManager.getSpecifications().respawnChannels();
+        Map<Channel, List<World>> respawnChannels = rtpManager.getSpecifications().respawnChannels();
+        if (respawnChannels.isEmpty()) {
+            return;
+        }
         for (Channel channel : respawnChannels.keySet()) {
-            if (!p.hasPermission("rtp.channel." + respawnChannels.get(channel))) {
+            if (!respawnChannels.get(channel).contains(p.getWorld())) {
+                continue;
+            }
+            if (!p.hasPermission("rtp.channel." + channel.getId())) {
                 continue;
             }
             processTeleport(p, channel);
