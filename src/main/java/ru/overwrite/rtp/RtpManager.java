@@ -565,4 +565,8 @@ public class RtpManager {
     public boolean hasActiveTasks(String playerName) {
         return !perPlayerActiveRtpTask.isEmpty() && perPlayerActiveRtpTask.containsKey(playerName);
     }
+
+    public boolean hasCooldown(Channel channel, Player p) {
+        return channel.getPlayerCooldowns() != null && channel.getPlayerCooldowns().containsKey(p.getName());
+    }
 }

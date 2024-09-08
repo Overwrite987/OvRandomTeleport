@@ -75,6 +75,7 @@ public class Main extends JavaPlugin {
         }
         setupEconomy(pluginManager);
         setupPerms(pluginManager);
+        setupPlaceholders(pluginManager);
         pluginManager.registerEvents(new RtpListener(this), this);
         checkForUpdates(mainSettings);
         server.getScheduler().runTaskAsynchronously(this, () -> rtpManager.setupChannels(config, pluginManager));
@@ -134,6 +135,13 @@ public class Main extends JavaPlugin {
         }
         perms = permissionProvider.getProvider();
         pluginLogger.info("§aМенеджер прав подключён!");
+    }
+
+    private void setupPlaceholders(PluginManager pluginManager) {
+        if (!pluginManager.isPluginEnabled("PlaceholderAPI")) {
+            return;
+        }
+        new RtpExpansion(this).register();
     }
 
     private void registerCommand(PluginManager pluginManager, ConfigurationSection mainSettings) {

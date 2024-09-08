@@ -322,11 +322,14 @@ messages:
   fail_to_find_location: '%prefix% &6Не удалось подобрать необходимую локацию. Попробуйте снова позже!'
   already_teleporting: '%prefix% &cВы уже телепортируетесь!'
   incorrect_channel: '%prefix% &cУказанного канала рандомной телепортации не существует!'
-  # Плейсхолдеры времени
-  time:
-    hours: ' ч. '
-    minutes: ' мин. '
-    seconds: ' сек. '
+  # Заполнители плейсхолдеров PlaceholderAPI
+  placeholders:
+    no_cooldown: '&aКулдаун отсутствует!'
+    # Плейсхолдеры времени
+    time:
+      hours: ' ч. '
+      minutes: ' мин. '
+      seconds: ' сек. '
   # Раздел для админских команд
   admin:
     reload: '%prefix% &aПлагин успешно перезагружен!'

@@ -25,7 +25,7 @@ public class Config {
             messages_player_not_found,
             messages_admin_help;
 
-    public static String time_hours, time_minutes, time_seconds;
+    public static String time_hours, time_minutes, time_seconds, papi_nocooldown;
 
     public static Utils.SerializerType serializer;
 
@@ -52,7 +52,9 @@ public class Config {
         messages_unknown_argument = getPrefixed(admin.getString("unknown_argument"), messages_prefix);
         messages_player_not_found = getPrefixed(admin.getString("player_not_found"), messages_prefix);
         messages_admin_help = getPrefixed(admin.getString("admin_help"), messages_prefix);
-        ConfigurationSection time = messages.getConfigurationSection("time");
+        ConfigurationSection placeholders = messages.getConfigurationSection("placeholders");
+        papi_nocooldown = Utils.colorize(placeholders.getString("no_cooldown"), serializer);
+        ConfigurationSection time = placeholders.getConfigurationSection("time");
         time_hours = Utils.colorize(time.getString("hours", " ч."), serializer);
         time_minutes = Utils.colorize(time.getString("minutes", " мин."), serializer);
         time_seconds = Utils.colorize(time.getString("seconds", " сек."), serializer);

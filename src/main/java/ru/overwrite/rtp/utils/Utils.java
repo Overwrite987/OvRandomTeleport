@@ -112,9 +112,9 @@ public class Utils {
     }
 
     public static String getTime(int time) {
-        final int hours = time / 3600;
-        final int minutes = (time % 3600) / 60;
-        final int seconds = time % 60;
+        final int hours = getHours(time);
+        final int minutes = getMinutes(time);
+        final int seconds = getSeconds(time);
 
         final StringBuilder result = new StringBuilder();
 
@@ -129,6 +129,18 @@ public class Utils {
         result.append(seconds).append(Config.time_seconds);
 
         return result.toString();
+    }
+
+    public static int getHours(int time) {
+        return time / 3600;
+    }
+
+    public static int getMinutes(int time) {
+        return (time % 3600) / 60;
+    }
+
+    public static int getSeconds(int time) {
+        return time % 60;
     }
 
     // Original - org.apache.commons.lang3.StringUtils#isNumeric
