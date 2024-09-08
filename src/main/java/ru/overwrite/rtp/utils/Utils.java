@@ -35,6 +35,9 @@ public class Utils {
     private static final char COLOR_CHAR = '§';
 
     public static String colorize(String message, SerializerType serializer) {
+        if (message == null || message.isEmpty()) {
+            return message;
+        }
         return switch (serializer) {
             case LEGACY -> {
                 Matcher matcher = HEX_PATTERN.matcher(message);
