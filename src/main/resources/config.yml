@@ -49,7 +49,8 @@ channels:
       void_worlds:
         - spawn
       # Телепортировать ли игрока на РТП при респавне?
-      teleport_on_respawn: false
+      # Принцип работы тот же, как у void_worlds
+      respawn_worlds: []
     # Настройка цены телепортации по данному каналу
     costs:
       # Тип используемой валюты
@@ -192,7 +193,7 @@ channels:
     specifications:
       teleport_on_first_join: false
       void_worlds: []
-      teleport_on_respawn: false
+      respawn_worlds: []
     # Необязательные параметры
     costs:
       # По умолчанию - VAULT
