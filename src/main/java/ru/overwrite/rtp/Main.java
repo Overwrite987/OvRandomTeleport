@@ -142,6 +142,7 @@ public class Main extends JavaPlugin {
             return;
         }
         new RtpExpansion(this).register();
+        pluginLogger.info("§eПлейсхолдеры подключены!");
     }
 
     private void registerCommand(PluginManager pluginManager, ConfigurationSection mainSettings) {
