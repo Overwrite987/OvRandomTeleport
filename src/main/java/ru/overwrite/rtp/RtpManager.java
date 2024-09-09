@@ -150,6 +150,9 @@ public class RtpManager {
     }
 
     private Costs setupChannelCosts(ConfigurationSection channelCosts) {
+        if (channelCosts == null) {
+            return null;
+        }
         Costs.MoneyType moneyType = Costs.MoneyType.valueOf(channelCosts.getString("money_type", "VAULT").toUpperCase());
         double moneyCost = channelCosts.getDouble("money_cost", -1);
         int hungerCost = channelCosts.getInt("hunger_cost", -1);
@@ -358,6 +361,9 @@ public class RtpManager {
 
     public boolean takeCost(Player p, Channel channel) {
         Costs costs = channel.getCosts();
+        if (costs == null) {
+            return false;
+        }
         double moneyCost = costs.moneyCost();
         switch (costs.moneyType()) {
             case VAULT: {
@@ -401,6 +407,9 @@ public class RtpManager {
 
     private void returnCost(Player p, Channel channel) {
         Costs costs = channel.getCosts();
+        if (costs == null) {
+            return;
+        }
         double moneyCost = costs.moneyCost();
         switch (costs.moneyType()) {
             case VAULT: {
