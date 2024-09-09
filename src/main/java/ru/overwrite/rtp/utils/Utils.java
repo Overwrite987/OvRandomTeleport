@@ -2,6 +2,7 @@ package ru.overwrite.rtp.utils;
 
 import it.unimi.dsi.fastutil.chars.CharOpenHashSet;
 import it.unimi.dsi.fastutil.chars.CharSet;
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -10,6 +11,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.Main;
+import ru.overwrite.rtp.RtpExpansion;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -106,6 +108,10 @@ public class Utils {
 
     public static void sendMessage(String message, Player p) {
         if (message.isEmpty() || message.isBlank()) {
+            return;
+        }
+        if (RtpExpansion.ACTIVE) {
+            p.sendMessage(PlaceholderAPI.setPlaceholders(p, message));
             return;
         }
         p.sendMessage(message);
