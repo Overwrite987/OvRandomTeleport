@@ -75,7 +75,7 @@ public class Main extends JavaPlugin {
         }
         setupEconomy(pluginManager);
         setupPerms(pluginManager);
-        setupPlaceholders(pluginManager);
+        setupPlaceholders(mainSettings, pluginManager);
         pluginManager.registerEvents(new RtpListener(this), this);
         checkForUpdates(mainSettings);
         server.getScheduler().runTaskAsynchronously(this, () -> rtpManager.setupChannels(config, pluginManager));
@@ -97,7 +97,7 @@ public class Main extends JavaPlugin {
     }
 
     public void checkForUpdates(ConfigurationSection mainSettings) {
-        if (!mainSettings.getBoolean("update_checker")) {
+        if (!mainSettings.getBoolean("update_checker", true)) {
             return;
         }
         Utils.checkUpdates(this, version -> {
@@ -137,8 +137,8 @@ public class Main extends JavaPlugin {
         pluginLogger.info("§aМенеджер прав подключён!");
     }
 
-    private void setupPlaceholders(PluginManager pluginManager) {
-        if (!pluginManager.isPluginEnabled("PlaceholderAPI")) {
+    private void setupPlaceholders(ConfigurationSection mainSettings, PluginManager pluginManager) {
+        if (!mainSettings.getBoolean("papi_support", true) || !pluginManager.isPluginEnabled("PlaceholderAPI")) {
             return;
         }
         new RtpExpansion(this).register();
@@ -150,7 +150,7 @@ public class Main extends JavaPlugin {
             CommandMap commandMap = server.getCommandMap();
             Constructor<PluginCommand> constructor = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
             constructor.setAccessible(true);
-            PluginCommand command = constructor.newInstance(mainSettings.getString("rtp_command"), this);
+            PluginCommand command = constructor.newInstance(mainSettings.getString("rtp_command", "rtp"), this);
             command.setAliases(mainSettings.getStringList("rtp_aliases"));
             RtpCommand rtpCommand = new RtpCommand(this);
             command.setExecutor(rtpCommand);
