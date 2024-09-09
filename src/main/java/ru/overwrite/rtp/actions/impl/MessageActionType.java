@@ -27,7 +27,7 @@ public class MessageActionType implements ActionType {
     private record MessageAction(@NotNull String message) implements Action {
         @Override
         public void perform(@NotNull Channel channel, @NotNull Player player, @NotNull String[] searchList, @NotNull String[] replacementList) {
-            player.sendMessage(Utils.replaceEach(message, searchList, replacementList));
+            Utils.sendMessage(Utils.replaceEach(message, searchList, replacementList), player);
         }
     }
 }

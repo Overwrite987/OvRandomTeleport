@@ -125,7 +125,7 @@ public class RtpManager {
                                  Map<Channel, List<World>> respawnChannels) {
 
         public static Specifications createEmpty() {
-            return new Specifications(new HashSet<>(), new HashMap<>(),new HashMap<>());
+            return new Specifications(new HashSet<>(), new HashMap<>(), new HashMap<>());
         }
 
         public void assign(Channel newChannel, ConfigurationSection section) {
