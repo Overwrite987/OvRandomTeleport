@@ -4,14 +4,14 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import lombok.Getter;
-import ru.overwrite.rtp.utils.ExpiringMap;
+import ru.overwrite.rtp.utils.TimedExpiringMap;
 
 import org.bukkit.World;
 
 @Getter
 public class Channel {
 
-    private final ExpiringMap<String, Long> playerCooldowns;
+    private final TimedExpiringMap<String, Long> playerCooldowns;
 
     private final String id;
 
@@ -68,7 +68,7 @@ public class Channel {
         this.locationGenOptions = locationGenOptions;
         this.invulnerableTicks = invulnerableTicks;
         this.cooldown = cooldown;
-        this.playerCooldowns = cooldown.defaultCooldown() > 0 ? new ExpiringMap<>(TimeUnit.SECONDS) : null;
+        this.playerCooldowns = cooldown.defaultCooldown() > 0 ? new TimedExpiringMap<>(TimeUnit.SECONDS) : null;
         this.bossBar = bossBar;
         this.restrictions = restrictions;
         this.avoidance = avoidance;

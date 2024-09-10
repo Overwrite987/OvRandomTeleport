@@ -5,12 +5,12 @@ import com.github.benmanes.caffeine.cache.Expiry;
 
 import java.util.concurrent.TimeUnit;
 
-public class ExpiringMap<K, V> {
+public class TimedExpiringMap<K, V> {
 
     private final Cache<K, ExpiringValue<V>> cache;
     private final TimeUnit unit;
 
-    public ExpiringMap(TimeUnit unit) {
+    public TimedExpiringMap(TimeUnit unit) {
         this.unit = unit;
         this.cache = CaffeineFactory.newBuilder()
                 .expireAfter(new Expiry<K, ExpiringValue<V>>() {
