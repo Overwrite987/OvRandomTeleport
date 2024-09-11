@@ -1,4 +1,4 @@
-package ru.overwrite.rtp.channels;
+package ru.overwrite.rtp.channels.settings;
 
 import org.bukkit.Material;
 import org.bukkit.block.Biome;

@@ -46,16 +46,18 @@ public class Main extends JavaPlugin {
         if (server.getPluginManager().isPluginEnabled("PlugManX") || server.getPluginManager().isPluginEnabled("PlugMan")) {
             return;
         }
-        boolean worldguard;
-        try {
-            Class.forName("com.sk89q.worldguard.protection.flags.registry.FlagConflictException");
-            worldguard = true;
-        } catch (ClassNotFoundException e) {
-            worldguard = false;
-        }
-        if (worldguard) {
+        if (hasWorldGuard()) {
             WGUtils.setupRtpFlag();
             pluginLogger.info("§5WorldGuard подключён!");
+        }
+    }
+
+    private boolean hasWorldGuard() {
+        try {
+            Class.forName("com.sk89q.worldguard.protection.flags.registry.FlagConflictException");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
         }
     }
 

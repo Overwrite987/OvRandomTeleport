@@ -8,8 +8,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import ru.overwrite.rtp.channels.Channel;
-import ru.overwrite.rtp.channels.Actions;
-import ru.overwrite.rtp.channels.Cooldown;
+import ru.overwrite.rtp.channels.settings.Actions;
+import ru.overwrite.rtp.channels.settings.Cooldown;
 import ru.overwrite.rtp.utils.Utils;
 
 import static ru.overwrite.rtp.utils.Config.serializer;

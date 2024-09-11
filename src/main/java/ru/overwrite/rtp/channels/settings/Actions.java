@@ -1,4 +1,4 @@
-package ru.overwrite.rtp.channels;
+package ru.overwrite.rtp.channels.settings;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import ru.overwrite.rtp.actions.Action;

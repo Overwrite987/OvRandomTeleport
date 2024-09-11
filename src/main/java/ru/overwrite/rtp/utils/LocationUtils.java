@@ -4,9 +4,9 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import ru.overwrite.rtp.channels.Avoidance;
+import ru.overwrite.rtp.channels.settings.Avoidance;
 import ru.overwrite.rtp.channels.Channel;
-import ru.overwrite.rtp.channels.LocationGenOptions;
+import ru.overwrite.rtp.channels.settings.LocationGenOptions;
 
 import java.util.Random;
 

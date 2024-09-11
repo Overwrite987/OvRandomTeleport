@@ -1,4 +1,4 @@
-package ru.overwrite.rtp.channels;
+package ru.overwrite.rtp.channels.settings;
 
 public record Restrictions(
         boolean restrictMove,

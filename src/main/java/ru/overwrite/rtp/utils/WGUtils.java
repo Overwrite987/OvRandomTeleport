@@ -20,7 +20,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import ru.overwrite.rtp.channels.Channel;
-import ru.overwrite.rtp.channels.LocationGenOptions;
+import ru.overwrite.rtp.channels.settings.LocationGenOptions;
 
 public class WGUtils {
 

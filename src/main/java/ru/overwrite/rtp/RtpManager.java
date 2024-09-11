@@ -22,6 +22,7 @@ import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.actions.ActionRegistry;
 import ru.overwrite.rtp.actions.impl.*;
 import ru.overwrite.rtp.channels.*;
+import ru.overwrite.rtp.channels.settings.*;
 import ru.overwrite.rtp.utils.*;
 
 import java.util.*;
