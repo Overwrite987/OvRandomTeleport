@@ -48,8 +48,7 @@ public class LocationUtils {
         }
 
         Location location = new Location(world, x + 0.5, y, z + 0.5, p.getLocation().getYaw(), p.getLocation().getPitch());
-        Avoidance avoidance = channel.getAvoidance();
-        if (isOutsideWorldBorder(location) || isDisallowedBlock(location, avoidance) || isDisallowedBiome(location, avoidance) || isInsideRegion(location, avoidance) || isInsideTown(location, avoidance)) {
+        if (isLocationRestricted(location, channel.getAvoidance())) {
             return null;
         } else {
             location.setY(y + 1);
@@ -100,8 +99,7 @@ public class LocationUtils {
         }
 
         Location location = new Location(world, x + 0.5, y, z + 0.5, p.getLocation().getYaw(), p.getLocation().getPitch());
-        Avoidance avoidance = channel.getAvoidance();
-        if (isOutsideWorldBorder(location) || isDisallowedBlock(location, avoidance) || isDisallowedBiome(location, avoidance) || isInsideRegion(location, avoidance) || isInsideTown(location, avoidance)) {
+        if (isLocationRestricted(location, channel.getAvoidance())) {
             return null;
         } else {
             location.setY(y + 1);
@@ -156,8 +154,7 @@ public class LocationUtils {
         }
 
         Location location = new Location(world, x + 0.5, y, z + 0.5, p.getLocation().getYaw(), p.getLocation().getPitch());
-        Avoidance avoidance = channel.getAvoidance();
-        if (isOutsideWorldBorder(location) || isDisallowedBlock(location, avoidance) || isDisallowedBiome(location, avoidance) || isInsideRegion(location, avoidance) || isInsideTown(location, avoidance)) {
+        if (isLocationRestricted(location, channel.getAvoidance())) {
             return null;
         } else {
             location.setY(y + 1);
@@ -204,8 +201,7 @@ public class LocationUtils {
         }
 
         Location location = new Location(world, x + 0.5, y, z + 0.5, p.getLocation().getYaw(), p.getLocation().getPitch());
-        Avoidance avoidance = channel.getAvoidance();
-        if (isOutsideWorldBorder(location) || isDisallowedBlock(location, avoidance) || isDisallowedBiome(location, avoidance) || isInsideRegion(location, avoidance) || isInsideTown(location, avoidance)) {
+        if (isLocationRestricted(location, channel.getAvoidance())) {
             return null;
         } else {
             location.setY(y + 1);
@@ -257,6 +253,14 @@ public class LocationUtils {
         System.out.println(minDistance);
 
         return maxDistance <= 1 && minDistance >= 2;
+    }
+
+    private static boolean isLocationRestricted(Location location, Avoidance avoidance) {
+        return isOutsideWorldBorder(location) ||
+                isDisallowedBlock(location, avoidance) ||
+                isDisallowedBiome(location, avoidance) ||
+                isInsideRegion(location, avoidance) ||
+                isInsideTown(location, avoidance);
     }
 
     private static boolean isOutsideWorldBorder(Location loc) {
