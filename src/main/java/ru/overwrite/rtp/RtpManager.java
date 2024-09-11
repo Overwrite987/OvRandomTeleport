@@ -367,44 +367,60 @@ public class RtpManager {
         if (costs == null) {
             return false;
         }
+
+        return processMoneyCost(p, channel, costs) &&
+                processHungerCost(p, channel, costs) &&
+                processExpCost(p, channel, costs);
+    }
+
+    private boolean processMoneyCost(Player p, Channel channel, Costs costs) {
         double moneyCost = costs.moneyCost();
-        switch (costs.moneyType()) {
-            case VAULT: {
-                if (plugin.getEconomy() != null && moneyCost > 0) {
-                    if (plugin.getEconomy().getBalance(p) < moneyCost) {
-                        Utils.sendMessage(channel.getMessages().notEnoughMoneyMessage().replace("%required%", Double.toString(moneyCost)), p);
-                        return false;
-                    }
-                    plugin.getEconomy().withdrawPlayer(p, moneyCost);
+        if (moneyCost <= 0) return true;
+
+        return switch (costs.moneyType()) {
+            case VAULT -> {
+                if (plugin.getEconomy() == null) {
+                    yield false;
                 }
-                break;
-            }
-            case PLAYERPOINTS: {
-                if (PlayerPointsUtils.getBalance(p) < moneyCost && moneyCost > 0) {
+                if (plugin.getEconomy().getBalance(p) < moneyCost) {
                     Utils.sendMessage(channel.getMessages().notEnoughMoneyMessage().replace("%required%", Double.toString(moneyCost)), p);
-                    return false;
+                    yield false;
+                }
+                plugin.getEconomy().withdrawPlayer(p, moneyCost);
+                yield true;
+            }
+            case PLAYERPOINTS -> {
+                if (PlayerPointsUtils.getBalance(p) < moneyCost) {
+                    Utils.sendMessage(channel.getMessages().notEnoughMoneyMessage().replace("%required%", Double.toString(moneyCost)), p);
+                    yield false;
                 }
                 PlayerPointsUtils.withdraw(p, (int) moneyCost);
-                break;
+                yield true;
             }
-            default: {
-                break;
-            }
+        };
+    }
+
+    private boolean processHungerCost(Player p, Channel channel, Costs costs) {
+        int hungerCost = costs.hungerCost();
+        if (hungerCost <= 0) return true;
+
+        if (p.getFoodLevel() < hungerCost) {
+            Utils.sendMessage(channel.getMessages().notEnoughHungerMessage().replace("%required%", Integer.toString(hungerCost)), p);
+            return false;
         }
-        if (costs.hungerCost() > 0) {
-            if (p.getFoodLevel() < costs.hungerCost()) {
-                Utils.sendMessage(channel.getMessages().notEnoughHungerMessage().replace("%required%", Integer.toString(costs.hungerCost())), p);
-                return false;
-            }
-            p.setFoodLevel(p.getFoodLevel() - costs.hungerCost());
+        p.setFoodLevel(p.getFoodLevel() - hungerCost);
+        return true;
+    }
+
+    private boolean processExpCost(Player p, Channel channel, Costs costs) {
+        float expCost = costs.expCost();
+        if (expCost <= 0) return true;
+
+        if (p.getExp() < expCost) {
+            Utils.sendMessage(channel.getMessages().notEnoughExpMessage().replace("%required%", Float.toString(expCost)), p);
+            return false;
         }
-        if (costs.expCost() > 0) {
-            if (p.getExp() < costs.expCost()) {
-                Utils.sendMessage(channel.getMessages().notEnoughExpMessage().replace("%required%", Float.toString(costs.expCost())), p);
-                return false;
-            }
-            p.setExp(p.getExp() - costs.expCost());
-        }
+        p.setExp(p.getExp() - expCost);
         return true;
     }
 
@@ -413,29 +429,36 @@ public class RtpManager {
         if (costs == null) {
             return;
         }
+        processMoneyReturn(p, costs);
+        processHungerReturn(p, costs);
+        processExpReturn(p, costs);
+    }
+
+    private void processMoneyReturn(Player p, Costs costs) {
         double moneyCost = costs.moneyCost();
+        if (moneyCost <= 0) return;
+
         switch (costs.moneyType()) {
-            case VAULT: {
-                if (plugin.getEconomy() != null && moneyCost > 0) {
+            case VAULT -> {
+                if (plugin.getEconomy() != null) {
                     plugin.getEconomy().depositPlayer(p, moneyCost);
                 }
-                break;
             }
-            case PLAYERPOINTS: {
-                if (moneyCost > 0) {
-                    PlayerPointsUtils.deposit(p, (int) moneyCost);
-                }
-                break;
-            }
-            default: {
-                break;
-            }
+            case PLAYERPOINTS -> PlayerPointsUtils.deposit(p, (int) moneyCost);
         }
-        if (costs.hungerCost() > 0) {
-            p.setFoodLevel(p.getFoodLevel() + costs.hungerCost());
+    }
+
+    private void processHungerReturn(Player p, Costs costs) {
+        int hungerCost = costs.hungerCost();
+        if (hungerCost > 0) {
+            p.setFoodLevel(p.getFoodLevel() + hungerCost);
         }
-        if (costs.expCost() > 0) {
-            p.setExp(p.getExp() + costs.expCost());
+    }
+
+    private void processExpReturn(Player p, Costs costs) {
+        float expCost = costs.expCost();
+        if (expCost > 0) {
+            p.setExp(p.getExp() + expCost);
         }
     }
 
