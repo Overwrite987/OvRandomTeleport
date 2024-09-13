@@ -73,10 +73,10 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
             Utils.sendMessage(channel.getMessages().noPermsMessage(), p);
             return false;
         }
-        if (rtpManager.hasCooldown(channel, p)) {
+        if (channel.getCooldown().hasCooldown(p)) {
             Utils.sendMessage(channel.getMessages().cooldownMessage()
                     .replace("%time%",
-                            Utils.getTime((int) (rtpManager.getChannelCooldown(p, channel.getCooldown()) - (System.currentTimeMillis() - channel.getPlayerCooldowns().get(p.getName())) / 1000))), p);
+                            Utils.getTime((int) (rtpManager.getChannelCooldown(p, channel.getCooldown()) - (System.currentTimeMillis() - channel.getCooldown().playerCooldowns().get(p.getName())) / 1000))), p);
             return false;
         }
         if (channel.getMinPlayersToUse() > 0 && (Bukkit.getOnlinePlayers().size() - 1) < channel.getMinPlayersToUse()) {

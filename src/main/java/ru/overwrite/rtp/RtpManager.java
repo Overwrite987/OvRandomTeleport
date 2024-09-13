@@ -27,6 +27,7 @@ import ru.overwrite.rtp.utils.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import static ru.overwrite.rtp.utils.Config.serializer;
 
@@ -183,22 +184,23 @@ public class RtpManager {
     }
 
     private Cooldown setupCooldown(ConfigurationSection cooldown) {
-        Object2IntLinkedOpenHashMap<String> cooldownsMap = new Object2IntLinkedOpenHashMap<>();
+        Object2IntLinkedOpenHashMap<String> groupCooldownsMap = new Object2IntLinkedOpenHashMap<>();
         if (isSectionNull(cooldown)) {
-            return new Cooldown(-1, cooldownsMap, false, -1);
+            return new Cooldown(-1, null, groupCooldownsMap, false, -1);
         }
         int defaultCooldown = cooldown.getInt("default_cooldown", -1);
+        TimedExpiringMap<String, Long> playerCooldowns = defaultCooldown > 0 ? new TimedExpiringMap<>(TimeUnit.SECONDS) : null;
         ConfigurationSection groupCooldowns = cooldown.getConfigurationSection("group_cooldowns");
         boolean useLastGroupCooldown = false;
         if (!isSectionNull(groupCooldowns) && plugin.getPerms() != null) {
             for (String groupName : groupCooldowns.getKeys(false)) {
                 int cd = groupCooldowns.getInt(groupName);
-                cooldownsMap.put(groupName, cd);
+                groupCooldownsMap.put(groupName, cd);
             }
             useLastGroupCooldown = cooldown.getBoolean("use_last_group_cooldown", false);
         }
         int teleportCooldown = cooldown.getInt("teleport_cooldown", -1);
-        return new Cooldown(defaultCooldown, cooldownsMap, useLastGroupCooldown, teleportCooldown);
+        return new Cooldown(defaultCooldown, playerCooldowns, groupCooldownsMap, useLastGroupCooldown, teleportCooldown);
     }
 
     private BossBar setupChannelBossBar(ConfigurationSection bossbar) {
@@ -332,10 +334,6 @@ public class RtpManager {
 
     public boolean hasActiveTasks(String playerName) {
         return !perPlayerActiveRtpTask.isEmpty() && perPlayerActiveRtpTask.containsKey(playerName);
-    }
-
-    public boolean hasCooldown(Channel channel, Player p) {
-        return channel.getPlayerCooldowns() != null && channel.getPlayerCooldowns().containsKey(p.getName());
     }
 
     public final List<String> teleportingNow = new ArrayList<>();
@@ -486,7 +484,7 @@ public class RtpManager {
             p.teleport(loc);
             teleportingNow.remove(p.getName());
             if (getChannelCooldown(p, channel.getCooldown()) > 0 && !p.hasPermission("rtp.bypasscooldown")) {
-                channel.getPlayerCooldowns().put(p.getName(), System.currentTimeMillis(), getChannelCooldown(p, channel.getCooldown()));
+                channel.getCooldown().playerCooldowns().put(p.getName(), System.currentTimeMillis(), getChannelCooldown(p, channel.getCooldown()));
             }
             this.executeActions(p, channel, channel.getActions().afterTeleportActions(), loc);
         });

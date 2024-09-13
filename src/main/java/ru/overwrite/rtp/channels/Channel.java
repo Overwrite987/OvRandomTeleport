@@ -12,8 +12,6 @@ import org.bukkit.World;
 @Getter
 public class Channel {
 
-    private final TimedExpiringMap<String, Long> playerCooldowns;
-
     private final String id;
 
     private final String name;
@@ -69,7 +67,6 @@ public class Channel {
         this.locationGenOptions = locationGenOptions;
         this.invulnerableTicks = invulnerableTicks;
         this.cooldown = cooldown;
-        this.playerCooldowns = cooldown.defaultCooldown() > 0 ? new TimedExpiringMap<>(TimeUnit.SECONDS) : null;
         this.bossBar = bossBar;
         this.restrictions = restrictions;
         this.avoidance = avoidance;

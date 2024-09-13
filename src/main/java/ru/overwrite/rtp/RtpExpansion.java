@@ -5,6 +5,7 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.channels.Channel;
+import ru.overwrite.rtp.channels.settings.Cooldown;
 import ru.overwrite.rtp.utils.Config;
 import ru.overwrite.rtp.utils.Utils;
 
@@ -49,14 +50,15 @@ public class RtpExpansion extends PlaceholderExpansion {
         }
         if (args[0].equalsIgnoreCase("hascooldown")) {
             Channel channel = rtpManager.getChannelByName(args[1]);
-            return getBooleanPlaceholder(rtpManager.hasCooldown(channel, player));
+            return getBooleanPlaceholder(channel.getCooldown().hasCooldown(player));
         }
         if (args[0].equalsIgnoreCase("cooldown")) {
             Channel channel = rtpManager.getChannelByName(args[1]);
-            if (!rtpManager.hasCooldown(channel, player)) {
+            Cooldown channelCooldown = channel.getCooldown();
+            if (!channelCooldown.hasCooldown(player)) {
                 return Config.papi_nocooldown;
             }
-            int cooldown = (int) (rtpManager.getChannelCooldown(player, channel.getCooldown()) - (System.currentTimeMillis() - channel.getPlayerCooldowns().get(player.getName())) / 1000);
+            int cooldown = (int) (rtpManager.getChannelCooldown(player, channelCooldown) - (System.currentTimeMillis() - channelCooldown.playerCooldowns().get(player.getName())) / 1000);
             if (args.length < 3) {
                 return Utils.getTime(cooldown);
             }
