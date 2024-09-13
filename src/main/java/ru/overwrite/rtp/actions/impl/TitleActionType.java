@@ -7,7 +7,6 @@ import ru.overwrite.rtp.Main;
 import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.actions.ActionType;
 import ru.overwrite.rtp.channels.Channel;
-import ru.overwrite.rtp.utils.Config;
 import ru.overwrite.rtp.utils.Utils;
 
 public class TitleActionType implements ActionType {
@@ -26,8 +25,8 @@ public class TitleActionType implements ActionType {
         int length = titleMessages.length;
 
         return new TitleAction(
-                Utils.colorize(titleMessages[TITLE_INDEX], Config.serializer),
-                (length > SUBTITLE_INDEX) ? Utils.colorize(titleMessages[SUBTITLE_INDEX], Config.serializer) : "",
+                Utils.COLORIZER.colorize(titleMessages[TITLE_INDEX]),
+                (length > SUBTITLE_INDEX) ? Utils.COLORIZER.colorize(titleMessages[SUBTITLE_INDEX]) : "",
                 (length > FADE_IN_INDEX) ? Integer.parseInt(titleMessages[FADE_IN_INDEX]) : 10,
                 (length > STAY_INDEX) ? Integer.parseInt(titleMessages[STAY_INDEX]) : 70,
                 (length > FADE_OUT_INDEX) ? Integer.parseInt(titleMessages[FADE_OUT_INDEX]) : 20

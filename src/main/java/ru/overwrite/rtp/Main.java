@@ -69,8 +69,9 @@ public class Main extends JavaPlugin {
         saveDefaultConfig();
         PluginManager pluginManager = server.getPluginManager();
         FileConfiguration config = getConfig();
-        pluginConfig.setupMessages(config);
         ConfigurationSection mainSettings = config.getConfigurationSection("main_settings");
+        Utils.setupColorizer(mainSettings);
+        pluginConfig.setupMessages(config);
         registerCommand(pluginManager, mainSettings);
         if (mainSettings.getBoolean("enable_metrics")) {
             new Metrics(this, 22021);

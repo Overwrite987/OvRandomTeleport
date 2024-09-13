@@ -3,15 +3,16 @@ package ru.overwrite.rtp.utils;
 import it.unimi.dsi.fastutil.chars.CharOpenHashSet;
 import it.unimi.dsi.fastutil.chars.CharSet;
 import me.clip.placeholderapi.PlaceholderAPI;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.Main;
 import ru.overwrite.rtp.RtpExpansion;
+import ru.overwrite.rtp.utils.color.LegacyColorizer;
+import ru.overwrite.rtp.utils.color.MiniMessageColorizer;
+import ru.overwrite.rtp.utils.color.VanillaColorizer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,49 +21,39 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Utils {
 
     public static boolean DEBUG = false;
 
-    private static final Pattern HEX_PATTERN = Pattern.compile("&#([a-fA-F\\d]{6})");
+    public static Colorizer COLORIZER;
 
-    public enum SerializerType {
-        LEGACY,
-        MINIMESSAGE
+    public static void setupColorizer(ConfigurationSection mainSettings) {
+        COLORIZER = switch (mainSettings.getString("serializer", "LEGACY").toUpperCase()) {
+            case "MINIMESSAGE" -> new MiniMessageColorizer();
+            case "LEGACY" -> new LegacyColorizer();
+            default -> new VanillaColorizer();
+        };
     }
 
-    private static final char COLOR_CHAR = '§';
-
-    public static String colorize(String message, SerializerType serializer) {
-        if (message == null || message.isEmpty()) {
-            return message;
+    public static List<World> getWorldList(List<String> worldNames) {
+        List<World> worldList = new ArrayList<>();
+        for (String w : worldNames) {
+            worldList.add(Bukkit.getWorld(w));
         }
-        return switch (serializer) {
-            case LEGACY -> {
-                Matcher matcher = HEX_PATTERN.matcher(message);
-                StringBuilder builder = new StringBuilder(message.length() + 32);
-                while (matcher.find()) {
-                    String group = matcher.group(1);
-                    matcher.appendReplacement(builder,
-                            COLOR_CHAR + "x" +
-                                    COLOR_CHAR + group.charAt(0) +
-                                    COLOR_CHAR + group.charAt(1) +
-                                    COLOR_CHAR + group.charAt(2) +
-                                    COLOR_CHAR + group.charAt(3) +
-                                    COLOR_CHAR + group.charAt(4) +
-                                    COLOR_CHAR + group.charAt(5));
-                }
-                message = matcher.appendTail(builder).toString();
-                yield translateAlternateColorCodes('&', message);
+        return worldList;
+    }
+
+    public static void checkUpdates(Main plugin, Consumer<String> consumer) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+                    new URL("https://raw.githubusercontent.com/Overwrite987/OvRandomTeleport/master/VERSION")
+                            .openStream()))) {
+                consumer.accept(reader.readLine().trim());
+            } catch (IOException exception) {
+                plugin.getLogger().warning("Can't check for updates: " + exception.getMessage());
             }
-            case MINIMESSAGE -> {
-                Component component = MiniMessage.miniMessage().deserialize(message);
-                yield LegacyComponentSerializer.legacySection().serialize(component);
-            }
-        };
+        });
     }
 
     private static final CharSet CODES = new CharOpenHashSet(new char[]{
@@ -84,26 +75,6 @@ public class Utils {
         }
 
         return new String(b);
-    }
-
-    public static List<World> getWorldList(List<String> worldNames) {
-        List<World> worldList = new ArrayList<>();
-        for (String w : worldNames) {
-            worldList.add(Bukkit.getWorld(w));
-        }
-        return worldList;
-    }
-
-    public static void checkUpdates(Main plugin, Consumer<String> consumer) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-                    new URL("https://raw.githubusercontent.com/Overwrite987/OvRandomTeleport/master/VERSION")
-                            .openStream()))) {
-                consumer.accept(reader.readLine().trim());
-            } catch (IOException exception) {
-                plugin.getLogger().warning("Can't check for updates: " + exception.getMessage());
-            }
-        });
     }
 
     public static void sendMessage(String message, Player p) {

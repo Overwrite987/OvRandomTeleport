@@ -29,7 +29,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import static ru.overwrite.rtp.utils.Config.serializer;
 
 public class RtpManager {
 
@@ -208,7 +207,7 @@ public class RtpManager {
             return new BossBar(false, "", BarColor.PURPLE, BarStyle.SOLID);
         }
         boolean enabled = bossbar.getBoolean("enabled", false);
-        String title = Utils.colorize(bossbar.getString("title"), serializer);
+        String title = Utils.COLORIZER.colorize(bossbar.getString("title"));
         BarColor color = BarColor.valueOf(bossbar.getString("color").toUpperCase());
         BarStyle style = BarStyle.valueOf(bossbar.getString("style").toUpperCase());
 

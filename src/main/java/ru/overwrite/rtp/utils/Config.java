@@ -27,12 +27,9 @@ public class Config {
 
     public static String time_hours, time_minutes, time_seconds, papi_nocooldown;
 
-    public static Utils.SerializerType serializer;
-
     public void setupMessages(FileConfiguration config) {
-        serializer = Utils.SerializerType.valueOf(config.getString("main_settings.serializer", "LEGACY").toUpperCase());
         ConfigurationSection messages = config.getConfigurationSection("messages");
-        messages_prefix = Utils.colorize(messages.getString("prefix", "messages.prefix"), serializer);
+        messages_prefix = Utils.COLORIZER.colorize(messages.getString("prefix", "messages.prefix"));
         messages_no_perms = getPrefixed(messages.getString("no_perms", "messages.no_perms"), messages_prefix);
         messages_invalid_world = getPrefixed(messages.getString("invalid_world", "messages.invalid_world"), messages_prefix);
         messages_not_enough_players = getPrefixed(messages.getString("not_enough_players", "messages.not_enough_players"), messages_prefix);
@@ -53,15 +50,15 @@ public class Config {
         messages_player_not_found = getPrefixed(admin.getString("player_not_found"), messages_prefix);
         messages_admin_help = getPrefixed(admin.getString("admin_help"), messages_prefix);
         ConfigurationSection placeholders = messages.getConfigurationSection("placeholders");
-        papi_nocooldown = Utils.colorize(placeholders.getString("no_cooldown"), serializer);
+        papi_nocooldown = Utils.COLORIZER.colorize(placeholders.getString("no_cooldown"));
         ConfigurationSection time = placeholders.getConfigurationSection("time");
-        time_hours = Utils.colorize(time.getString("hours", " ч."), serializer);
-        time_minutes = Utils.colorize(time.getString("minutes", " мин."), serializer);
-        time_seconds = Utils.colorize(time.getString("seconds", " сек."), serializer);
+        time_hours = Utils.COLORIZER.colorize(time.getString("hours", " ч."));
+        time_minutes = Utils.COLORIZER.colorize(time.getString("minutes", " мин."));
+        time_seconds = Utils.COLORIZER.colorize(time.getString("seconds", " сек."));
     }
 
     public String getPrefixed(String message, String prefix) {
-        return Utils.colorize(message.replace("%prefix%", prefix), serializer);
+        return Utils.COLORIZER.colorize(message.replace("%prefix%", prefix));
     }
 
 }

@@ -7,7 +7,6 @@ import ru.overwrite.rtp.Main;
 import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.actions.ActionType;
 import ru.overwrite.rtp.channels.Channel;
-import ru.overwrite.rtp.utils.Config;
 import ru.overwrite.rtp.utils.Utils;
 
 public class MessageActionType implements ActionType {
@@ -16,7 +15,7 @@ public class MessageActionType implements ActionType {
 
     @Override
     public @NotNull Action instance(@NotNull String context, @NotNull Main plugin) {
-        return new MessageAction(Utils.colorize(context, Config.serializer));
+        return new MessageAction(Utils.COLORIZER.colorize(context));
     }
 
     @Override
