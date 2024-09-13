@@ -19,7 +19,6 @@ public record Costs(
     }
 
     public boolean processMoneyCost(Player p, Channel channel) {
-        double moneyCost = moneyCost();
         if (moneyCost <= 0) return true;
 
         return switch (moneyType()) {
@@ -46,7 +45,6 @@ public record Costs(
     }
 
     public boolean processHungerCost(Player p, Channel channel) {
-        int hungerCost = hungerCost();
         if (hungerCost <= 0) return true;
 
         if (p.getFoodLevel() < hungerCost) {
@@ -58,7 +56,6 @@ public record Costs(
     }
 
     public boolean processExpCost(Player p, Channel channel) {
-        float expCost = expCost();
         if (expCost <= 0) return true;
 
         if (p.getExp() < expCost) {
@@ -70,7 +67,6 @@ public record Costs(
     }
 
     public void processMoneyReturn(Player p) {
-        double moneyCost = moneyCost();
         if (moneyCost <= 0) return;
 
         switch (moneyType()) {
@@ -84,14 +80,12 @@ public record Costs(
     }
 
     public void processHungerReturn(Player p) {
-        int hungerCost = hungerCost();
         if (hungerCost > 0) {
             p.setFoodLevel(p.getFoodLevel() + hungerCost);
         }
     }
 
     public void processExpReturn(Player p) {
-        float expCost = expCost();
         if (expCost > 0) {
             p.setExp(p.getExp() + expCost);
         }
