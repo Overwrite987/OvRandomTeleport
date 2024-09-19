@@ -60,7 +60,10 @@ public class WGUtils {
 
         List<ProtectedRegion> regionsInRange = regionManager.getRegions().values().stream()
                 .filter(region -> region.getType() != RegionType.GLOBAL)
-                .filter(region -> region.getFlag(RTP_IGNORE_FLAG) != StateFlag.State.ALLOW)
+                .filter(region -> {
+                    StateFlag.State flag = region.getFlag(RTP_IGNORE_FLAG);
+                    return flag != null && flag != StateFlag.State.ALLOW;
+                })
                 .filter(region -> {
                     BlockVector3 minPoint = region.getMinimumPoint();
                     BlockVector3 maxPoint = region.getMaximumPoint();
