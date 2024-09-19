@@ -8,11 +8,9 @@ import ru.overwrite.rtp.channels.settings.Avoidance;
 import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.channels.settings.LocationGenOptions;
 
-import java.util.Random;
-
 public class LocationUtils {
 
-    private static final Random random = new Random();
+    private static final FastRandom random = new FastRandom();
 
     public static final Object2IntOpenHashMap<String> iterationsPerPlayer = new Object2IntOpenHashMap<>();
 

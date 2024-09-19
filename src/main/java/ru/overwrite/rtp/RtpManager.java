@@ -29,7 +29,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-
 public class RtpManager {
 
     private final Main plugin;
@@ -50,7 +49,7 @@ public class RtpManager {
     @Getter
     private final Map<String, RtpTask> perPlayerActiveRtpTask = new ConcurrentHashMap<>();
 
-    private final Random random = new Random();
+    private final FastRandom random = new FastRandom();
 
     public RtpManager(Main plugin) {
         this.plugin = plugin;

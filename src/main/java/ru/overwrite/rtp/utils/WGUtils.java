@@ -1,7 +1,6 @@
 package ru.overwrite.rtp.utils;
 
 import java.util.List;
-import java.util.Random;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -24,7 +23,7 @@ import ru.overwrite.rtp.channels.settings.LocationGenOptions;
 
 public class WGUtils {
 
-    private static final Random random = new Random();
+    private static final FastRandom random = new FastRandom();
     public static StateFlag RTP_IGNORE_FLAG;
 
     public static void setupRtpFlag() {
