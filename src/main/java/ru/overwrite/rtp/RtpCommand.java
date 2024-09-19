@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.utils.Config;
+import ru.overwrite.rtp.utils.FastRandom;
 import ru.overwrite.rtp.utils.Utils;
 
 public class RtpCommand implements CommandExecutor, TabCompleter {
