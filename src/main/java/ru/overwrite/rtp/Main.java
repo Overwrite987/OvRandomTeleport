@@ -12,6 +12,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import ru.overwrite.rtp.utils.Config;
 import ru.overwrite.rtp.utils.Utils;
@@ -76,8 +77,11 @@ public class Main extends JavaPlugin {
         if (mainSettings.getBoolean("enable_metrics")) {
             new Metrics(this, 22021);
         }
-        setupEconomy(pluginManager);
-        setupPerms(pluginManager);
+        if (pluginManager.isPluginEnabled("Vault")) {
+            ServicesManager servicesManager = server.getServicesManager();;
+            setupEconomy(servicesManager);
+            setupPerms(servicesManager);
+        }
         setupPlaceholders(mainSettings, pluginManager);
         pluginManager.registerEvents(new RtpListener(this), this);
         checkForUpdates(mainSettings);
@@ -116,11 +120,8 @@ public class Main extends JavaPlugin {
         });
     }
 
-    private void setupEconomy(PluginManager pluginManager) {
-        if (!pluginManager.isPluginEnabled("Vault")) {
-            return;
-        }
-        RegisteredServiceProvider<Economy> rsp = server.getServicesManager().getRegistration(Economy.class);
+    private void setupEconomy(ServicesManager servicesManager) {
+        RegisteredServiceProvider<Economy> rsp = servicesManager.getRegistration(Economy.class);
         if (rsp == null) {
             return;
         }
@@ -128,11 +129,8 @@ public class Main extends JavaPlugin {
         pluginLogger.info("§6Экономика подключена!");
     }
 
-    private void setupPerms(PluginManager pluginManager) {
-        if (!pluginManager.isPluginEnabled("Vault")) {
-            return;
-        }
-        RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(Permission.class);
+    private void setupPerms(ServicesManager servicesManager) {
+        RegisteredServiceProvider<Permission> permissionProvider = servicesManager.getRegistration(Permission.class);
         if (permissionProvider == null) {
             return;
         }
