@@ -121,11 +121,11 @@ public class Main extends JavaPlugin {
     }
 
     private void setupEconomy(ServicesManager servicesManager) {
-        RegisteredServiceProvider<Economy> rsp = servicesManager.getRegistration(Economy.class);
-        if (rsp == null) {
+        RegisteredServiceProvider<Economy> economyProvider = servicesManager.getRegistration(Economy.class);
+        if (economyProvider == null) {
             return;
         }
-        economy = rsp.getProvider();
+        economy = economyProvider.getProvider();
         pluginLogger.info("§6Экономика подключена!");
     }
 
