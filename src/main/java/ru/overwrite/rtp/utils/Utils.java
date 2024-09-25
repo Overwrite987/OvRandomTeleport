@@ -120,21 +120,17 @@ public class Utils {
         return time % 60;
     }
 
-    // Original - org.apache.commons.lang3.StringUtils#isNumeric
     public static boolean isNumeric(CharSequence cs) {
         if (cs == null || cs.isEmpty()) {
             return false;
-        } else {
-            int sz = cs.length();
-
-            for (int i = 0; i < sz; ++i) {
-                if (!Character.isDigit(cs.charAt(i))) {
-                    return false;
-                }
-            }
-
-            return true;
         }
+        int sz = cs.length();
+        for (int i = 0; i < sz; ++i) {
+            if (!Character.isDigit(cs.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static String replaceEach(@NotNull String text, @NotNull String[] searchList, @NotNull String[] replacementList) {
