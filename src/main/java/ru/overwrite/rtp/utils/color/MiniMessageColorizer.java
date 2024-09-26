@@ -9,6 +9,9 @@ public class MiniMessageColorizer implements Colorizer {
 
     @Override
     public String colorize(String message) {
+        if (message == null || message.isEmpty()) {
+            return message;
+        }
         Component component = MiniMessage.miniMessage().deserialize(message);
         return LegacyComponentSerializer.legacySection().serialize(component);
     }

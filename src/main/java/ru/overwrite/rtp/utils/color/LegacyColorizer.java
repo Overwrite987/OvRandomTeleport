@@ -16,8 +16,8 @@ public class LegacyColorizer implements Colorizer {
         if (message == null || message.isEmpty()) {
             return message;
         }
-        Matcher matcher = HEX_PATTERN.matcher(message);
-        StringBuilder builder = new StringBuilder(message.length() + 32);
+        final Matcher matcher = HEX_PATTERN.matcher(message);
+        final StringBuilder builder = new StringBuilder(message.length() + 32);
         while (matcher.find()) {
             String group = matcher.group(1);
             matcher.appendReplacement(builder,

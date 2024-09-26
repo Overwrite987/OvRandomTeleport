@@ -142,7 +142,7 @@ public class Utils {
             throw new IllegalArgumentException("Search and replacement arrays must have the same length.");
         }
 
-        StringBuilder result = new StringBuilder(text);
+        final StringBuilder result = new StringBuilder(text);
 
         for (int i = 0; i < searchList.length; i++) {
             String search = searchList[i];
