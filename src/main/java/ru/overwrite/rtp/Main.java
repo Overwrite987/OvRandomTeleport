@@ -78,7 +78,7 @@ public class Main extends JavaPlugin {
             new Metrics(this, 22021);
         }
         if (pluginManager.isPluginEnabled("Vault")) {
-            ServicesManager servicesManager = server.getServicesManager();;
+            ServicesManager servicesManager = server.getServicesManager();
             setupEconomy(servicesManager);
             setupPerms(servicesManager);
         }
