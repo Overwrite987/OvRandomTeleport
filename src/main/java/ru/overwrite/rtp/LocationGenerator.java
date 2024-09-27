@@ -407,12 +407,10 @@ public class LocationGenerator {
         double maxDistanceRatioX = (double) deltaX / maxX;
         double maxDistanceRatioZ = (double) deltaZ / maxZ;
         double maxDistance = maxDistanceRatioX * maxDistanceRatioX + maxDistanceRatioZ * maxDistanceRatioZ;
-        System.out.println(maxDistance);
 
         double minDistanceRatioX = (double) deltaX / minX;
         double minDistanceRatioZ = (double) deltaZ / minZ;
         double minDistance = minDistanceRatioX * minDistanceRatioX + minDistanceRatioZ * minDistanceRatioZ;
-        System.out.println(minDistance);
 
         return maxDistance <= 1 && minDistance >= 2;
     }
