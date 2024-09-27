@@ -34,11 +34,11 @@ public class RtpTask {
 
     public void startPreTeleportTimer(Player p, Channel channel, Location loc) {
         String playerName = p.getName();
-        Cooldown cooldown = channel.getCooldown();
+        Cooldown cooldown = channel.cooldown();
         preTeleportCooldown = cooldown.teleportCooldown();
-        if (channel.getBossBar().bossbarEnabled()) {
-            String barTitle = Utils.COLORIZER.colorize(channel.getBossBar().bossbarTitle().replace("%time%", Utils.getTime(cooldown.teleportCooldown())));
-            bossBar = Bukkit.createBossBar(barTitle, channel.getBossBar().bossbarColor(), channel.getBossBar().bossbarType());
+        if (channel.bossBar().bossbarEnabled()) {
+            String barTitle = Utils.COLORIZER.colorize(channel.bossBar().bossbarTitle().replace("%time%", Utils.getTime(cooldown.teleportCooldown())));
+            bossBar = Bukkit.createBossBar(barTitle, channel.bossBar().bossbarColor(), channel.bossBar().bossbarType());
             bossBar.addPlayer(p);
         }
         runnable = (new BukkitRunnable() {
@@ -54,16 +54,16 @@ public class RtpTask {
                     cancel();
                     return;
                 }
-                if (channel.getBossBar().bossbarEnabled()) {
+                if (channel.bossBar().bossbarEnabled()) {
                     double percents = (cooldown.teleportCooldown() - (cooldown.teleportCooldown() - preTeleportCooldown))
                             / (double) cooldown.teleportCooldown();
                     if (percents < 1 && percents > 0) {
                         bossBar.setProgress(percents);
                     }
-                    String barTitle = Utils.COLORIZER.colorize(channel.getBossBar().bossbarTitle().replace("%time%", Utils.getTime(preTeleportCooldown)));
+                    String barTitle = Utils.COLORIZER.colorize(channel.bossBar().bossbarTitle().replace("%time%", Utils.getTime(preTeleportCooldown)));
                     bossBar.setTitle(barTitle);
                 }
-                Actions actions = channel.getActions();
+                Actions actions = channel.actions();
                 if (!actions.onCooldownActions().isEmpty()) {
                     for (int i : actions.onCooldownActions().keySet()) {
                         if (i == preTeleportCooldown) {

@@ -49,12 +49,14 @@ public class RtpManager {
     @Getter
     private final Map<String, RtpTask> perPlayerActiveRtpTask = new ConcurrentHashMap<>();
 
-    private final FastRandom random = new FastRandom();
+    @Getter
+    private final LocationGenerator locationGenerator;
 
     public RtpManager(Main plugin) {
         this.plugin = plugin;
         this.pluginConfig = plugin.getPluginConfig();
         this.actionRegistry = new ActionRegistry(plugin);
+        this.locationGenerator = new LocationGenerator(plugin);
         registerDefaultActions();
     }
 
@@ -338,25 +340,25 @@ public class RtpManager {
 
     public void preTeleport(Player p, Channel channel, World world) {
         if (teleportingNow.contains(p.getName())) {
-            Utils.sendMessage(channel.getMessages().alreadyTeleportingMessage(), p);
+            Utils.sendMessage(channel.messages().alreadyTeleportingMessage(), p);
             return;
         }
         teleportingNow.add(p.getName());
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            LocationUtils.iterationsPerPlayer.put(p.getName(), 1);
-            Location loc = switch (channel.getType()) {
-                case DEFAULT -> generateRandomLocation(p, channel, world);
-                case NEAR_PLAYER -> generateRandomLocationNearPlayer(p, channel, world);
-                case NEAR_REGION -> WGUtils.generateRandomLocationNearRandomRegion(p, channel, world);
+            locationGenerator.getIterationsPerPlayer().put(p.getName(), 1);
+            Location loc = switch (channel.type()) {
+                case DEFAULT -> locationGenerator.generateRandomLocation(p, channel, world);
+                case NEAR_PLAYER -> locationGenerator.generateRandomLocationNearPlayer(p, channel, world);
+                case NEAR_REGION -> locationGenerator.generateRandomLocationNearRandomRegion(p, channel, world);
             };
             if (loc == null) {
                 teleportingNow.remove(p.getName());
-                Utils.sendMessage(channel.getMessages().failToFindLocationMessage(), p);
+                Utils.sendMessage(channel.messages().failToFindLocationMessage(), p);
                 returnCost(p, channel); // return what we took
                 return;
             }
-            if (channel.getCooldown().teleportCooldown() > 0) {
-                this.executeActions(p, channel, channel.getActions().preTeleportActions(), p.getLocation());
+            if (channel.cooldown().teleportCooldown() > 0) {
+                this.executeActions(p, channel, channel.actions().preTeleportActions(), p.getLocation());
                 RtpTask rtpTask = new RtpTask(plugin, this, p.getName(), channel);
                 perPlayerActiveRtpTask.put(p.getName(), rtpTask);
                 rtpTask.startPreTeleportTimer(p, channel, loc);
@@ -367,7 +369,7 @@ public class RtpManager {
     }
 
     public boolean takeCost(Player p, Channel channel) {
-        Costs costs = channel.getCosts();
+        Costs costs = channel.costs();
         if (costs == null) {
             return false;
         }
@@ -378,7 +380,7 @@ public class RtpManager {
     }
 
     private void returnCost(Player p, Channel channel) {
-        Costs costs = channel.getCosts();
+        Costs costs = channel.costs();
         if (costs == null) {
             return;
         }
@@ -387,105 +389,24 @@ public class RtpManager {
         costs.processExpReturn(p);
     }
 
-    public Location generateRandomLocation(Player p, Channel channel, World world) {
-        if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("Iterations for player " + p.getName() + ": " + LocationUtils.iterationsPerPlayer.getInt(p.getName()));
-        }
-        if (LocationUtils.iterationsPerPlayer.getInt(p.getName()) >= channel.getLocationGenOptions().maxLocationAttempts()) {
-            LocationUtils.iterationsPerPlayer.removeInt(p.getName());
-            if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Max iterations reached for player " + p.getName());
-            }
-            return null;
-        }
-
-        LocationGenOptions.Shape shape = channel.getLocationGenOptions().shape();
-        Location location = switch (shape) {
-            case SQUARE -> LocationUtils.generateRandomSquareLocation(p, channel, world);
-            case ROUND -> LocationUtils.generateRandomRoundLocation(p, channel, world);
-        };
-
-        if (location == null) {
-            LocationUtils.iterationsPerPlayer.addTo(p.getName(), 1);
-            return generateRandomLocation(p, channel, world);
-        } else {
-            if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Location for player " + p.getName() + " found in " + LocationUtils.iterationsPerPlayer.getInt(p.getName()) + " iterations");
-            }
-            LocationUtils.iterationsPerPlayer.removeInt(p.getName());
-            return location;
-        }
-    }
-
-    private Location generateRandomLocationNearPlayer(Player p, Channel channel, World world) {
-        if (LocationUtils.iterationsPerPlayer.getInt(p.getName()) >= channel.getLocationGenOptions().maxLocationAttempts()) {
-            LocationUtils.iterationsPerPlayer.removeInt(p.getName());
-            return null;
-        }
-        List<Player> nearbyPlayers = getNearbyPlayers(p, channel, world);
-
-        if (nearbyPlayers.isEmpty()) {
-            if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("No players to generate location near player");
-            }
-            return null;
-        }
-
-        Player targetPlayer = nearbyPlayers.get(random.nextInt(nearbyPlayers.size()));
-
-        Location loc = targetPlayer.getLocation();
-        int centerX = loc.getBlockX();
-        int centerZ = loc.getBlockZ();
-
-        LocationGenOptions.Shape shape = channel.getLocationGenOptions().shape();
-        Location location = LocationUtils.generateRandomLocationNearPoint(shape, p, centerX, centerZ, channel, world);
-
-        if (location == null) {
-            LocationUtils.iterationsPerPlayer.addTo(p.getName(), 1);
-            return generateRandomLocationNearPlayer(p, channel, world);
-        } else {
-            if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Location for player " + p.getName() + " found in " + LocationUtils.iterationsPerPlayer.get(p.getName()) + " iterations");
-            }
-            LocationUtils.iterationsPerPlayer.removeInt(p.getName());
-            return location;
-        }
-    }
-
-    private List<Player> getNearbyPlayers(Player player, Channel channel, World world) {
-        List<Player> nearbyPlayers = new ArrayList<>();
-        LocationGenOptions locationGenOptions = channel.getLocationGenOptions();
-        int minX = locationGenOptions.minX();
-        int maxX = locationGenOptions.maxX();
-        int minZ = locationGenOptions.minZ();
-        int maxZ = locationGenOptions.maxZ();
-
-        for (Player p : world.getPlayers()) {
-            if (!p.equals(player) && !p.hasPermission("rtp.near.bypass")) {
-                Location loc = p.getLocation();
-                int px = loc.getBlockX();
-                int pz = loc.getBlockZ();
-                if (px >= minX && px <= maxX && pz >= minZ && pz <= maxZ) {
-                    nearbyPlayers.add(p);
-                }
-            }
-        }
-        return nearbyPlayers;
-    }
-
     public void teleportPlayer(Player p, Channel channel, Location loc) {
         Bukkit.getScheduler().runTask(plugin, () -> {
-            if (channel.getInvulnerableTicks() > 0) {
+            if (channel.invulnerableTicks() > 0) {
                 p.setInvulnerable(true);
-                Bukkit.getScheduler().runTaskLater(plugin, () -> p.setInvulnerable(false), channel.getInvulnerableTicks());
+                Bukkit.getScheduler().runTaskLater(plugin, () -> p.setInvulnerable(false), channel.invulnerableTicks());
             }
             p.teleport(loc);
             teleportingNow.remove(p.getName());
-            if (getChannelCooldown(p, channel.getCooldown()) > 0 && !p.hasPermission("rtp.bypasscooldown")) {
-                channel.getCooldown().playerCooldowns().put(p.getName(), System.currentTimeMillis(), getChannelCooldown(p, channel.getCooldown()));
-            }
-            this.executeActions(p, channel, channel.getActions().afterTeleportActions(), loc);
+            handlePlayerCooldown(p, channel);
+            this.executeActions(p, channel, channel.actions().afterTeleportActions(), loc);
         });
+    }
+
+    private void handlePlayerCooldown(Player p, Channel channel) {
+        int cooldown = getChannelCooldown(p, channel.cooldown());
+        if (getChannelCooldown(p, channel.cooldown()) > 0 && !p.hasPermission("rtp.bypasscooldown")) {
+            channel.cooldown().playerCooldowns().put(p.getName(), System.currentTimeMillis(), cooldown);
+        }
     }
 
     public int getChannelCooldown(Player p, Cooldown cooldown) {
@@ -496,7 +417,7 @@ public class RtpManager {
         if (groupCooldowns.isEmpty()) {
             return cooldown.defaultCooldown();
         }
-        String playerGroup = plugin.getPerms().getPrimaryGroup(p);
+        final String playerGroup = plugin.getPerms().getPrimaryGroup(p);
         int defaultCooldown = cooldown.useLastGroupCooldown()
                 ? groupCooldowns.getInt(new ArrayList<>(groupCooldowns.keySet()).get(groupCooldowns.size() - 1))
                 : cooldown.defaultCooldown();
@@ -509,8 +430,8 @@ public class RtpManager {
         if (actions.isEmpty()) {
             return;
         }
-        String name = channel.getName();
-        String cd = Utils.getTime(channel.getCooldown().teleportCooldown());
+        String name = channel.name();
+        String cd = Utils.getTime(channel.cooldown().teleportCooldown());
         String x = Integer.toString(loc.getBlockX());
         String y = Integer.toString(loc.getBlockY());
         String z = Integer.toString(loc.getBlockZ());

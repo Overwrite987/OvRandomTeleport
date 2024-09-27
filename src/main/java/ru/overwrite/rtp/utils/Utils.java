@@ -10,9 +10,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.Main;
 import ru.overwrite.rtp.RtpExpansion;
-import ru.overwrite.rtp.utils.color.LegacyColorizer;
-import ru.overwrite.rtp.utils.color.MiniMessageColorizer;
-import ru.overwrite.rtp.utils.color.VanillaColorizer;
+import ru.overwrite.rtp.utils.color.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,6 +30,7 @@ public class Utils {
         COLORIZER = switch (mainSettings.getString("serializer", "LEGACY").toUpperCase()) {
             case "MINIMESSAGE" -> new MiniMessageColorizer();
             case "LEGACY" -> new LegacyColorizer();
+            case "LEGACY_ADVANCED" -> new LegacyAdvancedColorizer();
             default -> new VanillaColorizer();
         };
     }

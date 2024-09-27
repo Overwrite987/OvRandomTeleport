@@ -41,35 +41,53 @@ public class RtpExpansion extends PlaceholderExpansion {
 
     @Override
     public String onPlaceholderRequest(Player player, @NotNull String params) {
-        if (player == null || !player.isOnline()) {
+        if (isPlayerInvalid(player)) {
             return "Player is not online! Can't parse placeholder";
         }
-        String[] args = params.split("_");
+
+        final String[] args = params.split("_");
         if (args.length < 2) {
             return null;
         }
-        if (args[0].equalsIgnoreCase("hascooldown")) {
-            Channel channel = rtpManager.getChannelByName(args[1]);
-            return getBooleanPlaceholder(channel.getCooldown().hasCooldown(player));
+
+        final String placeholderType = args[0].toLowerCase();
+        final Channel channel = rtpManager.getChannelByName(args[1]);
+        final Cooldown channelCooldown = channel.cooldown();
+
+        return switch (placeholderType) {
+            case "hascooldown" -> getBooleanPlaceholder(channelCooldown.hasCooldown(player));
+            case "cooldown" -> processCooldownPlaceholder(player, args, channelCooldown);
+            default -> null;
+        };
+    }
+
+    private boolean isPlayerInvalid(Player player) {
+        return player == null || !player.isOnline();
+    }
+
+    private String processCooldownPlaceholder(Player player, String[] args, Cooldown channelCooldown) {
+        if (!channelCooldown.hasCooldown(player)) {
+            return Config.papi_nocooldown;
         }
-        if (args[0].equalsIgnoreCase("cooldown")) {
-            Channel channel = rtpManager.getChannelByName(args[1]);
-            Cooldown channelCooldown = channel.getCooldown();
-            if (!channelCooldown.hasCooldown(player)) {
-                return Config.papi_nocooldown;
-            }
-            int cooldown = (int) (rtpManager.getChannelCooldown(player, channelCooldown) - (System.currentTimeMillis() - channelCooldown.playerCooldowns().get(player.getName())) / 1000);
-            if (args.length < 3) {
-                return Utils.getTime(cooldown);
-            }
-            return switch (args[2]) {
-                case "hours" -> Integer.toString(Utils.getHours(cooldown));
-                case "minutes" -> Integer.toString(Utils.getMinutes(cooldown));
-                case "seconds" -> Integer.toString(Utils.getSeconds(cooldown));
-                default -> null;
-            };
+        final int cooldown = calculateCooldown(player, channelCooldown);
+        if (args.length < 3) {
+            return Utils.getTime(cooldown);
         }
-        return null;
+        return getCooldownTimeComponent(args[2], cooldown);
+    }
+
+    private int calculateCooldown(Player player, Cooldown channelCooldown) {
+        final long playerCooldownStart = channelCooldown.playerCooldowns().get(player.getName());
+        return (int) (rtpManager.getChannelCooldown(player, channelCooldown) - (System.currentTimeMillis() - playerCooldownStart) / 1000);
+    }
+
+    private String getCooldownTimeComponent(String timeUnit, int cooldown) {
+        return switch (timeUnit) {
+            case "hours" -> Integer.toString(Utils.getHours(cooldown));
+            case "minutes" -> Integer.toString(Utils.getMinutes(cooldown));
+            case "seconds" -> Integer.toString(Utils.getSeconds(cooldown));
+            default -> null;
+        };
     }
 
     public String getBooleanPlaceholder(boolean b) {

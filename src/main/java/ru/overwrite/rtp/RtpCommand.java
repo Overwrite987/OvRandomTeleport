@@ -66,38 +66,38 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 
     private boolean processTeleport(Player p, Channel channel) {
         if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("Channel name: " + channel.getName() + " Channel permission: " + "rtp.channel." + channel.getName());
-            plugin.getPluginLogger().info("Player permission status: " + p.hasPermission("rtp.channel." + channel.getId()));
+            plugin.getPluginLogger().info("Channel name: " + channel.name() + " Channel permission: " + "rtp.channel." + channel.name());
+            plugin.getPluginLogger().info("Player permission status: " + p.hasPermission("rtp.channel." + channel.id()));
         }
-        if (!p.hasPermission("rtp.channel." + channel.getId())) {
-            Utils.sendMessage(channel.getMessages().noPermsMessage(), p);
+        if (!p.hasPermission("rtp.channel." + channel.id())) {
+            Utils.sendMessage(channel.messages().noPermsMessage(), p);
             return false;
         }
-        if (channel.getCooldown().hasCooldown(p)) {
-            Utils.sendMessage(channel.getMessages().cooldownMessage()
+        if (channel.cooldown().hasCooldown(p)) {
+            Utils.sendMessage(channel.messages().cooldownMessage()
                     .replace("%time%",
-                            Utils.getTime((int) (rtpManager.getChannelCooldown(p, channel.getCooldown()) - (System.currentTimeMillis() - channel.getCooldown().playerCooldowns().get(p.getName())) / 1000))), p);
+                            Utils.getTime((int) (rtpManager.getChannelCooldown(p, channel.cooldown()) - (System.currentTimeMillis() - channel.cooldown().playerCooldowns().get(p.getName())) / 1000))), p);
             return false;
         }
-        if (channel.getMinPlayersToUse() > 0 && (Bukkit.getOnlinePlayers().size() - 1) < channel.getMinPlayersToUse()) {
-            Utils.sendMessage(channel.getMessages().notEnoughPlayersMessage().replace("%required%", Integer.toString(channel.getMinPlayersToUse())), p);
+        if (channel.minPlayersToUse() > 0 && (Bukkit.getOnlinePlayers().size() - 1) < channel.minPlayersToUse()) {
+            Utils.sendMessage(channel.messages().notEnoughPlayersMessage().replace("%required%", Integer.toString(channel.minPlayersToUse())), p);
             return false;
         }
         if (!rtpManager.takeCost(p, channel)) {
             return false;
         }
-        if (!channel.getActiveWorlds().contains(p.getWorld())) {
+        if (!channel.activeWorlds().contains(p.getWorld())) {
             if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Active worlds for channel " + channel.getName() + " does not includes player's world: " + p.getWorld().getName());
+                plugin.getPluginLogger().info("Active worlds for channel " + channel.name() + " does not includes player's world: " + p.getWorld().getName());
             }
-            if (channel.isTeleportToFirstAllowedWorld()) {
+            if (channel.teleportToFirstAllowedWorld()) {
                 if (Utils.DEBUG) {
-                    plugin.getPluginLogger().info("Teleporting to first allowed world: " + channel.getActiveWorlds().get(0));
+                    plugin.getPluginLogger().info("Teleporting to first allowed world: " + channel.activeWorlds().get(0));
                 }
-                rtpManager.preTeleport(p, channel, channel.getActiveWorlds().get(0));
+                rtpManager.preTeleport(p, channel, channel.activeWorlds().get(0));
                 return true;
             }
-            Utils.sendMessage(channel.getMessages().invalidWorldMessage(), p);
+            Utils.sendMessage(channel.messages().invalidWorldMessage(), p);
             return false;
         }
         rtpManager.preTeleport(p, channel, p.getWorld());
@@ -138,12 +138,12 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
                     return false;
                 }
                 Channel channel = rtpManager.getChannelByName(args[3]);
-                if (!channel.getActiveWorlds().contains(targetPlayer.getWorld())) {
-                    if (channel.isTeleportToFirstAllowedWorld()) {
-                        processForceTeleport(args, targetPlayer, channel, channel.getActiveWorlds().get(0));
+                if (!channel.activeWorlds().contains(targetPlayer.getWorld())) {
+                    if (channel.teleportToFirstAllowedWorld()) {
+                        processForceTeleport(args, targetPlayer, channel, channel.activeWorlds().get(0));
                         return true;
                     }
-                    sender.sendMessage(channel.getMessages().invalidWorldMessage());
+                    sender.sendMessage(channel.messages().invalidWorldMessage());
                     return false;
                 }
                 processForceTeleport(args, targetPlayer, channel, targetPlayer.getWorld());
@@ -165,7 +165,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 
     private void processForceTeleport(String[] args, Player targetPlayer, Channel channel, World world) {
         if (args.length == 5 && args[4].equalsIgnoreCase("force")) {
-            rtpManager.teleportPlayer(targetPlayer, channel, rtpManager.generateRandomLocation(targetPlayer, channel, world));
+            rtpManager.teleportPlayer(targetPlayer, channel, rtpManager.getLocationGenerator().generateRandomLocation(targetPlayer, channel, world));
             return;
         }
         rtpManager.preTeleport(targetPlayer, channel, world);
