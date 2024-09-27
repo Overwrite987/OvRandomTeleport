@@ -11,105 +11,103 @@ public class LegacyAdvancedColorizer implements Colorizer {
         if (message == null || message.isEmpty()) {
             return message;
         }
-        final StringBuilder b = new StringBuilder();
-        final char[] mess = message.toCharArray();
-        boolean color = false, hashtag = false, doubleTag = false;
-        char tmp;
-        for (int i = 0; i < mess.length; ) {
-            final char c = mess[i];
-            if (doubleTag) {
-                doubleTag = false;
-                final int max = i + 3;
-                if (max <= mess.length) {
-                    boolean match = true;
-                    for (int n = i; n < max; n++) {
-                        tmp = mess[n];
-                        if (!((tmp >= '0' && tmp <= '9') || (tmp >= 'a' && tmp <= 'f') || (tmp >= 'A' && tmp <= 'F'))) {
-                            match = false;
-                            break;
-                        }
-                    }
-                    if (match) {
-                        b.append(COLOR_CHAR);
-                        b.append('x');
-                        for (; i < max; i++) {
-                            tmp = mess[i];
-                            b.append(COLOR_CHAR);
-                            b.append(tmp);
+        final StringBuilder builder = new StringBuilder();
+        final char[] messageChars = message.toCharArray();
+        boolean isColor = false, isHashtag = false, isDoubleTag = false;
 
-                            b.append(COLOR_CHAR);
-                            b.append(tmp);
-                        }
-                        continue;
-                    }
-                }
-                b.append('&');
-                b.append("##");
-            }
-            if (hashtag) {
-                hashtag = false;
-                // Check for double hashtag (&##123 => &#112233)
-                if (c == '#') {
-                    doubleTag = true;
-                    i++;
-                    continue;
-                }
-                final int max = i + 6;
-                if (max <= mess.length) {
-                    boolean match = true;
-                    for (int n = i; n < max; n++) {
-                        tmp = mess[n];
-                        if (!((tmp >= '0' && tmp <= '9') || (tmp >= 'a' && tmp <= 'f') || (tmp >= 'A' && tmp <= 'F'))) {
-                            match = false;
-                            break;
-                        }
-                    }
-                    if (match) {
-                        b.append(COLOR_CHAR);
-                        b.append('x');
+        for (int index = 0; index < messageChars.length; ) {
+            final char currentChar = messageChars[index];
 
-                        for (; i < max; i++) {
-                            b.append(COLOR_CHAR);
-                            b.append(mess[i]);
-                        }
-                        continue;
-                    }
-                }
-                b.append('&');
-                b.append('#');
-            }
-            if (color) {
-                color = false;
-                if (c == '#') {
-                    hashtag = true;
-                    i++;
+            if (isDoubleTag) {
+                isDoubleTag = false;
+                if (processDoubleTag(builder, messageChars, index)) {
+                    index += 3;
                     continue;
                 }
-                if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || c == 'r' || (c >= 'k' && c <= 'o') || (c >= 'A' && c <= 'F') || c == 'R' || (c >= 'K' && c <= 'O')) {
-                    b.append(COLOR_CHAR);
-                    b.append(c);
-                    i++;
+                builder.append("&##");
+            } else if (isHashtag) {
+                isHashtag = false;
+                if (currentChar == '#') {
+                    isDoubleTag = true;
+                    index++;
                     continue;
                 }
-                b.append('&');
-            }
-            if (c == '&') {
-                color = true;
-                i++;
+                if (processSingleTag(builder, messageChars, index, currentChar)) {
+                    index += 6;
+                    continue;
+                }
+                builder.append("&#");
+            } else if (isColor) {
+                isColor = false;
+                if (currentChar == '#') {
+                    isHashtag = true;
+                    index++;
+                    continue;
+                }
+                if (isValidColorCharacter(currentChar)) {
+                    builder.append(COLOR_CHAR).append(currentChar);
+                    index++;
+                    continue;
+                }
+                builder.append('&');
+            } else if (currentChar == '&') {
+                isColor = true;
+                index++;
                 continue;
+            } else {
+                builder.append(currentChar);
+                index++;
             }
-            b.append(c);
-            i++;
         }
-        if (color) {
-            b.append('&');
-        } else if (hashtag) {
-            b.append('&');
-            b.append('#');
-        } else if (doubleTag) {
-            b.append('&');
-            b.append("##");
+
+        appendRemainingColorTags(builder, isColor, isHashtag, isDoubleTag);
+        return builder.toString();
+    }
+
+    private boolean processDoubleTag(StringBuilder builder, char[] messageChars, int index) {
+        if (index + 3 <= messageChars.length && isValidHexCode(messageChars, index, 3)) {
+            builder.append(COLOR_CHAR).append('x');
+            for (int i = index; i < index + 3; i++) {
+                builder.append(COLOR_CHAR).append(messageChars[i]).append(COLOR_CHAR).append(messageChars[i]);
+            }
+            return true;
         }
-        return b.toString();
+        return false;
+    }
+
+    private boolean processSingleTag(StringBuilder builder, char[] messageChars, int index, char currentChar) {
+        if (index + 6 <= messageChars.length && isValidHexCode(messageChars, index, 6)) {
+            builder.append(COLOR_CHAR).append('x');
+            for (int i = index; i < index + 6; i++) {
+                builder.append(COLOR_CHAR).append(messageChars[i]);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isValidHexCode(char[] chars, int start, int length) {
+        for (int i = start; i < start + length; i++) {
+            char tmp = chars[i];
+            if (!((tmp >= '0' && tmp <= '9') || (tmp >= 'a' && tmp <= 'f') || (tmp >= 'A' && tmp <= 'F'))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isValidColorCharacter(char c) {
+        return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || c == 'r' || (c >= 'k' && c <= 'o') ||
+                (c >= 'A' && c <= 'F') || c == 'R' || (c >= 'K' && c <= 'O');
+    }
+
+    private void appendRemainingColorTags(StringBuilder builder, boolean isColor, boolean isHashtag, boolean isDoubleTag) {
+        if (isColor) {
+            builder.append('&');
+        } else if (isHashtag) {
+            builder.append("&#");
+        } else if (isDoubleTag) {
+            builder.append("&##");
+        }
     }
 }
