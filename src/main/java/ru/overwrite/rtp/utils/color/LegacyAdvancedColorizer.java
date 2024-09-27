@@ -53,7 +53,6 @@ public class LegacyAdvancedColorizer implements Colorizer {
             } else if (currentChar == '&') {
                 isColor = true;
                 index++;
-                continue;
             } else {
                 builder.append(currentChar);
                 index++;
