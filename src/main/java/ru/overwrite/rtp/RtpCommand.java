@@ -66,7 +66,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 
     private boolean processTeleport(Player p, Channel channel) {
         if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("Channel name: " + channel.name() + " Channel permission: " + "rtp.channel." + channel.name());
+            plugin.getPluginLogger().info("Channel name: " + channel.name() + " Channel permission: " + "rtp.channel." + channel.id());
             plugin.getPluginLogger().info("Player permission status: " + p.hasPermission("rtp.channel." + channel.id()));
         }
         if (!p.hasPermission("rtp.channel." + channel.id())) {
@@ -155,7 +155,10 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
             }
             case "debug": {
                 Utils.DEBUG = !Utils.DEBUG;
-                sender.sendMessage("Дебаг переключен в значение: " + Utils.DEBUG);
+                String message = "§7Дебаг переключен в значение: "
+                        + (Utils.DEBUG ? "§a" : "§c")
+                        + Utils.DEBUG;
+                sender.sendMessage(message);
                 return true;
             }
         }
