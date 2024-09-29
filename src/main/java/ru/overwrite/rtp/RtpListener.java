@@ -53,7 +53,7 @@ public class RtpListener implements Listener {
         }
         String playerName = p.getName();
         if (rtpManager.hasActiveTasks(playerName)) {
-            Channel activeChannel = rtpManager.getPerPlayerActiveRtpTask().get(playerName).getActiveChannel();
+            Channel activeChannel = getActiveChannel(playerName);
             if (activeChannel.restrictions().restrictMove()) {
                 Utils.sendMessage(activeChannel.messages().movedOnTeleportMessage(), p);
                 cancelTeleportation(playerName);
@@ -69,7 +69,7 @@ public class RtpListener implements Listener {
         Player p = e.getPlayer();
         String playerName = p.getName();
         if (rtpManager.hasActiveTasks(playerName)) {
-            Channel activeChannel = rtpManager.getPerPlayerActiveRtpTask().get(playerName).getActiveChannel();
+            Channel activeChannel = getActiveChannel(playerName);
             if (activeChannel.restrictions().restrictTeleport()) {
                 Utils.sendMessage(activeChannel.messages().teleportedOnTeleportMessage(), p);
                 cancelTeleportation(playerName);
@@ -142,12 +142,19 @@ public class RtpListener implements Listener {
     public void onDamage(EntityDamageByEntityEvent e) {
         Entity damagerEntity = e.getDamager();
         Entity damagedEntity = e.getEntity();
+
         if (damagerEntity instanceof Player damager) {
-            String damagerName = damager.getName();
-            if (!rtpManager.hasActiveTasks(damagerName)) {
-                return;
-            }
-            Channel activeChannel = rtpManager.getPerPlayerActiveRtpTask().get(damagerName).getActiveChannel();
+            handleDamagerPlayer(damager, damagedEntity);
+        }
+        if (damagedEntity instanceof Player damaged) {
+            handleDamagedPlayer(damagerEntity, damaged);
+        }
+    }
+
+    private void handleDamagerPlayer(Player damager, Entity damagedEntity) {
+        String damagerName = damager.getName();
+        if (rtpManager.hasActiveTasks(damagerName)) {
+            Channel activeChannel = getActiveChannel(damagerName);
             if (activeChannel.restrictions().restrictDamageOthers()) {
                 if (activeChannel.restrictions().damageCheckOnlyPlayers() && !(damagedEntity instanceof Player)) {
                     return;
@@ -156,23 +163,14 @@ public class RtpListener implements Listener {
                 cancelTeleportation(damagerName);
             }
         }
-        if (damagedEntity instanceof Player damaged) {
-            String damagedName = damaged.getName();
-            if (!rtpManager.hasActiveTasks(damagedName)) {
-                return;
-            }
-            Channel activeChannel = rtpManager.getPerPlayerActiveRtpTask().get(damagedName).getActiveChannel();
+    }
+
+    private void handleDamagedPlayer(Entity damagerEntity, Player damaged) {
+        String damagedName = damaged.getName();
+        if (rtpManager.hasActiveTasks(damagedName)) {
+            Channel activeChannel = getActiveChannel(damagedName);
             if (activeChannel.restrictions().restrictDamage()) {
-                Player damager = null;
-                if (damagerEntity instanceof Player p) {
-                    damager = p;
-                }
-                if (damagerEntity instanceof Projectile projectile) {
-                    ProjectileSource projectileSource = projectile.getShooter();
-                    if (projectileSource instanceof Player p) {
-                        damager = p;
-                    }
-                }
+                Player damager = getDamager(damagerEntity);
                 if (damager == null && activeChannel.restrictions().damageCheckOnlyPlayers()) {
                     return;
                 }
@@ -180,6 +178,23 @@ public class RtpListener implements Listener {
                 cancelTeleportation(damagedName);
             }
         }
+    }
+
+    private Channel getActiveChannel(String playerName) {
+        return rtpManager.getPerPlayerActiveRtpTask().get(playerName).getActiveChannel();
+    }
+
+    private Player getDamager(Entity damagerEntity) {
+        if (damagerEntity instanceof Player p) {
+            return p;
+        }
+        if (damagerEntity instanceof Projectile projectile) {
+            ProjectileSource projectileSource = projectile.getShooter();
+            if (projectileSource instanceof Player p) {
+                return p;
+            }
+        }
+        return null;
     }
 
     @EventHandler
