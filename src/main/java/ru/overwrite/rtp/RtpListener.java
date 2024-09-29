@@ -29,7 +29,7 @@ public class RtpListener implements Listener {
         this.rtpManager = plugin.getRtpManager();
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onMove(PlayerMoveEvent e) {
         if (!e.hasChangedBlock()) {
             return;
@@ -61,7 +61,7 @@ public class RtpListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onTeleport(PlayerTeleportEvent e) {
         if (e.getCause() == PlayerTeleportEvent.TeleportCause.PLUGIN) {
             return;
@@ -123,7 +123,7 @@ public class RtpListener implements Listener {
         rtpManager.preTeleport(p, channel, p.getWorld());
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onDamage(EntityDamageEvent e) {
         if (!(e.getEntity() instanceof Player p)) {
             return;
@@ -138,7 +138,7 @@ public class RtpListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onDamage(EntityDamageByEntityEvent e) {
         Entity damagerEntity = e.getDamager();
         Entity damagedEntity = e.getEntity();
@@ -203,7 +203,7 @@ public class RtpListener implements Listener {
         handlePlayerLeave(p);
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onKick(PlayerKickEvent e) {
         Player p = e.getPlayer();
         handlePlayerLeave(p);
