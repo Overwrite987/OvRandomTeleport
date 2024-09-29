@@ -53,13 +53,18 @@ public class Main extends JavaPlugin {
         }
     }
 
-    private boolean hasWorldGuard() {
-        try {
-            Class.forName("com.sk89q.worldguard.protection.flags.registry.FlagConflictException");
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
+    private Boolean hasWorldGuard = null;
+
+    public boolean hasWorldGuard() {
+        if (hasWorldGuard == null) {
+            try {
+                Class.forName("com.sk89q.worldguard.protection.flags.registry.FlagConflictException");
+                hasWorldGuard = true;
+            } catch (ClassNotFoundException e) {
+                hasWorldGuard = false;
+            }
         }
+        return hasWorldGuard;
     }
 
     @Override
@@ -142,6 +147,7 @@ public class Main extends JavaPlugin {
         if (!mainSettings.getBoolean("papi_support", true) || !pluginManager.isPluginEnabled("PlaceholderAPI")) {
             return;
         }
+        Utils.USE_PAPI = true;
         new RtpExpansion(this).register();
         pluginLogger.info("§eПлейсхолдеры подключены!");
     }

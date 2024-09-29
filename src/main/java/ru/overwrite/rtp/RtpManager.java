@@ -349,7 +349,9 @@ public class RtpManager {
             Location loc = switch (channel.type()) {
                 case DEFAULT -> locationGenerator.generateRandomLocation(p, channel, world);
                 case NEAR_PLAYER -> locationGenerator.generateRandomLocationNearPlayer(p, channel, world);
-                case NEAR_REGION -> locationGenerator.generateRandomLocationNearRandomRegion(p, channel, world);
+                case NEAR_REGION -> locationGenerator.getWgLocationGenerator() != null ?
+                        locationGenerator.getWgLocationGenerator().generateRandomLocationNearRandomRegion(p, channel, world) :
+                        locationGenerator.generateRandomRoundLocation(p, channel, world);
             };
             if (loc == null) {
                 teleportingNow.remove(p.getName());

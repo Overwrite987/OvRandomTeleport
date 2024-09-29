@@ -76,15 +76,24 @@ public class Utils {
         return new String(b);
     }
 
+    public static boolean USE_PAPI = false;
+
     public static void sendMessage(String message, Player p) {
         if (message.isEmpty() || message.isBlank()) {
             return;
         }
-        if (RtpExpansion.ACTIVE) {
-            p.sendMessage(PlaceholderAPI.setPlaceholders(p, message));
+        if (USE_PAPI) {
+            p.sendMessage(parsePlaceholders(message, p));
             return;
         }
         p.sendMessage(message);
+    }
+
+    public static String parsePlaceholders(String message, Player p) {
+        if (PlaceholderAPI.containsPlaceholders(message)) {
+            message = PlaceholderAPI.setPlaceholders(p, message);
+        }
+        return message;
     }
 
     public static String getTime(int time) {

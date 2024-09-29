@@ -12,11 +12,9 @@ import ru.overwrite.rtp.utils.Utils;
 public class RtpExpansion extends PlaceholderExpansion {
 
     private final RtpManager rtpManager;
-    public static boolean ACTIVE;
 
     public RtpExpansion(Main plugin) {
         this.rtpManager = plugin.getRtpManager();
-        ACTIVE = true;
     }
 
     @Override
