@@ -1,9 +1,11 @@
 package ru.overwrite.rtp.actions.impl;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.key.Key;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.Main;
+import ru.overwrite.rtp.RtpExpansion;
 import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.actions.ActionType;
 import ru.overwrite.rtp.channels.Channel;
@@ -47,11 +49,19 @@ public class TitleActionType implements ActionType {
     ) implements Action {
         @Override
         public void perform(@NotNull Channel channel, @NotNull Player player, @NotNull String[] searchList, @NotNull String[] replacementList) {
+            String title = Utils.replaceEach(this.title, searchList, replacementList);
+            String subtitle = Utils.replaceEach(this.subtitle, searchList, replacementList);
+            if (RtpExpansion.ACTIVE) {
+                player.sendTitle(
+                        PlaceholderAPI.setPlaceholders(player, title),
+                        PlaceholderAPI.setPlaceholders(player, subtitle),
+                        fadeIn, stay, fadeOut);
+                return;
+            }
             player.sendTitle(
-                    Utils.replaceEach(title, searchList, replacementList),
-                    Utils.replaceEach(subtitle, searchList, replacementList),
-                    fadeIn, stay, fadeOut
-            );
+                    title,
+                    subtitle,
+                    fadeIn, stay, fadeOut);
         }
     }
 }
