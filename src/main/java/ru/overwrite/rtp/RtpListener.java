@@ -173,7 +173,7 @@ public class RtpListener implements Listener {
                         damager = p;
                     }
                 }
-                if (damager != null && activeChannel.restrictions().damageCheckOnlyPlayers()) {
+                if (damager == null && activeChannel.restrictions().damageCheckOnlyPlayers()) {
                     return;
                 }
                 damaged.sendMessage(activeChannel.messages().damagedOnTeleportMessage());
