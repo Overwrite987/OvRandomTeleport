@@ -7,7 +7,7 @@ main_settings:
   # Команда рандомной телепортации (указывается без /)
   rtp_command: 'rtp'
   # Алиасы к команде рандомной телепортации
-  rtp_aliases: [ 'randomteleport', 'ovrandomteleport' ]
+  rtp_aliases: ['randomteleport', 'ovrandomteleport']
   # Название дефолтного канала.
   # Указанный канал будет использован в качестве основного при вводе команды /rtp
   default_channel: 'default'
@@ -19,6 +19,7 @@ main_settings:
   update_checker: true
 
 # Каналы рандомной телепортации
+# Вы можете создавать свои каналы, основываясь на уже заранее заготовленных в плагине
 channels:
   # Базовый канал (право на использование - rtp.channel.имя_канала т.е. в данном случае rtp.channel.default)
   default:
