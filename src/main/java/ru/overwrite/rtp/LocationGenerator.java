@@ -86,7 +86,7 @@ public class LocationGenerator {
             return generateRandomLocationNearPlayer(p, channel, world);
         } else {
             if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Location for player " + p.getName() + " found in " + iterationsPerPlayer.get(p.getName()) + " iterations");
+                plugin.getPluginLogger().info("Location for player " + p.getName() + " found in " + iterationsPerPlayer.getInt(p.getName()) + " iterations");
             }
             iterationsPerPlayer.removeInt(p.getName());
             return location;
