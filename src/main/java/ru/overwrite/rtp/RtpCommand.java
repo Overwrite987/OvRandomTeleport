@@ -192,6 +192,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
                 if (args.length == 2) {
                     completions.add("help");
                     completions.add("reload");
+                    completions.add("teleport");
                     completions.add("forceteleport");
                     completions.add("forcertp");
                     completions.add("debug");
