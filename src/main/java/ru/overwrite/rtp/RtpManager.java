@@ -362,7 +362,6 @@ public class RtpManager {
             if (channel.cooldown().teleportCooldown() > 0) {
                 this.executeActions(p, channel, channel.actions().preTeleportActions(), p.getLocation());
                 RtpTask rtpTask = new RtpTask(plugin, this, p.getName(), channel);
-                perPlayerActiveRtpTask.put(p.getName(), rtpTask);
                 rtpTask.startPreTeleportTimer(p, channel, loc);
                 return;
             }
