@@ -119,6 +119,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
                 FileConfiguration config = plugin.getConfig();
                 pluginConfig.setupMessages(config);
                 rtpManager.getNamedChannels().clear();
+                rtpManager.getSpecifications().clearAll();
                 rtpManager.setupChannels(config, Bukkit.getPluginManager());
                 sender.sendMessage(pluginConfig.messages_reload);
                 return true;

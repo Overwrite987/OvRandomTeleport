@@ -74,7 +74,7 @@ public class RtpManager {
             if (Utils.DEBUG) {
                 plugin.getPluginLogger().info("Id: " + channelId);
             }
-            ConfigurationSection channelSection = config.getConfigurationSection("channels." + channelId);
+            final ConfigurationSection channelSection = config.getConfigurationSection("channels." + channelId);
             String name = channelSection.getString("name", "");
             ChannelType type = channelSection.getString("type") == null ? ChannelType.DEFAULT : ChannelType.valueOf(channelSection.getString("type").toUpperCase());
             if (type == ChannelType.NEAR_REGION && !pluginManager.isPluginEnabled("WorldGuard")) {
@@ -130,6 +130,12 @@ public class RtpManager {
 
         public static Specifications createEmpty() {
             return new Specifications(new HashSet<>(), new HashMap<>(), new HashMap<>());
+        }
+
+        public void clearAll() {
+            this.joinChannels.clear();
+            this.voidChannels.clear();
+            this.respawnChannels.clear();
         }
 
         public void assign(Channel newChannel, ConfigurationSection section) {
