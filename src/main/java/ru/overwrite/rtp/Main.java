@@ -23,7 +23,7 @@ import ru.overwrite.rtp.utils.logging.PaperLogger;
 
 import java.lang.reflect.Constructor;
 
-public class Main extends JavaPlugin {
+public final class Main extends JavaPlugin {
 
     private final Server server = getServer();
 
