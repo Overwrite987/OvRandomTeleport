@@ -28,7 +28,7 @@ public class LocationGenerator {
         this.plugin = plugin;
         this.iterationsPerPlayer = new Object2IntOpenHashMap<>();
         if (plugin.hasWorldGuard()) {
-            wgLocationGenerator = new WGLocationGenerator(plugin);
+            wgLocationGenerator = new WGLocationGenerator(this);
         } else {
             wgLocationGenerator = null;
         }

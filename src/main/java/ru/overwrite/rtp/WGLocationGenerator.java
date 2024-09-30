@@ -16,15 +16,17 @@ import ru.overwrite.rtp.utils.WGUtils;
 
 import java.util.List;
 
-public class WGLocationGenerator extends LocationGenerator {
+public class WGLocationGenerator {
 
-    public WGLocationGenerator(Main plugin) {
-        super(plugin);
+    LocationGenerator locationGenerator;
+
+    public WGLocationGenerator(LocationGenerator locationGenerator) {
+        this.locationGenerator = locationGenerator;
     }
 
     public Location generateRandomLocationNearRandomRegion(Player p, Channel channel, World world) {
         LocationGenOptions locationGenOptions = channel.locationGenOptions();
-        if (hasReachedMaxIterations(p, locationGenOptions)) {
+        if (locationGenerator.hasReachedMaxIterations(p, locationGenOptions)) {
             return null;
         }
 
@@ -57,19 +59,19 @@ public class WGLocationGenerator extends LocationGenerator {
             return null;
         }
 
-        ProtectedRegion randomRegion = regionsInRange.get(random.nextInt(regionsInRange.size()));
+        ProtectedRegion randomRegion = regionsInRange.get(locationGenerator.random.nextInt(regionsInRange.size()));
 
         int centerX = (randomRegion.getMinimumPoint().getX() + randomRegion.getMaximumPoint().getX()) / 2;
         int centerZ = (randomRegion.getMinimumPoint().getZ() + randomRegion.getMaximumPoint().getZ()) / 2;
 
         LocationGenOptions.Shape shape = locationGenOptions.shape();
-        Location location = generateRandomLocationNearPoint(shape, p, centerX, centerZ, channel, world);
+        Location location = locationGenerator.generateRandomLocationNearPoint(shape, p, centerX, centerZ, channel, world);
 
         if (location == null) {
-            iterationsPerPlayer.addTo(p.getName(), 1);
+            locationGenerator.iterationsPerPlayer.addTo(p.getName(), 1);
             return generateRandomLocationNearRandomRegion(p, channel, world);
         } else {
-            iterationsPerPlayer.removeInt(p.getName());
+            locationGenerator.iterationsPerPlayer.removeInt(p.getName());
             return location;
         }
     }
