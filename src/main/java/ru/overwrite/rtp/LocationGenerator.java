@@ -367,35 +367,42 @@ public class LocationGenerator {
     private boolean isLocationRestricted(Location location, Avoidance avoidance) {
         if (isOutsideWorldBorder(location)) {
             if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Location " + location + " is outside the world border.");
+                plugin.getPluginLogger().info("Location " + locationToString(location) + " is outside the world border.");
             }
             return true;
         }
         if (isDisallowedBlock(location, avoidance)) {
             if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Location " + location + " contains a disallowed block.");
+                plugin.getPluginLogger().info("Location " + locationToString(location) + " contains a disallowed block.");
             }
             return true;
         }
         if (isDisallowedBiome(location, avoidance)) {
             if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Location " + location + " is in a disallowed biome.");
+                plugin.getPluginLogger().info("Location " + locationToString(location) + " is in a disallowed biome.");
             }
             return true;
         }
         if (isInsideRegion(location, avoidance)) {
             if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Location " + location + " is inside a disallowed region.");
+                plugin.getPluginLogger().info("Location " + locationToString(location) + " is inside a disallowed region.");
             }
             return true;
         }
         if (isInsideTown(location, avoidance)) {
             if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Location " + location + " is inside a disallowed town.");
+                plugin.getPluginLogger().info("Location " + locationToString(location) + " is inside a disallowed town.");
             }
             return true;
         }
         return false;
+    }
+
+    public static String locationToString(Location location) {
+        return "(" + location.getWorld().getName() + "/"
+                + location.getBlockX() + "/"
+                + location.getBlockY() + "/"
+                + location.getBlockZ() + ")";
     }
 
     private boolean isOutsideWorldBorder(Location loc) {
