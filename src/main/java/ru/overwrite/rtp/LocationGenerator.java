@@ -218,7 +218,6 @@ public class LocationGenerator {
         }
     }
 
-
     public Location generateRandomLocationNearPoint(LocationGenOptions.Shape shape, Player p, int centerX, int centerZ, Channel channel, World world) {
         return switch (shape) {
             case SQUARE -> generateRandomSquareLocationNearPoint(p, centerX, centerZ, channel, world);
