@@ -91,7 +91,7 @@ channels:
       # Максимальное кол-во попыток найти локацию для телепорта (нужно, чтобы не застрять в бесконечном цикле поиска локации)
       max_location_attempts: 50
     # Сколько тиков игрок должен быть неуязвим после телепортации через канал RTP (-1 чтобы отключить)
-    invulnerable_after_teleport: 3
+    invulnerable_after_teleport: 10
     # Настройки кулдаунов
     cooldown:
       # Дефолтный кулдаун для телепортации
@@ -219,7 +219,7 @@ channels:
       # Необязательный параметр
       max_location_attempts: 50
     # Необязательный параметр
-    invulnerable_after_teleport: 3
+    invulnerable_after_teleport: 10
     # Необязательные параметры
     cooldown:
       default_cooldown: 60
