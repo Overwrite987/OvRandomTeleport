@@ -3,6 +3,6 @@ version: '${project.version}'
 author: OverwriteMC
 main: ru.overwrite.rtp.Main
 api-version: 1.13
-softdepend: [Vault, WorldGuard, WorldEdit, Towny, PlayerPoints]
+softdepend: [Vault, WorldGuard, WorldEdit, Towny, PlayerPoints, PlaceholderAPI]
 libraries:
   - com.github.ben-manes.caffeine:caffeine:3.1.8
