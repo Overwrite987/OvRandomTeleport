@@ -69,9 +69,6 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        if (!isPaper()) {
-            return;
-        }
         saveDefaultConfig();
         PluginManager pluginManager = server.getPluginManager();
         FileConfiguration config = getConfig();
@@ -91,21 +88,6 @@ public final class Main extends JavaPlugin {
         pluginManager.registerEvents(new RtpListener(this), this);
         checkForUpdates(mainSettings);
         server.getScheduler().runTaskAsynchronously(this, () -> rtpManager.setupChannels(config, pluginManager));
-    }
-
-    public boolean isPaper() {
-        if (server.getName().equals("CraftBukkit")) {
-            pluginLogger.info(" ");
-            pluginLogger.info("§6============= §6! WARNING ! §c=============");
-            pluginLogger.info("§eЭтот плагин работает только на Paper и его форках!");
-            pluginLogger.info("§eАвтор плагина §cкатегорически §eвыступает за отказ от использования устаревшего и уязвимого софта!");
-            pluginLogger.info("§eСкачать Paper: §ahttps://papermc.io/downloads/all");
-            pluginLogger.info("§6============= §6! WARNING ! §c=============");
-            pluginLogger.info(" ");
-            this.setEnabled(false);
-            return false;
-        }
-        return true;
     }
 
     public void checkForUpdates(ConfigurationSection mainSettings) {
