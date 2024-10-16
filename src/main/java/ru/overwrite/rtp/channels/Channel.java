@@ -2,6 +2,8 @@ package ru.overwrite.rtp.channels;
 
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import ru.overwrite.rtp.channels.settings.*;
 
 import org.bukkit.World;
@@ -16,12 +18,12 @@ public record Channel(
         Costs costs,
         LocationGenOptions locationGenOptions,
         int invulnerableTicks,
-        Cooldown cooldown,
-        BossBar bossBar,
-        Particles particles,
-        Restrictions restrictions,
-        Avoidance avoidance,
-        Actions actions,
-        Messages messages) {
+        @NotNull Cooldown cooldown,
+        @Nullable BossBar bossBar,
+        @Nullable Particles particles,
+        @NotNull Restrictions restrictions,
+        @NotNull Avoidance avoidance,
+        @Nullable Actions actions,
+        @NotNull Messages messages) {
 
 }
