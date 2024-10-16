@@ -83,6 +83,9 @@ public class RtpManager {
             Costs costs = setupChannelCosts(channelSection.getConfigurationSection("costs"));
             LocationGenOptions locationGenOptions = setupChannelGenOptions(channelSection.getConfigurationSection("location_generation_options"));
             if (locationGenOptions == null) {
+                if (Utils.DEBUG) {
+                    plugin.getPluginLogger().info("Could not setup location generator options for channel " + channelId);
+                }
                 continue;
             }
             int invulnerableTicks = channelSection.getInt("invulnerable_after_teleport", 1);
