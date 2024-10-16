@@ -23,7 +23,7 @@ public record Channel(
         @Nullable Particles particles,
         @NotNull Restrictions restrictions,
         @NotNull Avoidance avoidance,
-        @Nullable Actions actions,
+        @NotNull Actions actions,
         @NotNull Messages messages) {
 
 }

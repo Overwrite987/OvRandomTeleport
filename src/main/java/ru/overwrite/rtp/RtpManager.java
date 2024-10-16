@@ -266,10 +266,8 @@ public class RtpManager {
     }
 
     private Actions setupChannelActions(ConfigurationSection actions) {
-        if (isSectionNull(actions)) {
-            return null;
-        }
-        List<Action> preTeleportActions = getActionList(actions.getStringList("pre_teleport"));
+        boolean isNullSection = isSectionNull(actions);
+        List<Action> preTeleportActions = isNullSection ? List.of() : getActionList(actions.getStringList("pre_teleport"));
         Int2ObjectMap<List<Action>> onCooldownActions = new Int2ObjectOpenHashMap<>();
         ConfigurationSection cdActions = actions.getConfigurationSection("on_cooldown");
         if (!isSectionNull(cdActions)) {
@@ -282,7 +280,7 @@ public class RtpManager {
                 onCooldownActions.put(time, actionList);
             }
         }
-        List<Action> afterTeleportActions = getActionList(actions.getStringList("after_teleport"));
+        List<Action> afterTeleportActions = isNullSection ? List.of() : getActionList(actions.getStringList("after_teleport"));
 
         return new Actions(preTeleportActions, onCooldownActions, afterTeleportActions);
     }
