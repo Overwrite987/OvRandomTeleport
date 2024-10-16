@@ -28,7 +28,7 @@ public class Config {
     public static String time_hours, time_minutes, time_seconds, papi_nocooldown;
 
     public void setupMessages(FileConfiguration config) {
-        ConfigurationSection messages = config.getConfigurationSection("messages");
+        final ConfigurationSection messages = config.getConfigurationSection("messages");
         messages_prefix = Utils.COLORIZER.colorize(messages.getString("prefix", "messages.prefix"));
         messages_no_perms = getPrefixed(messages.getString("no_perms", "messages.no_perms"), messages_prefix);
         messages_invalid_world = getPrefixed(messages.getString("invalid_world", "messages.invalid_world"), messages_prefix);
@@ -44,14 +44,14 @@ public class Config {
         messages_damaged_other_on_teleport = getPrefixed(messages.getString("damaged_other_on_teleport", "messages.damaged_other_on_teleport"), messages_prefix);
         messages_fail_to_find_location = getPrefixed(messages.getString("fail_to_find_location", "messages.fail_to_find_location"), messages_prefix);
         messages_already_teleporting = getPrefixed(messages.getString("already_teleporting", "messages.already_teleporting"), messages_prefix);
-        ConfigurationSection admin = messages.getConfigurationSection("admin");
+        final ConfigurationSection admin = messages.getConfigurationSection("admin");
         messages_reload = getPrefixed(admin.getString("reload"), messages_prefix);
         messages_unknown_argument = getPrefixed(admin.getString("unknown_argument"), messages_prefix);
         messages_player_not_found = getPrefixed(admin.getString("player_not_found"), messages_prefix);
         messages_admin_help = getPrefixed(admin.getString("admin_help"), messages_prefix);
-        ConfigurationSection placeholders = messages.getConfigurationSection("placeholders");
+        final ConfigurationSection placeholders = messages.getConfigurationSection("placeholders");
         papi_nocooldown = Utils.COLORIZER.colorize(placeholders.getString("no_cooldown"));
-        ConfigurationSection time = placeholders.getConfigurationSection("time");
+        final ConfigurationSection time = placeholders.getConfigurationSection("time");
         time_hours = Utils.COLORIZER.colorize(time.getString("hours", " ч."));
         time_minutes = Utils.COLORIZER.colorize(time.getString("minutes", " мин."));
         time_seconds = Utils.COLORIZER.colorize(time.getString("seconds", " сек."));
