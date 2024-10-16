@@ -92,9 +92,6 @@ public class RtpManager {
             Restrictions restrictions = setupChannelRestrictions(channelSection.getConfigurationSection("restrictions"));
             Avoidance avoidance = setupChannelAvoidance(channelSection.getConfigurationSection("avoid"), pluginManager);
             Actions channelActions = setupChannelActions(channelSection.getConfigurationSection("actions"));
-            if (channelActions == null) {
-                continue;
-            }
             Messages messages = setupChannelMessages(channelSection.getConfigurationSection("messages"));
 
             Channel newChannel = new Channel(channelId,
