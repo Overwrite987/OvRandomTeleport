@@ -6,10 +6,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 import lombok.Getter;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Biome;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
@@ -91,6 +88,7 @@ public class RtpManager {
             int invulnerableTicks = channelSection.getInt("invulnerable_after_teleport", 1);
             Cooldown cooldown = setupCooldown(channelSection.getConfigurationSection("cooldown"));
             BossBar bossBar = setupChannelBossBar(channelSection.getConfigurationSection("bossbar"));
+            Particles particles = setupChannelParticles(channelSection.getConfigurationSection("particles"));
             Restrictions restrictions = setupChannelRestrictions(channelSection.getConfigurationSection("restrictions"));
             Avoidance avoidance = setupChannelAvoidance(channelSection.getConfigurationSection("avoid"), pluginManager);
             Actions channelActions = setupChannelActions(channelSection.getConfigurationSection("actions"));
@@ -110,6 +108,7 @@ public class RtpManager {
                     invulnerableTicks,
                     cooldown,
                     bossBar,
+                    particles,
                     restrictions,
                     avoidance,
                     channelActions,
@@ -211,14 +210,24 @@ public class RtpManager {
 
     private BossBar setupChannelBossBar(ConfigurationSection bossbar) {
         if (isSectionNull(bossbar)) {
-            return new BossBar(false, "", BarColor.PURPLE, BarStyle.SOLID);
+            return null;
         }
-        boolean enabled = bossbar.getBoolean("enabled", false);
         String title = Utils.COLORIZER.colorize(bossbar.getString("title"));
         BarColor color = BarColor.valueOf(bossbar.getString("color").toUpperCase());
         BarStyle style = BarStyle.valueOf(bossbar.getString("style").toUpperCase());
 
-        return new BossBar(enabled, title, color, style);
+        return new BossBar(title, color, style);
+    }
+
+    private Particles setupChannelParticles(ConfigurationSection particles) {
+        if (isSectionNull(particles)) {
+            return null;
+        }
+        Particle particle = Particle.valueOf(particles.getString("id"));
+        int count = particles.getInt("count");
+        double radius = particles.getDouble("radius");
+        double speed = particles.getDouble("speed");
+        return new Particles(particle, count, radius, speed);
     }
 
     private Restrictions setupChannelRestrictions(ConfigurationSection restrictions) {
@@ -362,7 +371,7 @@ public class RtpManager {
             if (loc == null) {
                 teleportingNow.remove(p.getName());
                 Utils.sendMessage(channel.messages().failToFindLocationMessage(), p);
-                returnCost(p, channel); // return what we took
+                this.returnCost(p, channel); // return what we took
                 return;
             }
             if (channel.cooldown().teleportCooldown() > 0) {
@@ -371,7 +380,7 @@ public class RtpManager {
                 rtpTask.startPreTeleportTimer(p, channel, loc);
                 return;
             }
-            teleportPlayer(p, channel, loc);
+            this.teleportPlayer(p, channel, loc);
         });
     }
 
@@ -403,10 +412,36 @@ public class RtpManager {
                 Bukkit.getScheduler().runTaskLater(plugin, () -> p.setInvulnerable(false), channel.invulnerableTicks());
             }
             p.teleport(loc);
+            this.spawnParticles(p, channel.particles());
             teleportingNow.remove(p.getName());
-            handlePlayerCooldown(p, channel);
+            this.handlePlayerCooldown(p, channel);
             this.executeActions(p, channel, channel.actions().afterTeleportActions(), loc);
         });
+    }
+
+    public void spawnParticles(Player p, Particles particles) {
+        Location loc = p.getLocation();
+        loc.add(0, 1, 0);
+        final World world = loc.getWorld();
+
+        final int count = particles.count();
+        final double radius = particles.radius();
+
+        final double goldenAngle = Math.PI * (3 - Math.sqrt(5));
+
+        for (int i = 0; i < count; i++) {
+            double yOffset = 1 - (2.0 * i) / (count - 1);
+            double radiusAtHeight = Math.sqrt(1 - yOffset * yOffset);
+
+            double theta = goldenAngle * i;
+
+            double xOffset = radius * radiusAtHeight * Math.cos(theta);
+            double zOffset = radius * radiusAtHeight * Math.sin(theta);
+
+            Location particleLocation = loc.clone().add(xOffset, yOffset * radius, zOffset);
+
+            world.spawnParticle(particles.id(), particleLocation, 1, 0, 0, 0, particles.speed());
+        }
     }
 
     private void handlePlayerCooldown(Player p, Channel channel) {
@@ -442,7 +477,7 @@ public class RtpManager {
         String x = Integer.toString(loc.getBlockX());
         String y = Integer.toString(loc.getBlockY());
         String z = Integer.toString(loc.getBlockZ());
-        String[] replacementList = {p.getName(), name, cd, x, y, z};
+        final String[] replacementList = {p.getName(), name, cd, x, y, z};
         Bukkit.getScheduler().runTask(plugin, () -> {
             for (Action action : actions) {
                 action.perform(channel, p, searchList, replacementList);

@@ -35,7 +35,7 @@ public class RtpTask {
     public void startPreTeleportTimer(Player p, Channel channel, Location location) {
         Cooldown cooldown = channel.cooldown();
         this.preTeleportCooldown = cooldown.teleportCooldown();
-        if (channel.bossBar().bossbarEnabled()) {
+        if (channel.bossBar() != null) {
             setupBossBar(p, channel, cooldown);
         }
         this.runnable = new BukkitRunnable() {
@@ -69,7 +69,7 @@ public class RtpTask {
     }
 
     private void updateBossBar(Channel channel, Cooldown cooldown) {
-        if (channel.bossBar().bossbarEnabled()) {
+        if (channel.bossBar() != null) {
             double progress = preTeleportCooldown / (double) cooldown.teleportCooldown();
             if (progress < 1 && progress > 0) {
                 bossBar.setProgress(progress);

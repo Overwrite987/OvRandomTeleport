@@ -18,6 +18,7 @@ public record Channel(
         int invulnerableTicks,
         Cooldown cooldown,
         BossBar bossBar,
+        Particles particles,
         Restrictions restrictions,
         Avoidance avoidance,
         Actions actions,
