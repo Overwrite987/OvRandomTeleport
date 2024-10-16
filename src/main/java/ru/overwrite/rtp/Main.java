@@ -72,7 +72,7 @@ public final class Main extends JavaPlugin {
         saveDefaultConfig();
         PluginManager pluginManager = server.getPluginManager();
         final FileConfiguration config = getConfig();
-        ConfigurationSection mainSettings = config.getConfigurationSection("main_settings");
+        final ConfigurationSection mainSettings = config.getConfigurationSection("main_settings");
         Utils.setupColorizer(mainSettings);
         pluginConfig.setupMessages(config);
         registerCommand(pluginManager, mainSettings);
