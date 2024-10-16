@@ -231,11 +231,12 @@ public class RtpManager {
     }
 
     private Restrictions setupChannelRestrictions(ConfigurationSection restrictions) {
-        boolean restrictMove = !isSectionNull(restrictions) && restrictions.getBoolean("move", false);
-        boolean restrictTeleport = !isSectionNull(restrictions) && restrictions.getBoolean("teleport", false);
-        boolean restrictDamage = !isSectionNull(restrictions) && restrictions.getBoolean("damage", false);
-        boolean restrictDamageOthers = !isSectionNull(restrictions) && restrictions.getBoolean("damage_others", false);
-        boolean damageCheckOnlyPlayers = !isSectionNull(restrictions) && restrictions.getBoolean("damage_check_only_players", false);
+        boolean isNullSection = isSectionNull(restrictions);
+        boolean restrictMove = !isNullSection && restrictions.getBoolean("move", false);
+        boolean restrictTeleport = !isNullSection && restrictions.getBoolean("teleport", false);
+        boolean restrictDamage = !isNullSection && restrictions.getBoolean("damage", false);
+        boolean restrictDamageOthers = !isNullSection && restrictions.getBoolean("damage_others", false);
+        boolean damageCheckOnlyPlayers = !isNullSection && restrictions.getBoolean("damage_check_only_players", false);
 
         return new Restrictions(restrictMove, restrictTeleport, restrictDamage, restrictDamageOthers, damageCheckOnlyPlayers);
     }
@@ -424,21 +425,18 @@ public class RtpManager {
         loc.add(0, 1, 0);
         final World world = loc.getWorld();
 
-        final int count = particles.count();
-        final double radius = particles.radius();
-
         final double goldenAngle = Math.PI * (3 - Math.sqrt(5));
 
-        for (int i = 0; i < count; i++) {
-            double yOffset = 1 - (2.0 * i) / (count - 1);
+        for (int i = 0; i < particles.count(); i++) {
+            double yOffset = 1 - (2.0 * i) / (particles.count() - 1);
             double radiusAtHeight = Math.sqrt(1 - yOffset * yOffset);
 
             double theta = goldenAngle * i;
 
-            double xOffset = radius * radiusAtHeight * Math.cos(theta);
-            double zOffset = radius * radiusAtHeight * Math.sin(theta);
+            double xOffset = particles.radius() * radiusAtHeight * Math.cos(theta);
+            double zOffset = particles.radius() * radiusAtHeight * Math.sin(theta);
 
-            Location particleLocation = loc.clone().add(xOffset, yOffset * radius, zOffset);
+            Location particleLocation = loc.clone().add(xOffset, yOffset * particles.radius(), zOffset);
 
             world.spawnParticle(particles.id(), particleLocation, 1, 0, 0, 0, particles.speed());
         }
