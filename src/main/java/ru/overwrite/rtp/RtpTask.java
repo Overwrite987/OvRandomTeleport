@@ -36,7 +36,7 @@ public class RtpTask {
         Cooldown cooldown = channel.cooldown();
         this.preTeleportCooldown = cooldown.teleportCooldown();
         if (channel.bossBar() != null) {
-            setupBossBar(p, channel, cooldown);
+            this.setupBossBar(p, channel, cooldown);
         }
         this.runnable = new BukkitRunnable() {
             @Override
@@ -65,7 +65,7 @@ public class RtpTask {
         }
         rtpManager.getPerPlayerActiveRtpTask().remove(playerName);
         rtpManager.teleportPlayer(player, channel, location);
-        cancel();
+        this.cancel();
     }
 
     private void updateBossBar(Channel channel, Cooldown cooldown) {
