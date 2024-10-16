@@ -421,6 +421,9 @@ public class RtpManager {
     }
 
     public void spawnParticles(Player p, Particles particles) {
+        if (particles == null) {
+            return;
+        }
         Location loc = p.getLocation();
         loc.add(0, 1, 0);
         final World world = loc.getWorld();
