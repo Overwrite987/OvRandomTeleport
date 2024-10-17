@@ -21,7 +21,7 @@ public class WGUtils {
             StateFlag flag = new StateFlag("rtp-base-no-teleport", true);
             registry.register(flag);
             RTP_IGNORE_FLAG = flag;
-        } catch (FlagConflictException e) {
+        } catch (FlagConflictException ex) {
             Flag<?> existing = registry.get("rtp-base-no-teleport");
             if (existing instanceof StateFlag) {
                 RTP_IGNORE_FLAG = (StateFlag) existing;

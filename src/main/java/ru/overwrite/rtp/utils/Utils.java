@@ -48,8 +48,8 @@ public class Utils {
                     new URL("https://raw.githubusercontent.com/Overwrite987/OvRandomTeleport/master/VERSION")
                             .openStream()))) {
                 consumer.accept(reader.readLine().trim());
-            } catch (IOException exception) {
-                plugin.getLogger().warning("Can't check for updates: " + exception.getMessage());
+            } catch (IOException ex) {
+                plugin.getLogger().warning("Unable to check for updates: " + ex.getMessage());
             }
         });
     }

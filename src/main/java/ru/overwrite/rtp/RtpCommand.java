@@ -195,10 +195,10 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 
                         downloadFile(downloadUrl, targetFile);
 
-                        sender.sendMessage("§aОбновление было загружено успешно в папку updates!");
+                        sender.sendMessage("§aОбновление было загружено успешно!");
                         sender.sendMessage("§aПерезапустите сервер, чтобы применить обновление.");
-                    } catch (IOException e) {
-                        sender.sendMessage("§cОшибка при загрузке обновления: " + e.getMessage());
+                    } catch (IOException ex) {
+                        sender.sendMessage("§cОшибка при загрузке обновления: " + ex.getMessage());
                     }
                 }
                 sender.sendMessage("§6========================================");

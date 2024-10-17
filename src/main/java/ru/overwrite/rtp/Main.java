@@ -60,7 +60,7 @@ public final class Main extends JavaPlugin {
             try {
                 Class.forName("com.sk89q.worldguard.protection.flags.registry.FlagConflictException");
                 hasWorldGuard = true;
-            } catch (ClassNotFoundException e) {
+            } catch (ClassNotFoundException ex) {
                 hasWorldGuard = false;
             }
         }
