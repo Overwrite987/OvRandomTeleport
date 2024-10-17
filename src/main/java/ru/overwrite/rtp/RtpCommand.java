@@ -178,32 +178,30 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
     }
 
     public void checkAndUpdatePlugin(CommandSender sender, Main plugin) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            Utils.checkUpdates(plugin, version -> {
-                sender.sendMessage("§6========================================");
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> Utils.checkUpdates(plugin, version -> {
+            sender.sendMessage("§6========================================");
 
-                String currentVersion = plugin.getDescription().getVersion();
+            String currentVersion = plugin.getDescription().getVersion();
 
-                if (currentVersion.equals(version)) {
-                    sender.sendMessage("§aВы уже используете последнюю версию плагина!");
-                } else {
-                    String currentJarName = new File(plugin.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()).getName();
-                    String downloadUrl = "https://github.com/Overwrite987/OvRandomTeleport/releases/download/" + version + "/" + "OvRandomTeleport-" + version + ".jar";
-                    try {
-                        File updateFolder = Bukkit.getUpdateFolderFile();
-                        File targetFile = new File(updateFolder, currentJarName);
+            if (currentVersion.equals(version)) {
+                sender.sendMessage("§aВы уже используете последнюю версию плагина!");
+            } else {
+                String currentJarName = new File(plugin.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()).getName();
+                String downloadUrl = "https://github.com/Overwrite987/OvRandomTeleport/releases/download/" + version + "/" + "OvRandomTeleport-" + version + ".jar";
+                try {
+                    File updateFolder = Bukkit.getUpdateFolderFile();
+                    File targetFile = new File(updateFolder, currentJarName);
 
-                        downloadFile(downloadUrl, targetFile);
+                    downloadFile(downloadUrl, targetFile);
 
-                        sender.sendMessage("§aОбновление было загружено успешно!");
-                        sender.sendMessage("§aПерезапустите сервер, чтобы применить обновление.");
-                    } catch (IOException ex) {
-                        sender.sendMessage("§cОшибка при загрузке обновления: " + ex.getMessage());
-                    }
+                    sender.sendMessage("§aОбновление было загружено успешно!");
+                    sender.sendMessage("§aПерезапустите сервер, чтобы применить обновление.");
+                } catch (IOException ex) {
+                    sender.sendMessage("§cОшибка при загрузке обновления: " + ex.getMessage());
                 }
-                sender.sendMessage("§6========================================");
-            });
-        });
+            }
+            sender.sendMessage("§6========================================");
+        }));
     }
 
     private void downloadFile(String urlString, File destination) throws IOException {
