@@ -1,5 +1,11 @@
 package ru.overwrite.rtp;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -154,6 +160,10 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage(pluginConfig.messages_admin_help);
                 return true;
             }
+            case "update": {
+                checkAndUpdatePlugin(sender, plugin);
+                return true;
+            }
             case "debug": {
                 Utils.DEBUG = !Utils.DEBUG;
                 String message = "§7Дебаг переключен в значение: "
@@ -165,6 +175,42 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
         }
         sender.sendMessage(pluginConfig.messages_unknown_argument);
         return false;
+    }
+
+    public void checkAndUpdatePlugin(CommandSender sender, Main plugin) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            Utils.checkUpdates(plugin, version -> {
+                sender.sendMessage("§6========================================");
+
+                String currentVersion = plugin.getDescription().getVersion();
+
+                if (currentVersion.equals(version)) {
+                    sender.sendMessage("§aВы уже используете последнюю версию плагина!");
+                } else {
+                    String currentJarName = new File(plugin.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()).getName();
+                    String downloadUrl = "https://github.com/Overwrite987/OvRandomTeleport/releases/download/" + version + "/" + "OvRandomTeleport-" + version + ".jar";
+                    try {
+                        File updateFolder = Bukkit.getUpdateFolderFile();
+                        File targetFile = new File(updateFolder, currentJarName);
+
+                        downloadFile(downloadUrl, targetFile);
+
+                        sender.sendMessage("§aОбновление было загружено успешно в папку updates!");
+                        sender.sendMessage("§aПерезапустите сервер, чтобы применить обновление.");
+                    } catch (IOException e) {
+                        sender.sendMessage("§cОшибка при загрузке обновления: " + e.getMessage());
+                    }
+                }
+                sender.sendMessage("§6========================================");
+            });
+        });
+    }
+
+    private void downloadFile(String urlString, File destination) throws IOException {
+        URL url = new URL(urlString);
+        try (InputStream in = url.openStream()) {
+            Files.copy(in, destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
     }
 
     private void processForceTeleport(String[] args, Player targetPlayer, Channel channel, World world) {
@@ -196,6 +242,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
                     completions.add("teleport");
                     completions.add("forceteleport");
                     completions.add("forcertp");
+                    completions.add("update");
                     completions.add("debug");
                 }
                 if (args.length > 2 && isForceRtp(args[1])) {

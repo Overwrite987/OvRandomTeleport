@@ -102,6 +102,8 @@ public final class Main extends JavaPlugin {
                 pluginLogger.info("§aВы используете устаревшую плагина!");
                 pluginLogger.info("§aВы можете скачать новую версию здесь:");
                 pluginLogger.info("§bgithub.com/Overwrite987/OvRandomTeleport/releases/");
+                pluginLogger.info("");
+                pluginLogger.info("§aИли обновите плагин при помощи §b/rtp admin update");
             }
             pluginLogger.info("§6========================================");
         });
