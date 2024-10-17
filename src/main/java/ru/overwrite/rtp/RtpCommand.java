@@ -88,7 +88,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
         }
         if (!channel.activeWorlds().contains(p.getWorld())) {
             if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Active worlds for channel " + channel.name() + " does not includes player's world: " + p.getWorld().getName());
+                plugin.getPluginLogger().info("Active worlds for channel " + channel.id() + " does not includes player's world: " + p.getWorld().getName());
             }
             if (channel.teleportToFirstAllowedWorld()) {
                 if (Utils.DEBUG) {
