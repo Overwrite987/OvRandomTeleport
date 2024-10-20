@@ -1,6 +1,7 @@
 package ru.overwrite.rtp;
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -18,7 +19,7 @@ import java.util.List;
 public class LocationGenerator {
 
     private final Main plugin;
-    protected final FastRandom random = new FastRandom();
+    protected final XoRoShiRo128PlusRandom random = new XoRoShiRo128PlusRandom();
 
     @Getter
     private final WGLocationGenerator wgLocationGenerator;
