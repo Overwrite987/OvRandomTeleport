@@ -12,7 +12,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.channels.settings.LocationGenOptions;
-import ru.overwrite.rtp.utils.WGUtils;
+import ru.overwrite.rtp.utils.regions.WGUtils;
 
 import java.util.List;
 

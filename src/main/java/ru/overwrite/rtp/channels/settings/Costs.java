@@ -3,7 +3,7 @@ package ru.overwrite.rtp.channels.settings;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.entity.Player;
 import ru.overwrite.rtp.channels.Channel;
-import ru.overwrite.rtp.utils.PlayerPointsUtils;
+import ru.overwrite.rtp.utils.economy.PlayerPointsUtils;
 import ru.overwrite.rtp.utils.Utils;
 
 public record Costs(

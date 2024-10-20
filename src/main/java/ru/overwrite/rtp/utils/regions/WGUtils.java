@@ -1,4 +1,4 @@
-package ru.overwrite.rtp.utils;
+package ru.overwrite.rtp.utils.regions;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;

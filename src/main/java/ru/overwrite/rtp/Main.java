@@ -17,7 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import ru.overwrite.rtp.utils.Config;
 import ru.overwrite.rtp.utils.Utils;
 import ru.overwrite.rtp.utils.VersionUtils;
-import ru.overwrite.rtp.utils.WGUtils;
+import ru.overwrite.rtp.utils.regions.WGUtils;
 import ru.overwrite.rtp.utils.logging.BukkitLogger;
 import ru.overwrite.rtp.utils.logging.PaperLogger;
 

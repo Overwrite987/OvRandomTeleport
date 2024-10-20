@@ -9,6 +9,8 @@ import ru.overwrite.rtp.channels.settings.Avoidance;
 import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.channels.settings.LocationGenOptions;
 import ru.overwrite.rtp.utils.*;
+import ru.overwrite.rtp.utils.regions.TownyUtils;
+import ru.overwrite.rtp.utils.regions.WGUtils;
 
 import java.util.ArrayList;
 import java.util.List;

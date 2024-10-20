@@ -1,4 +1,4 @@
-package ru.overwrite.rtp.utils;
+package ru.overwrite.rtp.utils.regions;
 
 import org.bukkit.Location;
 import com.palmergames.bukkit.towny.TownyAPI;
