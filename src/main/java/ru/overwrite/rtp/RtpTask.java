@@ -37,12 +37,10 @@ public class RtpTask {
     public void startPreTeleportTimer(Player p, Channel channel, Location location) {
         Cooldown cooldown = channel.cooldown();
         this.preTeleportCooldown = cooldown.teleportCooldown();
-        if (channel.bossBar() != null && channel.bossBar().bossbarEnabled()) {
+        if (channel.bossBar().bossbarEnabled()) {
             this.setupBossBar(p, channel, cooldown);
         }
-        if (channel.particles() != null) {
-            startParticleAnimation(p, preTeleportCooldown * 20, channel.particles());
-        }
+        startParticleAnimation(p, preTeleportCooldown * 20, channel.particles());
         this.runnable = new BukkitRunnable() {
             @Override
             public void run() {
@@ -63,6 +61,7 @@ public class RtpTask {
             double angle = 0;
             double yOffset = 0;
             int tickCounter = 0;
+
             @Override
             public void run() {
                 tickCounter++;
@@ -108,14 +107,12 @@ public class RtpTask {
     }
 
     private void updateBossBar(Channel channel, Cooldown cooldown) {
-        if (channel.bossBar() != null) {
-            double progress = preTeleportCooldown / (double) cooldown.teleportCooldown();
-            if (progress < 1 && progress > 0) {
-                bossBar.setProgress(progress);
-            }
-            String title = Utils.COLORIZER.colorize(channel.bossBar().bossbarTitle().replace("%time%", Utils.getTime(preTeleportCooldown)));
-            bossBar.setTitle(title);
+        double progress = preTeleportCooldown / (double) cooldown.teleportCooldown();
+        if (progress < 1 && progress > 0) {
+            bossBar.setProgress(progress);
         }
+        String title = Utils.COLORIZER.colorize(channel.bossBar().bossbarTitle().replace("%time%", Utils.getTime(preTeleportCooldown)));
+        bossBar.setTitle(title);
     }
 
     private void handleCooldownActions(Player player, Channel channel) {

@@ -191,7 +191,7 @@ public class RtpManager {
     private Cooldown setupCooldown(ConfigurationSection cooldown) {
         Object2IntLinkedOpenHashMap<String> groupCooldownsMap = new Object2IntLinkedOpenHashMap<>();
         if (isSectionNull(cooldown)) {
-            return null;
+            return new Cooldown(-1, null, groupCooldownsMap, false, -1);
         }
         int defaultCooldown = cooldown.getInt("default_cooldown", -1);
         TimedExpiringMap<String, Long> playerCooldowns = defaultCooldown > 0 ? new TimedExpiringMap<>(TimeUnit.SECONDS) : null;
@@ -210,7 +210,7 @@ public class RtpManager {
 
     private BossBar setupChannelBossBar(ConfigurationSection bossbar) {
         if (isSectionNull(bossbar)) {
-            return null;
+            return new BossBar(false, null, null, null);
         }
         boolean enabled = bossbar.getBoolean("enabled");
         String title = Utils.COLORIZER.colorize(bossbar.getString("title"));
@@ -222,7 +222,9 @@ public class RtpManager {
 
     private Particles setupChannelParticles(ConfigurationSection particles) {
         if (isSectionNull(particles)) {
-            return null;
+            return new Particles(
+                    false, null, -1, -1, false,
+                    false, null, -1, -1, -1);
         }
         boolean preTeleportEnabled = false;
         Particle preTeleportId = null;
@@ -398,7 +400,7 @@ public class RtpManager {
                 this.returnCost(p, channel); // return what we took
                 return;
             }
-            if (channel.cooldown() != null && channel.cooldown().teleportCooldown() > 0) {
+            if (channel.cooldown().teleportCooldown() > 0) {
                 this.executeActions(p, channel, channel.actions().preTeleportActions(), p.getLocation());
                 RtpTask rtpTask = new RtpTask(plugin, this, p.getName(), channel);
                 rtpTask.startPreTeleportTimer(p, channel, loc);
@@ -471,9 +473,6 @@ public class RtpManager {
     }
 
     private void handlePlayerCooldown(Player p, Cooldown cooldown) {
-        if (cooldown == null) {
-            return;
-        }
         int cooldownTime = getChannelCooldown(p, cooldown);
         if (getChannelCooldown(p, cooldown) > 0 && !p.hasPermission("rtp.bypasscooldown")) {
             cooldown.playerCooldowns().put(p.getName(), System.currentTimeMillis(), cooldownTime);
