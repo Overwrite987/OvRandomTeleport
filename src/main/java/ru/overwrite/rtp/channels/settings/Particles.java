@@ -3,8 +3,14 @@ package ru.overwrite.rtp.channels.settings;
 import org.bukkit.Particle;
 
 public record Particles(
-        Particle id,
-        int count,
-        double radius,
-        double speed) {
+        boolean preTeleportEnabled,
+        Particle preTeleportId,
+        int preTeleportDots,
+        double preTeleportRadius,
+        boolean preTeleportUp,
+        boolean afterTeleportEnabled,
+        Particle afterTeleportId,
+        int afterTeleportCount,
+        double afterTeleportRadius,
+        double afterTeleportSpeed) {
 }

@@ -191,7 +191,7 @@ public class RtpManager {
     private Cooldown setupCooldown(ConfigurationSection cooldown) {
         Object2IntLinkedOpenHashMap<String> groupCooldownsMap = new Object2IntLinkedOpenHashMap<>();
         if (isSectionNull(cooldown)) {
-            return new Cooldown(-1, null, groupCooldownsMap, false, -1);
+            return null;
         }
         int defaultCooldown = cooldown.getInt("default_cooldown", -1);
         TimedExpiringMap<String, Long> playerCooldowns = defaultCooldown > 0 ? new TimedExpiringMap<>(TimeUnit.SECONDS) : null;
@@ -212,22 +212,47 @@ public class RtpManager {
         if (isSectionNull(bossbar)) {
             return null;
         }
+        boolean enabled = bossbar.getBoolean("enabled");
         String title = Utils.COLORIZER.colorize(bossbar.getString("title"));
         BarColor color = BarColor.valueOf(bossbar.getString("color").toUpperCase());
         BarStyle style = BarStyle.valueOf(bossbar.getString("style").toUpperCase());
 
-        return new BossBar(title, color, style);
+        return new BossBar(enabled, title, color, style);
     }
 
     private Particles setupChannelParticles(ConfigurationSection particles) {
         if (isSectionNull(particles)) {
             return null;
         }
-        Particle particle = Particle.valueOf(particles.getString("id"));
-        int count = particles.getInt("count");
-        double radius = particles.getDouble("radius");
-        double speed = particles.getDouble("speed");
-        return new Particles(particle, count, radius, speed);
+        boolean preTeleportEnabled = false;
+        Particle preTeleportId = null;
+        int preTeleportDots = 0;
+        double preTeleportRadius = 0;
+        boolean preTeleportUp = false;
+        boolean afterTeleportParticleEnabled = false;
+        Particle afterTeleportParticle = null;
+        int afterTeleportCount = 0;
+        double afterTeleportRadius = 0;
+        double afterTeleportSpeed = 0;
+        ConfigurationSection preTeleport = particles.getConfigurationSection("pre_teleport");
+        if (!isSectionNull(preTeleport)) {
+            preTeleportEnabled = preTeleport.getBoolean("enabled", false);
+            preTeleportId = Particle.valueOf(preTeleport.getString("id"));
+            preTeleportDots = preTeleport.getInt("dots");
+            preTeleportRadius = preTeleport.getDouble("radius");
+            preTeleportUp = preTeleport.getBoolean("up");
+        }
+        ConfigurationSection afterTeleport = particles.getConfigurationSection("after_teleport");
+        if (!isSectionNull(afterTeleport)) {
+            afterTeleportParticleEnabled = afterTeleport.getBoolean("enabled", false);
+            afterTeleportParticle = Particle.valueOf(afterTeleport.getString("id"));
+            afterTeleportCount = afterTeleport.getInt("count");
+            afterTeleportRadius = afterTeleport.getDouble("radius");
+            afterTeleportSpeed = afterTeleport.getDouble("speed");
+        }
+        return new Particles(
+                preTeleportEnabled, preTeleportId, preTeleportDots, preTeleportRadius, preTeleportUp,
+                afterTeleportParticleEnabled, afterTeleportParticle, afterTeleportCount, afterTeleportRadius, afterTeleportSpeed);
     }
 
     private Restrictions setupChannelRestrictions(ConfigurationSection restrictions) {
@@ -373,7 +398,7 @@ public class RtpManager {
                 this.returnCost(p, channel); // return what we took
                 return;
             }
-            if (channel.cooldown().teleportCooldown() > 0) {
+            if (channel.cooldown() != null && channel.cooldown().teleportCooldown() > 0) {
                 this.executeActions(p, channel, channel.actions().preTeleportActions(), p.getLocation());
                 RtpTask rtpTask = new RtpTask(plugin, this, p.getName(), channel);
                 rtpTask.startPreTeleportTimer(p, channel, loc);
@@ -413,40 +438,45 @@ public class RtpManager {
             p.teleport(loc);
             this.spawnParticles(p, channel.particles());
             teleportingNow.remove(p.getName());
-            this.handlePlayerCooldown(p, channel);
+            this.handlePlayerCooldown(p, channel.cooldown());
             this.executeActions(p, channel, channel.actions().afterTeleportActions(), loc);
         });
     }
 
     public void spawnParticles(Player p, Particles particles) {
-        if (particles == null) {
+        if (particles == null || !particles.afterTeleportEnabled()) {
             return;
         }
-        Location loc = p.getLocation();
-        loc.add(0, 1, 0);
-        final World world = loc.getWorld();
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            Location loc = p.getLocation();
+            loc.add(0, 1, 0);
+            final World world = loc.getWorld();
 
-        final double goldenAngle = Math.PI * (3 - Math.sqrt(5));
+            final double goldenAngle = Math.PI * (3 - Math.sqrt(5));
 
-        for (int i = 0; i < particles.count(); i++) {
-            double yOffset = 1 - (2.0 * i) / (particles.count() - 1);
-            double radiusAtHeight = Math.sqrt(1 - yOffset * yOffset);
+            for (int i = 0; i < particles.afterTeleportCount(); i++) {
+                double yOffset = 1 - (2.0 * i) / (particles.afterTeleportCount() - 1);
+                double radiusAtHeight = Math.sqrt(1 - yOffset * yOffset);
 
-            double theta = goldenAngle * i;
+                double theta = goldenAngle * i;
 
-            double xOffset = particles.radius() * radiusAtHeight * Math.cos(theta);
-            double zOffset = particles.radius() * radiusAtHeight * Math.sin(theta);
+                double xOffset = particles.afterTeleportRadius() * radiusAtHeight * Math.cos(theta);
+                double zOffset = particles.afterTeleportRadius() * radiusAtHeight * Math.sin(theta);
 
-            Location particleLocation = loc.clone().add(xOffset, yOffset * particles.radius(), zOffset);
+                Location particleLocation = loc.clone().add(xOffset, yOffset * particles.afterTeleportRadius(), zOffset);
 
-            world.spawnParticle(particles.id(), particleLocation, 1, 0, 0, 0, particles.speed());
-        }
+                world.spawnParticle(particles.afterTeleportId(), particleLocation, 1, 0, 0, 0, particles.afterTeleportSpeed());
+            }
+        }, 1L);
     }
 
-    private void handlePlayerCooldown(Player p, Channel channel) {
-        int cooldown = getChannelCooldown(p, channel.cooldown());
-        if (getChannelCooldown(p, channel.cooldown()) > 0 && !p.hasPermission("rtp.bypasscooldown")) {
-            channel.cooldown().playerCooldowns().put(p.getName(), System.currentTimeMillis(), cooldown);
+    private void handlePlayerCooldown(Player p, Cooldown cooldown) {
+        if (cooldown == null) {
+            return;
+        }
+        int cooldownTime = getChannelCooldown(p, cooldown);
+        if (getChannelCooldown(p, cooldown) > 0 && !p.hasPermission("rtp.bypasscooldown")) {
+            cooldown.playerCooldowns().put(p.getName(), System.currentTimeMillis(), cooldownTime);
         }
     }
 

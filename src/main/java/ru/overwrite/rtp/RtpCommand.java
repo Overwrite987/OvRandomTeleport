@@ -79,7 +79,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
             Utils.sendMessage(channel.messages().noPermsMessage(), p);
             return false;
         }
-        if (channel.cooldown().hasCooldown(p)) {
+        if (channel.cooldown() != null && channel.cooldown().hasCooldown(p)) {
             Utils.sendMessage(channel.messages().cooldownMessage()
                     .replace("%time%",
                             Utils.getTime((int) (rtpManager.getChannelCooldown(p, channel.cooldown()) - (System.currentTimeMillis() - channel.cooldown().playerCooldowns().get(p.getName())) / 1000))), p);
@@ -221,7 +221,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
-        List<String> completions = new ArrayList<>();
+        final List<String> completions = new ArrayList<>();
         if (args.length == 1) {
             for (String channelName : rtpManager.getNamedChannels().keySet()) {
                 if (sender.hasPermission("rtp.channel." + channelName)) {

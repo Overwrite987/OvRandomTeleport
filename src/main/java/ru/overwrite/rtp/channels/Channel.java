@@ -18,7 +18,7 @@ public record Channel(
         Costs costs,
         LocationGenOptions locationGenOptions,
         int invulnerableTicks,
-        @NotNull Cooldown cooldown,
+        @Nullable Cooldown cooldown,
         @Nullable BossBar bossBar,
         @Nullable Particles particles,
         @NotNull Restrictions restrictions,

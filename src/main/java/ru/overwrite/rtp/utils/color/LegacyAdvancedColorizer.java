@@ -1,7 +1,5 @@
 package ru.overwrite.rtp.utils.color;
 
-import ru.overwrite.rtp.utils.Colorizer;
-
 public class LegacyAdvancedColorizer implements Colorizer {
 
     private static final char COLOR_CHAR = '§';

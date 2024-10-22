@@ -10,6 +10,7 @@ import org.bukkit.scheduler.BukkitTask;
 import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.channels.settings.Actions;
 import ru.overwrite.rtp.channels.settings.Cooldown;
+import ru.overwrite.rtp.channels.settings.Particles;
 import ru.overwrite.rtp.utils.Utils;
 
 public class RtpTask {
@@ -24,6 +25,7 @@ public class RtpTask {
     private int preTeleportCooldown;
     private BossBar bossBar;
     private BukkitTask runnable;
+    private BukkitTask particleTask;
 
     public RtpTask(Main plugin, RtpManager rtpManager, String playerName, Channel channel) {
         this.plugin = plugin;
@@ -35,8 +37,11 @@ public class RtpTask {
     public void startPreTeleportTimer(Player p, Channel channel, Location location) {
         Cooldown cooldown = channel.cooldown();
         this.preTeleportCooldown = cooldown.teleportCooldown();
-        if (channel.bossBar() != null) {
+        if (channel.bossBar() != null && channel.bossBar().bossbarEnabled()) {
             this.setupBossBar(p, channel, cooldown);
+        }
+        if (channel.particles() != null) {
+            startParticleAnimation(p, preTeleportCooldown * 20, channel.particles());
         }
         this.runnable = new BukkitRunnable() {
             @Override
@@ -51,6 +56,40 @@ public class RtpTask {
             }
         }.runTaskTimerAsynchronously(plugin, 20L, 20L);
         rtpManager.getPerPlayerActiveRtpTask().put(this.playerName, this);
+    }
+
+    public void startParticleAnimation(Player player, int duration, Particles particles) {
+        this.particleTask = new BukkitRunnable() {
+            double angle = 0;
+            double yOffset = 0;
+            int tickCounter = 0;
+            @Override
+            public void run() {
+                tickCounter++;
+                if (tickCounter >= duration) {
+                    this.cancel();
+                    return;
+                }
+                final Location location = player.getLocation();
+                double yStep = 2.0 / duration;
+                if (!particles.preTeleportUp()) {
+                    yStep = -yStep;
+                }
+                double baseSpeedMultiplier = 4.0;
+                double rotationSpeed = (2 * Math.PI * baseSpeedMultiplier) / (duration * particles.preTeleportDots()); // Вращение в 4 раза быстрее и корректировка по количеству точек
+                for (int i = 0; i < particles.preTeleportDots(); i++) {
+                    double phaseOffset = i * (2 * Math.PI / particles.preTeleportDots());
+                    double x = Math.cos(angle + phaseOffset) * particles.preTeleportRadius();
+                    double z = Math.sin(angle + phaseOffset) * particles.preTeleportRadius();
+
+                    location.add(x, yOffset, z);
+                    player.getWorld().spawnParticle(particles.preTeleportId(), location, 1, 0, 0, 0, 0);
+                    location.subtract(x, yOffset, z);
+                }
+                angle += rotationSpeed;
+                yOffset += yStep;
+            }
+        }.runTaskTimer(plugin, 0, 1);
     }
 
     private void setupBossBar(Player player, Channel channel, Cooldown cooldown) {
@@ -95,6 +134,9 @@ public class RtpTask {
             bossBar.removeAll();
         }
         runnable.cancel();
+        if (particleTask != null) {
+            particleTask.cancel();
+        }
         rtpManager.getPerPlayerActiveRtpTask().remove(playerName);
     }
 }

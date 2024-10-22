@@ -1,6 +1,5 @@
 package ru.overwrite.rtp.utils.color;
 
-import ru.overwrite.rtp.utils.Colorizer;
 import ru.overwrite.rtp.utils.Utils;
 
 public class VanillaColorizer implements Colorizer {
