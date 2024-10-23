@@ -74,8 +74,7 @@ public class RtpTask {
                 if (!particles.preTeleportUp()) {
                     yStep = -yStep;
                 }
-                double baseSpeedMultiplier = 4.0;
-                double rotationSpeed = (2 * Math.PI * baseSpeedMultiplier) / (duration * particles.preTeleportDots()); // Вращение в 4 раза быстрее и корректировка по количеству точек
+                double rotationSpeed = (2 * Math.PI * particles.preTeleportSpeed()) / (duration * particles.preTeleportDots());
                 for (int i = 0; i < particles.preTeleportDots(); i++) {
                     double phaseOffset = i * (2 * Math.PI / particles.preTeleportDots());
                     double x = Math.cos(angle + phaseOffset) * particles.preTeleportRadius();

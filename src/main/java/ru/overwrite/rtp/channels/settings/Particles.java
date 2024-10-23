@@ -7,6 +7,7 @@ public record Particles(
         Particle preTeleportId,
         int preTeleportDots,
         double preTeleportRadius,
+        double preTeleportSpeed,
         boolean preTeleportUp,
         boolean afterTeleportEnabled,
         Particle afterTeleportId,
