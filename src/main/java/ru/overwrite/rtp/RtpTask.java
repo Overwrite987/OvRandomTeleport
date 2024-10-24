@@ -59,8 +59,13 @@ public class RtpTask {
     public void startParticleAnimation(Player player, int duration, Particles particles) {
         this.particleTask = new BukkitRunnable() {
             double angle = 0;
-            double yOffset = 0;
+            double yOffset = particles.preTeleportInvert() ? 0.0 : 2.0;
             int tickCounter = 0;
+
+            final double rotationSpeed = ((2 * Math.PI * particles.preTeleportSpeed()) / duration)
+                    * ((particles.preTeleportInvert() && particles.preTeleportJumping()) ? 2 : 1); // attempt to fix strange issue with slow rotation
+            final double yStep = particles.preTeleportInvert() ? (2.0 / duration) : (-2.0 / duration);
+            final double verticalRotationSpeed = 2 * Math.PI * 2 / duration;
 
             @Override
             public void run() {
@@ -69,23 +74,50 @@ public class RtpTask {
                     this.cancel();
                     return;
                 }
+
                 final Location location = player.getLocation();
-                double yStep = 2.0 / duration;
-                if (!particles.preTeleportUp()) {
-                    yStep = -yStep;
-                }
-                double rotationSpeed = (2 * Math.PI * particles.preTeleportSpeed()) / (duration * particles.preTeleportDots());
+                final double yRingOffset = Math.sin((Math.PI * tickCounter) / duration) * 2;
+
                 for (int i = 0; i < particles.preTeleportDots(); i++) {
                     double phaseOffset = i * (2 * Math.PI / particles.preTeleportDots());
-                    double x = Math.cos(angle + phaseOffset) * particles.preTeleportRadius();
-                    double z = Math.sin(angle + phaseOffset) * particles.preTeleportRadius();
 
-                    location.add(x, yOffset, z);
+                    double x, y, z;
+
+                    if (particles.preTeleportJumping()) {
+                        y = yRingOffset;
+
+                        x = Math.cos(angle + phaseOffset) * particles.preTeleportRadius();
+                        z = Math.sin(angle + phaseOffset) * particles.preTeleportRadius();
+
+                        // Выполняем вращение вокруг оси XZ
+                        double cosRotation = Math.cos(verticalRotationSpeed * tickCounter);
+                        double sinRotation = Math.sin(verticalRotationSpeed * tickCounter);
+
+                        double rotatedX = x * cosRotation - z * sinRotation;
+                        double rotatedZ = x * sinRotation + z * cosRotation;
+
+                        x = rotatedX;
+                        z = rotatedZ;
+                    } else {
+                        x = Math.cos(angle + phaseOffset) * particles.preTeleportRadius();
+                        y = yOffset;
+                        z = Math.sin(angle + phaseOffset) * particles.preTeleportRadius();
+                    }
+
+                    location.add(x, y, z);
                     player.getWorld().spawnParticle(particles.preTeleportId(), location, 1, 0, 0, 0, 0);
-                    location.subtract(x, yOffset, z);
+                    location.subtract(x, y, z);
                 }
-                angle += rotationSpeed;
-                yOffset += yStep;
+
+                if (particles.preTeleportInvert()) {
+                    angle -= rotationSpeed;
+                } else {
+                    angle += rotationSpeed;
+                }
+
+                if (!particles.preTeleportJumping()) {
+                    yOffset += yStep;
+                }
             }
         }.runTaskTimer(plugin, 0, 1);
     }

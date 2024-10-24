@@ -128,8 +128,11 @@ channels:
         radius: 1.25
         # Какова будет скорость анимации
         speed: 4.0
-        # Должна ли анимация идти вверх или же вниз
-        up: true
+        # Должна ли анимация быть инвертированной
+        # Против часовой, а не по часовой и не сверху вниз, а снизу вверх (в случае если jumping: false)
+        invert: false
+        # Должна ли анимация быть "прыгающей"
+        jumping: true
       # Настройка партиклов после телепорта
       after_teleport:
         # Включены ли партиклы
@@ -273,7 +276,8 @@ channels:
         id: FLAME
         dots: 2
         radius: 1.25
-        up: true
+        invert: true
+        jumping: false
       # Необязательные параметры
       after_teleport:
         enabled: true
