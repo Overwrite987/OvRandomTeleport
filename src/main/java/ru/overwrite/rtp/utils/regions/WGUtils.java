@@ -18,7 +18,7 @@ public class WGUtils {
     public static void setupRtpFlag() {
         FlagRegistry registry = WorldGuard.getInstance().getFlagRegistry();
         try {
-            StateFlag flag = new StateFlag("rtp-base-no-teleport", true);
+            StateFlag flag = new StateFlag("rtp-base-no-teleport", false);
             registry.register(flag);
             RTP_IGNORE_FLAG = flag;
         } catch (FlagConflictException ex) {
