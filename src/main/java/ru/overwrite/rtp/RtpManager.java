@@ -453,7 +453,7 @@ public class RtpManager {
             return;
         }
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            Location loc = p.getLocation();
+            final Location loc = p.getLocation();
             loc.add(0, 1, 0);
             final World world = loc.getWorld();
 
