@@ -32,7 +32,8 @@ public class UtilsTest {
         return new Object[][]{
                 {"Test", new String[]{"Test"}, new String[]{"Tset"}},
                 {"Hello World", new String[]{"Hello"}, new String[]{"Bye"}},
-                {"CaSe TeSt", new String[]{"CaSe", "tEsT"}, new String[]{"cAsE", "FaIl"}}
+                {"CaSe TeSt", new String[]{"CaSe", "tEsT"}, new String[]{"cAsE", "FaIl"}},
+                {"Multiple things things things things to replace", new String[]{"things"}, new String[]{"another_things"}}
         };
     }
 
