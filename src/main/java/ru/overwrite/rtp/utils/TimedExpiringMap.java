@@ -50,6 +50,10 @@ public class TimedExpiringMap<K, V> {
         this.cache.invalidate(key);
     }
 
+    public boolean idEmpty() {
+        return this.size() == 0;
+    }
+
     public long size() {
         return this.cache.estimatedSize();
     }
@@ -61,5 +65,3 @@ public class TimedExpiringMap<K, V> {
     private record ExpiringValue<V>(V value, long expiryDuration) {
     }
 }
-
-
