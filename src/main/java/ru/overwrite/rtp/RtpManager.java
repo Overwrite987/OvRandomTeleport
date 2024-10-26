@@ -419,7 +419,6 @@ public class RtpManager {
         if (costs == null) {
             return false;
         }
-
         return costs.processMoneyCost(p, channel) &&
                 costs.processHungerCost(p, channel) &&
                 costs.processExpCost(p, channel);

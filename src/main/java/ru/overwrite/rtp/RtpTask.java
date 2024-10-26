@@ -89,7 +89,6 @@ public class RtpTask {
                         x = Math.cos(angle + phaseOffset) * particles.preTeleportRadius();
                         z = Math.sin(angle + phaseOffset) * particles.preTeleportRadius();
 
-                        // Выполняем вращение вокруг оси XZ
                         double cosRotation = Math.cos(verticalRotationSpeed * tickCounter);
                         double sinRotation = Math.sin(verticalRotationSpeed * tickCounter);
 
