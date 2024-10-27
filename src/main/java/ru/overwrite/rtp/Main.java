@@ -145,7 +145,9 @@ public final class Main extends JavaPlugin {
             command.setAliases(mainSettings.getStringList("rtp_aliases"));
             RtpCommand rtpCommand = new RtpCommand(this);
             command.setExecutor(rtpCommand);
-            command.setTabCompleter(rtpCommand);
+            if (mainSettings.getBoolean("rtp_tab_complete")) {
+                command.setTabCompleter(rtpCommand);
+            }
             commandMap.register(getDescription().getName(), command);
         } catch (Exception ex) {
             pluginLogger.info("Unable to register RTP command!" + ex);

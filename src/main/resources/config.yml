@@ -10,6 +10,8 @@ main_settings:
   rtp_command: 'rtp'
   # Алиасы к команде рандомной телепортации
   rtp_aliases: ['randomteleport', 'ovrandomteleport']
+  # Должен ли быть включён таб-комплит у команды ртп?
+  rtp_tab_complete: true
   # Название дефолтного канала.
   # Указанный канал будет использован в качестве основного при вводе команды /rtp
   default_channel: 'default'
