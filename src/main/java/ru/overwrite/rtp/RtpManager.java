@@ -179,10 +179,10 @@ public class RtpManager {
         int maxX = locationGenOptions.getInt("max_x");
         int minZ = locationGenOptions.getInt("min_z");
         int maxZ = locationGenOptions.getInt("max_z");
-        int centerX = locationGenOptions.getInt("center_x", 0);
-        int centerZ = locationGenOptions.getInt("center_z", 0);
         int nearRadiusMin = locationGenOptions.getInt("min_near_point_distance", 30);
         int nearRadiusMax = locationGenOptions.getInt("max_near_point_distance", 60);
+        int centerX = locationGenOptions.getInt("center_x", 0);
+        int centerZ = locationGenOptions.getInt("center_z", 0);
         int maxLocationAttempts = locationGenOptions.getInt("max_location_attempts", 50);
 
         return new LocationGenOptions(shape, genFormat, minX, maxX, minZ, maxZ, nearRadiusMin, nearRadiusMax, centerX, centerZ, maxLocationAttempts);
