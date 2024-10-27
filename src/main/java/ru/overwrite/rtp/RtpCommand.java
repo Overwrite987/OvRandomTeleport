@@ -122,7 +122,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
         switch (args[1].toLowerCase()) {
             case "reload": {
                 plugin.reloadConfig();
-                FileConfiguration config = plugin.getConfig();
+                final FileConfiguration config = plugin.getConfig();
                 pluginConfig.setupMessages(config);
                 rtpManager.getNamedChannels().clear();
                 rtpManager.getSpecifications().clearAll();

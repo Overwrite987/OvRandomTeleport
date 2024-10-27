@@ -144,11 +144,11 @@ public class RtpManager {
                 joinChannels.add(newChannel);
             }
             List<World> voidWorlds = Utils.getWorldList(section.getStringList("void_worlds"));
-            if (!voidWorlds.isEmpty()) {
+            if (!voidWorlds.isEmpty() && !voidWorlds.equals(Collections.singletonList(null))) {
                 voidChannels.put(newChannel, voidWorlds);
             }
             List<World> respawnWorlds = Utils.getWorldList(section.getStringList("respawn_worlds"));
-            if (!respawnWorlds.isEmpty()) {
+            if (!respawnWorlds.isEmpty() && !respawnWorlds.equals(Collections.singletonList(null))) {
                 respawnChannels.put(newChannel, respawnWorlds);
             }
         }
