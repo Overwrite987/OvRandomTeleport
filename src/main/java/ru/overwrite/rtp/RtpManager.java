@@ -223,7 +223,7 @@ public class RtpManager {
     private Particles setupChannelParticles(ConfigurationSection particles) {
         if (isSectionNull(particles)) {
             return new Particles(
-                    false, null, -1, -1, -1, false, false,
+                    false, null, -1, -1, -1, false, false, false,
                     false, null, -1, -1, -1);
         }
         boolean preTeleportEnabled = false;
@@ -233,6 +233,7 @@ public class RtpManager {
         double preTeleportSpeed = 0;
         boolean preTeleportInvert = false;
         boolean preTeleportJumping = false;
+        boolean preTeleportMoveNear = false;
         boolean afterTeleportParticleEnabled = false;
         Particle afterTeleportParticle = null;
         int afterTeleportCount = 0;
@@ -247,6 +248,7 @@ public class RtpManager {
             preTeleportSpeed = preTeleport.getDouble("speed");
             preTeleportInvert = preTeleport.getBoolean("invert");
             preTeleportJumping = preTeleport.getBoolean("jumping");
+            preTeleportMoveNear = preTeleport.getBoolean("move_near");
         }
         ConfigurationSection afterTeleport = particles.getConfigurationSection("after_teleport");
         if (!isSectionNull(afterTeleport)) {
@@ -257,7 +259,7 @@ public class RtpManager {
             afterTeleportSpeed = afterTeleport.getDouble("speed");
         }
         return new Particles(
-                preTeleportEnabled, preTeleportId, preTeleportDots, preTeleportRadius, preTeleportSpeed, preTeleportInvert, preTeleportJumping,
+                preTeleportEnabled, preTeleportId, preTeleportDots, preTeleportRadius, preTeleportSpeed, preTeleportInvert, preTeleportJumping, preTeleportMoveNear,
                 afterTeleportParticleEnabled, afterTeleportParticle, afterTeleportCount, afterTeleportRadius, afterTeleportSpeed);
     }
 

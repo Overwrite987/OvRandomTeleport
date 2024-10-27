@@ -62,8 +62,10 @@ public class RtpTask {
             double yOffset = particles.preTeleportInvert() ? 0.0 : 2.0;
             int tickCounter = 0;
 
+            final double initialRadius = particles.preTeleportRadius();
+            final double radiusStep = particles.preTeleportMoveNear() ? initialRadius / duration : 0;
             final double rotationSpeed = ((2 * Math.PI * particles.preTeleportSpeed()) / duration)
-                    * ((particles.preTeleportInvert() && particles.preTeleportJumping()) ? 2 : 1); // attempt to fix strange issue with slow rotation
+                    * ((particles.preTeleportInvert() && particles.preTeleportJumping()) ? 2 : 1);
             final double yStep = particles.preTeleportInvert() ? (2.0 / duration) : (-2.0 / duration);
             final double verticalRotationSpeed = 2 * Math.PI * 2 / duration;
 
@@ -78,6 +80,8 @@ public class RtpTask {
                 final Location location = player.getLocation();
                 final double yRingOffset = Math.sin((Math.PI * tickCounter) / duration) * 2;
 
+                double currentRadius = particles.preTeleportMoveNear() ? initialRadius - (radiusStep * tickCounter) : initialRadius;
+
                 for (int i = 0; i < particles.preTeleportDots(); i++) {
                     double phaseOffset = i * (2 * Math.PI / particles.preTeleportDots());
 
@@ -86,8 +90,8 @@ public class RtpTask {
                     if (particles.preTeleportJumping()) {
                         y = yRingOffset;
 
-                        x = Math.cos(angle + phaseOffset) * particles.preTeleportRadius();
-                        z = Math.sin(angle + phaseOffset) * particles.preTeleportRadius();
+                        x = Math.cos(angle + phaseOffset) * currentRadius;
+                        z = Math.sin(angle + phaseOffset) * currentRadius;
 
                         double cosRotation = Math.cos(verticalRotationSpeed * tickCounter);
                         double sinRotation = Math.sin(verticalRotationSpeed * tickCounter);
@@ -98,9 +102,9 @@ public class RtpTask {
                         x = rotatedX;
                         z = rotatedZ;
                     } else {
-                        x = Math.cos(angle + phaseOffset) * particles.preTeleportRadius();
+                        x = Math.cos(angle + phaseOffset) * currentRadius;
                         y = yOffset;
-                        z = Math.sin(angle + phaseOffset) * particles.preTeleportRadius();
+                        z = Math.sin(angle + phaseOffset) * currentRadius;
                     }
 
                     location.add(x, y, z);
