@@ -121,9 +121,11 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
         }
         switch (args[1].toLowerCase()) {
             case "reload": {
+                plugin.unregisterCommand(plugin.getConfig().getConfigurationSection("main_settings"));
                 plugin.reloadConfig();
                 final FileConfiguration config = plugin.getConfig();
                 pluginConfig.setupMessages(config);
+                plugin.registerCommand(Bukkit.getPluginManager(), config.getConfigurationSection("main_settings"));
                 rtpManager.getNamedChannels().clear();
                 rtpManager.getSpecifications().clearAll();
                 rtpManager.setupChannels(config, Bukkit.getPluginManager());
