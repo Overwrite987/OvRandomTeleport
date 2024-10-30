@@ -30,7 +30,7 @@ public class LegacyAdvancedColorizer implements Colorizer {
                     index++;
                     continue;
                 }
-                if (processSingleTag(builder, messageChars, index, currentChar)) {
+                if (processSingleTag(builder, messageChars, index)) {
                     index += 6;
                     continue;
                 }
@@ -72,7 +72,7 @@ public class LegacyAdvancedColorizer implements Colorizer {
         return false;
     }
 
-    private boolean processSingleTag(StringBuilder builder, char[] messageChars, int index, char currentChar) {
+    private boolean processSingleTag(StringBuilder builder, char[] messageChars, int index) {
         if (index + 6 <= messageChars.length && isValidHexCode(messageChars, index, 6)) {
             builder.append(COLOR_CHAR).append('x');
             for (int i = index; i < index + 6; i++) {
