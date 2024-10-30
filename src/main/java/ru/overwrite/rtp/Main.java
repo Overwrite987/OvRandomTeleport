@@ -22,7 +22,6 @@ import ru.overwrite.rtp.utils.logging.BukkitLogger;
 import ru.overwrite.rtp.utils.logging.PaperLogger;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 
 public final class Main extends JavaPlugin {
 
@@ -137,7 +136,7 @@ public final class Main extends JavaPlugin {
         pluginLogger.info("§eПлейсхолдеры подключены!");
     }
 
-    public void registerCommand(PluginManager pluginManager, ConfigurationSection mainSettings) {
+    private void registerCommand(PluginManager pluginManager, ConfigurationSection mainSettings) {
         try {
             CommandMap commandMap = server.getCommandMap();
             Constructor<PluginCommand> constructor = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
@@ -150,32 +149,9 @@ public final class Main extends JavaPlugin {
                 command.setTabCompleter(rtpCommand);
             }
             commandMap.register(getDescription().getName(), command);
-            this.syncCommands();
-        } catch (ReflectiveOperationException ex) {
-            pluginLogger.info("Unable to register RTP command! " + ex);
+        } catch (Exception ex) {
+            pluginLogger.info("Unable to register RTP command!" + ex);
             pluginManager.disablePlugin(this);
-        }
-    }
-
-    public void unregisterCommand(ConfigurationSection mainSettings) {
-        CommandMap commandMap = server.getCommandMap();
-        PluginCommand command = (PluginCommand) commandMap.getCommand(mainSettings.getString("rtp_command", "rtp"));
-        command.setExecutor(null);
-        command.setTabCompleter(null);
-        commandMap.getKnownCommands().remove(command.getName());
-        for (String alias : command.getAliases()) {
-            commandMap.getKnownCommands().remove(alias);
-        }
-        command.unregister(commandMap);
-    }
-
-    private void syncCommands() {
-        try {
-            Method method = server.getClass().getDeclaredMethod("syncCommands");
-            method.setAccessible(true);
-            method.invoke(server);
-        } catch (ReflectiveOperationException ex) {
-            pluginLogger.info("Unable to resync commands! " + ex);
         }
     }
 

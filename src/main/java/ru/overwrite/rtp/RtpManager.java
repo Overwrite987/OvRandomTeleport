@@ -3,9 +3,7 @@ package ru.overwrite.rtp;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import it.unimi.dsi.fastutil.objects.ObjectSet;
 
 import lombok.Getter;
 import org.bukkit.*;
@@ -191,7 +189,7 @@ public class RtpManager {
     }
 
     private Cooldown setupCooldown(ConfigurationSection cooldown) {
-        Object2IntMap<String> groupCooldownsMap = new Object2IntLinkedOpenHashMap<>();
+        Object2IntLinkedOpenHashMap<String> groupCooldownsMap = new Object2IntLinkedOpenHashMap<>();
         if (isSectionNull(cooldown)) {
             return new Cooldown(-1, null, groupCooldownsMap, false, -1);
         }
@@ -278,7 +276,7 @@ public class RtpManager {
 
     private Avoidance setupChannelAvoidance(ConfigurationSection avoid, PluginManager pluginManager) {
         boolean isNullSection = isSectionNull(avoid);
-        ObjectSet<Material> avoidBlocks = new ObjectOpenHashSet<>();
+        Set<Material> avoidBlocks = new ObjectOpenHashSet<>();
         boolean avoidBlocksBlacklist = true;
         if (!isNullSection) {
             avoidBlocksBlacklist = avoid.getBoolean("blocks.blacklist", true);
@@ -286,7 +284,7 @@ public class RtpManager {
                 avoidBlocks.add(Material.valueOf(m.toUpperCase()));
             }
         }
-        ObjectSet<Biome> avoidBiomes = new ObjectOpenHashSet<>();
+        Set<Biome> avoidBiomes = new ObjectOpenHashSet<>();
         boolean avoidBiomesBlacklist = true;
         if (!isNullSection) {
             avoidBiomesBlacklist = avoid.getBoolean("biomes.blacklist", true);
@@ -490,7 +488,7 @@ public class RtpManager {
         if (cooldown.defaultCooldown() < 0) {
             return -1;
         }
-        Object2IntMap<String> groupCooldowns = cooldown.groupCooldowns();
+        Object2IntLinkedOpenHashMap<String> groupCooldowns = cooldown.groupCooldowns();
         if (groupCooldowns.isEmpty()) {
             return cooldown.defaultCooldown();
         }
