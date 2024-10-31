@@ -31,7 +31,7 @@ public final class Main extends JavaPlugin {
     private final Logger pluginLogger = VersionUtils.SUB_VERSION >= 19 ? new PaperLogger(this) : new BukkitLogger(this);
 
     @Getter
-    private final Config pluginConfig = new Config();
+    private final Config pluginConfig = new Config(this);
 
     @Getter
     private final RtpManager rtpManager = new RtpManager(this);

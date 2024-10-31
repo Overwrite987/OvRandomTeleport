@@ -2,8 +2,18 @@ package ru.overwrite.rtp.utils;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import ru.overwrite.rtp.Main;
+
+import java.io.File;
 
 public class Config {
+
+    private final Main plugin;
+
+    public Config(Main plugin) {
+        this.plugin = plugin;
+    }
 
     public String messages_prefix,
             messages_no_perms,
@@ -59,6 +69,14 @@ public class Config {
 
     public String getPrefixed(String message, String prefix) {
         return Utils.COLORIZER.colorize(message.replace("%prefix%", prefix));
+    }
+
+    public FileConfiguration getFile(String path, String fileName) {
+        File file = new File(path, fileName);
+        if (!file.exists()) {
+            plugin.saveResource("channels/" + fileName, false);
+        }
+        return YamlConfiguration.loadConfiguration(file);
     }
 
 }

@@ -1,0 +1,114 @@
+# Обязательный параметр
+name: 'Возле игроков'
+# Обязательный параметр
+type: NEAR_PLAYER
+# Необязательный параметр
+min_players_to_use: 5
+# Обязательный параметр
+active_worlds:
+  - 'world'
+# Необязательный параметр
+teleport_to_first_world: true
+# Необязательные параметры
+specifications:
+  teleport_on_first_join: false
+  void_worlds: []
+  respawn_worlds: []
+# Необязательные параметры
+costs:
+  # По умолчанию - VAULT
+  money_type: VAULT
+  money_cost: 1000
+  hunger_cost: 5
+  experience_cost: 10
+# Обязательные параметры
+location_generation_options:
+  shape: SQUARE
+  # Необязательный параметр. По умолчанию - RECTANGULAR
+  gen_format: RECTANGULAR
+  min_x: -1000
+  max_x: 1000
+  min_z: -1000
+  max_z: 1000
+  # Необязательные параметры
+  min_near_point_distance: 30
+  max_near_point_distance: 90
+  # Необязательный параметр
+  max_location_attempts: 50
+# Необязательный параметр
+invulnerable_after_teleport: 10
+# Необязательные параметры
+cooldown:
+  default_cooldown: 60
+  group_cooldowns:
+    vip: 30
+    premium: 10
+  use_last_group_cooldown: true
+  teleport_cooldown: 5
+# Необязательный параметр
+teleport_cooldown: 5
+# Необязательные параметры
+bossbar:
+  enabled: true
+  title: '&fТелепортация через: &5%time%'
+  color: WHITE
+  style: SEGMENTED_12
+# Необязательные параметры
+particles:
+  # Необязательные параметры
+  pre_teleport:
+    enabled: false
+    id: FLAME
+    dots: 2
+    radius: 1.25
+    invert: true
+    jumping: false
+    move_near: true
+  # Необязательные параметры
+  after_teleport:
+    enabled: true
+    id: FLAME
+    count: 45
+    radius: 1.25
+    speed: 0.0
+# Необязательные параметры
+restrictions:
+  move: true
+  damage: true
+# Необязательные параметры
+avoid:
+  blocks:
+    blacklist: true
+    list:
+      - 'LAVA'
+      - 'WATER'
+  biomes:
+    blacklist: true
+    list: []
+  regions: true
+  towns: false
+# Не обязательные параметры
+actions:
+  # Укажите [] для отключения
+  pre_teleport:
+    - '[MESSAGE] &7&l(&5&lOvRandomTeleport&7) &6» &fВы будете телепортированы через %time% Не двигайтесь и не получайте урона.'
+    - '[SOUND] BLOCK_NOTE_BLOCK_PLING;1;1'
+  # Необязательный параметр
+  on_cooldown:
+    3:
+      - '[TITLE] &aТелепорт через &e3...'
+    2:
+      - '[TITLE] &aТелепорт через &62...'
+    1:
+      - '[TITLE] &aТелепорт через &c1...'
+  # Укажите [] для отключения
+  after_teleport:
+    - '[MESSAGE] &7&l(&5&lOvRandomTeleport&7) &6» &aУспешная телепортация! &fВы телепортировались на координаты: &2%x% %y% %z%.'
+    - '[TITLE] &a&lУспех!;&fВы телепортировались на координаты: &2%x% %y% %z%.'
+    - '[SOUND] ENTITY_PLAYER_LEVELUP;1;1'
+# Необязательный параметр
+# Отдельные сообщения при использовании канала.
+# Если они не указаны - будут использованы дефолтные
+messages:
+  prefix: '&7&l(&5&lOvRandomTeleport+&7&l) &6»&r'
+  no_perms: '%prefix% &cУ вас не достаточно прав на использование канала телепортации к игрокам.'
