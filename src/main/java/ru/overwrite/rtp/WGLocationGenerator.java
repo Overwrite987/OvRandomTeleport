@@ -14,6 +14,7 @@ import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.channels.settings.LocationGenOptions;
 import ru.overwrite.rtp.utils.regions.WGUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class WGLocationGenerator {
@@ -41,19 +42,24 @@ public class WGLocationGenerator {
         int minZ = locationGenOptions.minZ();
         int maxZ = locationGenOptions.maxZ();
 
-        List<ProtectedRegion> regionsInRange = regionManager.getRegions().values().stream()
-                .filter(region -> region.getType() != RegionType.GLOBAL)
-                .filter(region -> {
-                    StateFlag.State flag = region.getFlag(WGUtils.RTP_IGNORE_FLAG);
-                    return flag != null && flag != StateFlag.State.ALLOW;
-                })
-                .filter(region -> {
-                    BlockVector3 minPoint = region.getMinimumPoint();
-                    BlockVector3 maxPoint = region.getMaximumPoint();
-                    return minPoint.getX() >= minX && maxPoint.getX() <= maxX &&
-                            minPoint.getZ() >= minZ && maxPoint.getZ() <= maxZ;
-                })
-                .toList();
+        List<ProtectedRegion> regionsInRange = new ArrayList<>();
+        for (ProtectedRegion region : regionManager.getRegions().values()) {
+            if (region.getType() == RegionType.GLOBAL) {
+                continue;
+            }
+
+            StateFlag.State flag = region.getFlag(WGUtils.RTP_IGNORE_FLAG);
+            if (flag == null || flag == StateFlag.State.ALLOW) {
+                continue;
+            }
+
+            BlockVector3 minPoint = region.getMinimumPoint();
+            BlockVector3 maxPoint = region.getMaximumPoint();
+            if (minPoint.getX() >= minX && maxPoint.getX() <= maxX &&
+                    minPoint.getZ() >= minZ && maxPoint.getZ() <= maxZ) {
+                regionsInRange.add(region);
+            }
+        }
 
         if (regionsInRange.isEmpty()) {
             return null;
