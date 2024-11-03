@@ -334,35 +334,39 @@ public class RtpManager {
     }
 
     private Messages setupChannelMessages(ConfigurationSection messages) {
-        String prefix = isConfigValueExist(messages, "prefix") ? messages.getString("prefix") : pluginConfig.messages_prefix;
-        String noPermsMessage = getMessage(messages, "no_perms", pluginConfig.messages_no_perms, prefix);
-        String invalidWorldMessage = getMessage(messages, "invalid_world", pluginConfig.messages_invalid_world, prefix);
-        String notEnoughPlayersMessage = getMessage(messages, "not_enough_players", pluginConfig.messages_not_enough_players, prefix);
-        String notEnoughMoneyMessage = getMessage(messages, "not_enough_money", pluginConfig.messages_not_enough_money, prefix);
-        String notEnoughHungerMessage = getMessage(messages, "not_enough_hunger", pluginConfig.messages_not_enough_hunger, prefix);
-        String notEnoughExpMessage = getMessage(messages, "not_enough_experience", pluginConfig.messages_not_enough_exp, prefix);
-        String cooldownMessage = getMessage(messages, "cooldown", pluginConfig.messages_cooldown, prefix);
-        String movedOnTeleportMessage = getMessage(messages, "moved_on_teleport", pluginConfig.messages_moved_on_teleport, prefix);
-        String teleportedOnTeleportMessage = getMessage(messages, "teleported_on_teleport", pluginConfig.messages_teleported_on_teleport, prefix);
-        String damagedOnTeleportMessage = getMessage(messages, "damaged_on_teleport", pluginConfig.messages_damaged_on_teleport, prefix);
-        String damagedOtherOnTeleportMessage = getMessage(messages, "damaged_other_on_teleport", pluginConfig.messages_damaged_other_on_teleport, prefix);
-        String failToFindLocationMessage = getMessage(messages, "fail_to_find_location", pluginConfig.messages_fail_to_find_location, prefix);
-        String alreadyTeleportingMessage = getMessage(messages, "already_teleporting", pluginConfig.messages_already_teleporting, prefix);
+        Messages defaultMessages = pluginConfig.getDefaultChannelMessages();
+        if (isSectionNull(messages)) {
+            return defaultMessages;
+        }
+        String prefix = isConfigValueExist(messages, "prefix") ? messages.getString("prefix") : pluginConfig.getMessagesPrefix();
+        String noPerms = getMessage(messages, "no_perms", defaultMessages.noPerms(), prefix);
+        String invalidWorld = getMessage(messages, "invalid_world", defaultMessages.invalidWorld(), prefix);
+        String notEnoughPlayers = getMessage(messages, "not_enough_players", defaultMessages.notEnoughPlayers(), prefix);
+        String notEnoughMoney = getMessage(messages, "not_enough_money", defaultMessages.notEnoughMoney(), prefix);
+        String notEnoughHunger = getMessage(messages, "not_enough_hunger", defaultMessages.notEnoughHunger(), prefix);
+        String notEnoughExp = getMessage(messages, "not_enough_experience", defaultMessages.notEnoughExp(), prefix);
+        String cooldown = getMessage(messages, "cooldown", defaultMessages.cooldown(), prefix);
+        String movedOnTeleport = getMessage(messages, "moved_on_teleport", defaultMessages.movedOnTeleport(), prefix);
+        String teleportedOnTeleport = getMessage(messages, "teleported_on_teleport", defaultMessages.teleportedOnTeleport(), prefix);
+        String damagedOnTeleport = getMessage(messages, "damaged_on_teleport",defaultMessages.damagedOnTeleport(), prefix);
+        String damagedOtherOnTeleport = getMessage(messages, "damaged_other_on_teleport", defaultMessages.damagedOtherOnTeleport(), prefix);
+        String failToFindLocation = getMessage(messages, "fail_to_find_location", defaultMessages.failToFindLocation(), prefix);
+        String alreadyTeleporting = getMessage(messages, "already_teleporting", defaultMessages.alreadyTeleporting(), prefix);
 
         return new Messages(
-                noPermsMessage,
-                invalidWorldMessage,
-                notEnoughPlayersMessage,
-                notEnoughMoneyMessage,
-                notEnoughHungerMessage,
-                notEnoughExpMessage,
-                cooldownMessage,
-                movedOnTeleportMessage,
-                teleportedOnTeleportMessage,
-                damagedOnTeleportMessage,
-                damagedOtherOnTeleportMessage,
-                failToFindLocationMessage,
-                alreadyTeleportingMessage
+                noPerms,
+                invalidWorld,
+                notEnoughPlayers,
+                notEnoughMoney,
+                notEnoughHunger,
+                notEnoughExp,
+                cooldown,
+                movedOnTeleport,
+                teleportedOnTeleport,
+                damagedOnTeleport,
+                damagedOtherOnTeleport,
+                failToFindLocation,
+                alreadyTeleporting
         );
     }
 
@@ -371,7 +375,7 @@ public class RtpManager {
     }
 
     private boolean isConfigValueExist(ConfigurationSection section, String key) {
-        return !isSectionNull(section) && section.getString(key) != null;
+        return section.getString(key) != null;
     }
 
     private boolean isSectionNull(ConfigurationSection section) {
@@ -390,7 +394,7 @@ public class RtpManager {
 
     public void preTeleport(Player p, Channel channel, World world) {
         if (teleportingNow.contains(p.getName())) {
-            Utils.sendMessage(channel.messages().alreadyTeleportingMessage(), p);
+            Utils.sendMessage(channel.messages().alreadyTeleporting(), p);
             return;
         }
         teleportingNow.add(p.getName());
@@ -405,7 +409,7 @@ public class RtpManager {
             };
             if (loc == null) {
                 teleportingNow.remove(p.getName());
-                Utils.sendMessage(channel.messages().failToFindLocationMessage(), p);
+                Utils.sendMessage(channel.messages().failToFindLocation(), p);
                 this.returnCost(p, channel); // return what we took
                 return;
             }

@@ -105,14 +105,14 @@ public class Utils {
         final StringBuilder result = new StringBuilder();
 
         if (hours > 0) {
-            result.append(hours).append(Config.time_hours);
+            result.append(hours).append(Config.timeHours);
         }
 
         if (minutes > 0 || hours > 0) {
-            result.append(minutes).append(Config.time_minutes);
+            result.append(minutes).append(Config.timeMinutes);
         }
 
-        result.append(seconds).append(Config.time_seconds);
+        result.append(seconds).append(Config.timeSeconds);
 
         return result.toString();
     }

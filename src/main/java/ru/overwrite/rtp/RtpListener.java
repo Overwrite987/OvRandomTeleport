@@ -55,7 +55,7 @@ public class RtpListener implements Listener {
         if (rtpManager.hasActiveTasks(playerName)) {
             Channel activeChannel = getActiveChannel(playerName);
             if (activeChannel.restrictions().restrictMove()) {
-                Utils.sendMessage(activeChannel.messages().movedOnTeleportMessage(), p);
+                Utils.sendMessage(activeChannel.messages().movedOnTeleport(), p);
                 cancelTeleportation(playerName);
             }
         }
@@ -71,7 +71,7 @@ public class RtpListener implements Listener {
         if (rtpManager.hasActiveTasks(playerName)) {
             Channel activeChannel = getActiveChannel(playerName);
             if (activeChannel.restrictions().restrictTeleport()) {
-                Utils.sendMessage(activeChannel.messages().teleportedOnTeleportMessage(), p);
+                Utils.sendMessage(activeChannel.messages().teleportedOnTeleport(), p);
                 cancelTeleportation(playerName);
             }
         }
@@ -132,7 +132,7 @@ public class RtpListener implements Listener {
         if (rtpManager.hasActiveTasks(playerName)) {
             Channel activeChannel = rtpManager.getPerPlayerActiveRtpTask().get(playerName).getActiveChannel();
             if (activeChannel.restrictions().restrictDamage() && !activeChannel.restrictions().damageCheckOnlyPlayers()) {
-                Utils.sendMessage(activeChannel.messages().damagedOnTeleportMessage(), p);
+                Utils.sendMessage(activeChannel.messages().damagedOnTeleport(), p);
                 cancelTeleportation(playerName);
             }
         }
@@ -159,7 +159,7 @@ public class RtpListener implements Listener {
                 if (activeChannel.restrictions().damageCheckOnlyPlayers() && !(damagedEntity instanceof Player)) {
                     return;
                 }
-                damager.sendMessage(activeChannel.messages().damagedOtherOnTeleportMessage());
+                damager.sendMessage(activeChannel.messages().damagedOtherOnTeleport());
                 cancelTeleportation(damagerName);
             }
         }
@@ -174,7 +174,7 @@ public class RtpListener implements Listener {
                 if (damager == null && activeChannel.restrictions().damageCheckOnlyPlayers()) {
                     return;
                 }
-                damaged.sendMessage(activeChannel.messages().damagedOnTeleportMessage());
+                damaged.sendMessage(activeChannel.messages().damagedOnTeleport());
                 cancelTeleportation(damagedName);
             }
         }

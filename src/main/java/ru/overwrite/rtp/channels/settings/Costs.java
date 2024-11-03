@@ -46,14 +46,14 @@ public record Costs(
     }
 
     private void sendNotEnoughMoneyMessage(Channel channel, Player p) {
-        Utils.sendMessage(channel.messages().notEnoughMoneyMessage().replace("%required%", Double.toString(moneyCost)), p);
+        Utils.sendMessage(channel.messages().notEnoughMoney().replace("%required%", Double.toString(moneyCost)), p);
     }
 
     public boolean processHungerCost(Player p, Channel channel) {
         if (hungerCost <= 0) return true;
 
         if (p.getFoodLevel() < hungerCost) {
-            Utils.sendMessage(channel.messages().notEnoughHungerMessage().replace("%required%", Integer.toString(hungerCost)), p);
+            Utils.sendMessage(channel.messages().notEnoughHunger().replace("%required%", Integer.toString(hungerCost)), p);
             return false;
         }
         p.setFoodLevel(p.getFoodLevel() - hungerCost);
@@ -64,7 +64,7 @@ public record Costs(
         if (expCost <= 0) return true;
 
         if (p.getExp() < expCost) {
-            Utils.sendMessage(channel.messages().notEnoughExpMessage().replace("%required%", Float.toString(expCost)), p);
+            Utils.sendMessage(channel.messages().notEnoughExp().replace("%required%", Float.toString(expCost)), p);
             return false;
         }
         p.setExp(p.getExp() - expCost);

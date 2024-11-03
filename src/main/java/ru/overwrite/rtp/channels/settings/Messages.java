@@ -1,17 +1,17 @@
 package ru.overwrite.rtp.channels.settings;
 
 public record Messages(
-        String noPermsMessage,
-        String invalidWorldMessage,
-        String notEnoughPlayersMessage,
-        String notEnoughMoneyMessage,
-        String notEnoughHungerMessage,
-        String notEnoughExpMessage,
-        String cooldownMessage,
-        String movedOnTeleportMessage,
-        String teleportedOnTeleportMessage,
-        String damagedOnTeleportMessage,
-        String damagedOtherOnTeleportMessage,
-        String failToFindLocationMessage,
-        String alreadyTeleportingMessage) {
+        String noPerms,
+        String invalidWorld,
+        String notEnoughPlayers,
+        String notEnoughMoney,
+        String notEnoughHunger,
+        String notEnoughExp,
+        String cooldown,
+        String movedOnTeleport,
+        String teleportedOnTeleport,
+        String damagedOnTeleport,
+        String damagedOtherOnTeleport,
+        String failToFindLocation,
+        String alreadyTeleporting) {
 }

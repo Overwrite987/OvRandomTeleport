@@ -12,9 +12,11 @@ import ru.overwrite.rtp.utils.Utils;
 public class RtpExpansion extends PlaceholderExpansion {
 
     private final RtpManager rtpManager;
+    private final Config.PlaceholderMessages placeholderMessages;
 
     public RtpExpansion(Main plugin) {
         this.rtpManager = plugin.getRtpManager();
+        this.placeholderMessages = plugin.getPluginConfig().getPlaceholderMessages();
     }
 
     @Override
@@ -65,7 +67,7 @@ public class RtpExpansion extends PlaceholderExpansion {
 
     private String processCooldownPlaceholder(Player player, String[] args, Cooldown channelCooldown) {
         if (!channelCooldown.hasCooldown(player)) {
-            return Config.papi_nocooldown;
+            return placeholderMessages.noCooldown();
         }
         final int cooldown = calculateCooldown(player, channelCooldown);
         if (args.length < 3) {
