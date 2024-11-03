@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.channels.settings.Cooldown;
+import ru.overwrite.rtp.channels.settings.Costs;
 import ru.overwrite.rtp.utils.Config;
 import ru.overwrite.rtp.utils.Utils;
 
@@ -57,6 +58,7 @@ public class RtpExpansion extends PlaceholderExpansion {
         return switch (placeholderType) {
             case "hascooldown" -> getBooleanPlaceholder(channelCooldown.hasCooldown(player));
             case "cooldown" -> processCooldownPlaceholder(player, args, channelCooldown);
+            case "cost" -> getCostValue(channel, args);
             default -> null;
         };
     }
@@ -88,6 +90,27 @@ public class RtpExpansion extends PlaceholderExpansion {
             case "seconds" -> Integer.toString(Utils.getSeconds(cooldown));
             default -> null;
         };
+    }
+
+    private String getCostValue(Channel channel, String[] args) {
+        if (args.length < 3) {
+            return null;
+        }
+        Costs costs = channel.costs();
+        if (costs == null) {
+            return placeholderMessages.noValue();
+        }
+        final String costIdentifier = args[2];
+        return switch (costIdentifier) {
+            case "money" -> getOrDefaultValue(Double.toString(costs.moneyCost()));
+            case "hunger" -> getOrDefaultValue(Integer.toString(costs.hungerCost()));
+            case "exp" -> getOrDefaultValue(Double.toString(costs.expCost()));
+            default -> null;
+        };
+    }
+
+    private <T> String getOrDefaultValue(T value) {
+        return value != null ? value.toString() : placeholderMessages.noValue();
     }
 
     public String getBooleanPlaceholder(boolean b) {

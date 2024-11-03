@@ -61,6 +61,7 @@ messages:
   # Заполнители плейсхолдеров PlaceholderAPI
   placeholders:
     no_cooldown: '&aКулдаун отсутствует!'
+    no_value: '&cОтсутствует'
     # Плейсхолдеры времени
     time:
       hours: ' ч. '
