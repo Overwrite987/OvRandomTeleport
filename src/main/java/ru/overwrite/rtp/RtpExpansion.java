@@ -13,11 +13,11 @@ import ru.overwrite.rtp.utils.Utils;
 public class RtpExpansion extends PlaceholderExpansion {
 
     private final RtpManager rtpManager;
-    private final Config.PlaceholderMessages placeholderMessages;
+    private final Config pluginConfig;
 
     public RtpExpansion(Main plugin) {
         this.rtpManager = plugin.getRtpManager();
-        this.placeholderMessages = plugin.getPluginConfig().getPlaceholderMessages();
+        this.pluginConfig = plugin.getPluginConfig();
     }
 
     @Override
@@ -69,7 +69,7 @@ public class RtpExpansion extends PlaceholderExpansion {
 
     private String processCooldownPlaceholder(Player player, String[] args, Cooldown channelCooldown) {
         if (!channelCooldown.hasCooldown(player)) {
-            return placeholderMessages.noCooldown();
+            return pluginConfig.getPlaceholderMessages().noCooldown();
         }
         final int cooldown = calculateCooldown(player, channelCooldown);
         if (args.length < 3) {
@@ -98,7 +98,7 @@ public class RtpExpansion extends PlaceholderExpansion {
         }
         Costs costs = channel.costs();
         if (costs == null) {
-            return placeholderMessages.noValue();
+            return pluginConfig.getPlaceholderMessages().noValue();
         }
         final String costIdentifier = args[2];
         return switch (costIdentifier) {
@@ -110,7 +110,7 @@ public class RtpExpansion extends PlaceholderExpansion {
     }
 
     private <T> String getOrDefaultValue(T value) {
-        return value != null ? value.toString() : placeholderMessages.noValue();
+        return value != null ? value.toString() : pluginConfig.getPlaceholderMessages().noValue();
     }
 
     public String getBooleanPlaceholder(boolean b) {
