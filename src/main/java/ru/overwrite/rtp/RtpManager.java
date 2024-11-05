@@ -83,6 +83,7 @@ public class RtpManager {
             List<World> activeWorlds = Utils.getWorldList(channelSection.getStringList("active_worlds"));
             boolean teleportToFirstAllowedWorld = channelSection.getBoolean("teleport_to_first_world", false);
             int minPlayersToUse = channelSection.getInt("min_players_to_use", -1);
+            int invulnerableTicks = channelSection.getInt("invulnerable_after_teleport", 1);
             Costs costs = setupChannelCosts(channelSection.getConfigurationSection("costs"));
             LocationGenOptions locationGenOptions = setupChannelGenOptions(channelSection.getConfigurationSection("location_generation_options"));
             if (locationGenOptions == null) {
@@ -91,7 +92,6 @@ public class RtpManager {
                 }
                 continue;
             }
-            int invulnerableTicks = channelSection.getInt("invulnerable_after_teleport", 1);
             Cooldown cooldown = setupCooldown(channelSection.getConfigurationSection("cooldown"));
             BossBar bossBar = setupChannelBossBar(channelSection.getConfigurationSection("bossbar"));
             Particles particles = setupChannelParticles(channelSection.getConfigurationSection("particles"));
@@ -106,9 +106,9 @@ public class RtpManager {
                     activeWorlds,
                     teleportToFirstAllowedWorld,
                     minPlayersToUse,
+                    invulnerableTicks,
                     costs,
                     locationGenOptions,
-                    invulnerableTicks,
                     cooldown,
                     bossBar,
                     particles,
@@ -397,6 +397,9 @@ public class RtpManager {
             Utils.sendMessage(channel.messages().alreadyTeleporting(), p);
             return;
         }
+        if (Utils.DEBUG) {
+            plugin.getPluginLogger().info("Pre teleporting player " + p.getName() + " with channel " + channel.id() + " in world " + world.getName());
+        }
         teleportingNow.add(p.getName());
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             locationGenerator.getIterationsPerPlayer().put(p.getName(), 1);
@@ -444,6 +447,9 @@ public class RtpManager {
     }
 
     public void teleportPlayer(Player p, Channel channel, Location loc) {
+        if (Utils.DEBUG) {
+            plugin.getPluginLogger().info("Teleporting player " + p.getName() + " with channel " + channel.id() + " to location " + loc.toString());
+        }
         Bukkit.getScheduler().runTask(plugin, () -> {
             if (channel.invulnerableTicks() > 0) {
                 p.setInvulnerable(true);
