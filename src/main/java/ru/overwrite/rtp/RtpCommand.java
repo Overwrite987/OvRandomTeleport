@@ -89,6 +89,9 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
             return false;
         }
         if (!rtpManager.takeCost(p, channel)) {
+            if (Utils.DEBUG) {
+                plugin.getPluginLogger().info("Take cost for channel " + channel.id() + " didn't pass");
+            }
             return false;
         }
         if (!channel.activeWorlds().contains(p.getWorld())) {

@@ -429,7 +429,7 @@ public class RtpManager {
     public boolean takeCost(Player p, Channel channel) {
         Costs costs = channel.costs();
         if (costs == null) {
-            return false;
+            return true;
         }
         return costs.processMoneyCost(p, channel) &&
                 costs.processHungerCost(p, channel) &&
