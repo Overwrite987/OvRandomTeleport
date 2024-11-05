@@ -73,7 +73,7 @@ public class RtpManager {
             }
             ConfigurationSection channelSection = config.getConfigurationSection("channels." + channelId);
             if (!channelSection.getString("file", "").isBlank()) {
-                channelSection = pluginConfig.getFile(plugin.getDataFolder().getAbsolutePath() + "/channels", channelSection.getString("file")); // I didn't know it was possible
+                channelSection = pluginConfig.getFile(plugin.getDataFolder().getAbsolutePath() + "/channels", channelSection.getString("file"));
             }
             String name = channelSection.getString("name", "");
             ChannelType type = channelSection.getString("type") == null ? ChannelType.DEFAULT : ChannelType.valueOf(channelSection.getString("type").toUpperCase());
