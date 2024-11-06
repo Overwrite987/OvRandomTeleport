@@ -48,8 +48,9 @@ public class WGLocationGenerator {
                 continue;
             }
 
-            StateFlag.State flag = region.getFlag(WGUtils.RTP_IGNORE_FLAG);
-            if (flag == null || flag == StateFlag.State.ALLOW) {
+            StateFlag ignoreFlag = WGUtils.RTP_IGNORE_FLAG;
+            StateFlag.State flag = region.getFlag(ignoreFlag);
+            if (flag == StateFlag.State.ALLOW) {
                 continue;
             }
 
