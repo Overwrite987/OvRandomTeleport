@@ -41,7 +41,7 @@ public class Utils {
     }
 
     public static void checkUpdates(Main plugin, Consumer<String> consumer) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(
                     new URL("https://raw.githubusercontent.com/Overwrite987/OvRandomTeleport/master/VERSION")
                             .openStream()))) {
@@ -49,7 +49,7 @@ public class Utils {
             } catch (IOException ex) {
                 plugin.getLogger().warning("Unable to check for updates: " + ex.getMessage());
             }
-        });
+        }, 30);
     }
 
     public static String translateAlternateColorCodes(char altColorChar, String textToTranslate) {
