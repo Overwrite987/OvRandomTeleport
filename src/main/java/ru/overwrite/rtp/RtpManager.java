@@ -413,7 +413,7 @@ public class RtpManager {
             if (loc == null) {
                 teleportingNow.remove(p.getName());
                 Utils.sendMessage(channel.messages().failToFindLocation(), p);
-                this.returnCost(p, channel); // return what we took
+                this.returnCost(p, channel);
                 return;
             }
             if (channel.cooldown().teleportCooldown() > 0) {
