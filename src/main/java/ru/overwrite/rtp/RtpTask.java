@@ -141,6 +141,9 @@ public class RtpTask {
     }
 
     private void updateBossBar(Channel channel, Cooldown cooldown) {
+        if (bossBar == null) {
+            return;
+        }
         double progress = preTeleportCooldown / (double) cooldown.teleportCooldown();
         if (progress < 1 && progress > 0) {
             bossBar.setProgress(progress);
