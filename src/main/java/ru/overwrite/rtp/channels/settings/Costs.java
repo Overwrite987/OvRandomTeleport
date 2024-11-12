@@ -11,7 +11,7 @@ public record Costs(
         MoneyType moneyType,
         double moneyCost,
         int hungerCost,
-        float expCost) {
+        int expCost) {
 
     public enum MoneyType {
         VAULT,
@@ -63,11 +63,11 @@ public record Costs(
     public boolean processExpCost(Player p, Channel channel) {
         if (expCost <= 0) return true;
 
-        if (p.getExp() < expCost) {
+        if (p.getTotalExperience() < expCost) {
             Utils.sendMessage(channel.messages().notEnoughExp().replace("%required%", Float.toString(expCost)), p);
             return false;
         }
-        p.setExp(p.getExp() - expCost);
+        p.setTotalExperience(p.getTotalExperience() - expCost);
         return true;
     }
 

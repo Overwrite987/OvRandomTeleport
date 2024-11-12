@@ -168,7 +168,7 @@ public class RtpManager {
         Costs.MoneyType moneyType = Costs.MoneyType.valueOf(channelCosts.getString("money_type", "VAULT").toUpperCase());
         double moneyCost = channelCosts.getDouble("money_cost", -1);
         int hungerCost = channelCosts.getInt("hunger_cost", -1);
-        float expCost = (float) channelCosts.getDouble("experience_cost", -1);
+        int expCost = channelCosts.getInt("experience_cost", -1);
         return new Costs(plugin.getEconomy(), moneyType, moneyCost, hungerCost, expCost);
     }
 
