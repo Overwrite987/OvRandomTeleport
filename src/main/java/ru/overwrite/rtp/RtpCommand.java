@@ -25,13 +25,11 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
     private final Main plugin;
     private final Config pluginConfig;
     private final RtpManager rtpManager;
-    private final Config.CommandMessages commandMessages;
 
     public RtpCommand(Main plugin) {
         this.plugin = plugin;
         this.rtpManager = plugin.getRtpManager();
         this.pluginConfig = plugin.getPluginConfig();
-        this.commandMessages = plugin.getPluginConfig().getCommandMessages();
     }
 
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
@@ -58,13 +56,13 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
                 return false;
             }
             if (!rtpManager.getNamedChannels().containsKey(args[0])) {
-                Utils.sendMessage(commandMessages.incorrectChannel(), p);
+                Utils.sendMessage(pluginConfig.getCommandMessages().incorrectChannel(), p);
                 return false;
             }
             Channel channel = rtpManager.getChannelByName(args[0]);
             return processTeleport(p, channel);
         } else {
-            sender.sendMessage(commandMessages.incorrectChannel());
+            sender.sendMessage(pluginConfig.getCommandMessages().incorrectChannel());
             return false;
         }
     }
@@ -113,6 +111,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean processAdminCommand(CommandSender sender, String[] args) {
+        Config.CommandMessages commandMessages = pluginConfig.getCommandMessages();
         if (!sender.hasPermission("rtp.admin")) {
             sender.sendMessage(commandMessages.incorrectChannel());
             return false;
