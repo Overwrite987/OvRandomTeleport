@@ -28,7 +28,10 @@ public record Costs(
     }
 
     private boolean processVaultMoneyCost(Player p, Channel channel) {
-        if (economy == null || economy.getBalance(p) < moneyCost) {
+        if (economy == null) {
+            return true;
+        }
+        if (economy.getBalance(p) < moneyCost) {
             sendNotEnoughMoneyMessage(channel, p);
             return false;
         }

@@ -97,9 +97,6 @@ public class RtpExpansion extends PlaceholderExpansion {
             return null;
         }
         Costs costs = channel.costs();
-        if (costs == null) {
-            return pluginConfig.getPlaceholderMessages().noValue();
-        }
         final String costIdentifier = args[2];
         return switch (costIdentifier) {
             case "money" -> getOrDefaultValue(Double.toString(costs.moneyCost()));

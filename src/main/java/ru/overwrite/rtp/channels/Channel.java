@@ -3,7 +3,6 @@ package ru.overwrite.rtp.channels;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import ru.overwrite.rtp.channels.settings.*;
 
 import org.bukkit.World;
@@ -16,7 +15,7 @@ public record Channel(
         boolean teleportToFirstAllowedWorld,
         int minPlayersToUse,
         int invulnerableTicks,
-        @Nullable Costs costs,
+        @NotNull Costs costs,
         @NotNull LocationGenOptions locationGenOptions,
         @NotNull Cooldown cooldown,
         @NotNull BossBar bossBar,

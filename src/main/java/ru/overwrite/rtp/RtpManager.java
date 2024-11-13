@@ -163,7 +163,7 @@ public class RtpManager {
 
     private Costs setupChannelCosts(ConfigurationSection channelCosts) {
         if (channelCosts == null) {
-            return null;
+            return new Costs(null, null, -1, -1, -1);
         }
         Costs.MoneyType moneyType = Costs.MoneyType.valueOf(channelCosts.getString("money_type", "VAULT").toUpperCase());
         double moneyCost = channelCosts.getDouble("money_cost", -1);
@@ -348,7 +348,7 @@ public class RtpManager {
         String cooldown = getMessage(messages, "cooldown", defaultMessages.cooldown(), prefix);
         String movedOnTeleport = getMessage(messages, "moved_on_teleport", defaultMessages.movedOnTeleport(), prefix);
         String teleportedOnTeleport = getMessage(messages, "teleported_on_teleport", defaultMessages.teleportedOnTeleport(), prefix);
-        String damagedOnTeleport = getMessage(messages, "damaged_on_teleport",defaultMessages.damagedOnTeleport(), prefix);
+        String damagedOnTeleport = getMessage(messages, "damaged_on_teleport", defaultMessages.damagedOnTeleport(), prefix);
         String damagedOtherOnTeleport = getMessage(messages, "damaged_other_on_teleport", defaultMessages.damagedOtherOnTeleport(), prefix);
         String failToFindLocation = getMessage(messages, "fail_to_find_location", defaultMessages.failToFindLocation(), prefix);
         String alreadyTeleporting = getMessage(messages, "already_teleporting", defaultMessages.alreadyTeleporting(), prefix);
@@ -428,9 +428,6 @@ public class RtpManager {
 
     public boolean takeCost(Player p, Channel channel) {
         Costs costs = channel.costs();
-        if (costs == null) {
-            return true;
-        }
         return costs.processMoneyCost(p, channel) &&
                 costs.processHungerCost(p, channel) &&
                 costs.processExpCost(p, channel);
@@ -438,9 +435,6 @@ public class RtpManager {
 
     private void returnCost(Player p, Channel channel) {
         Costs costs = channel.costs();
-        if (costs == null) {
-            return;
-        }
         costs.processMoneyReturn(p);
         costs.processHungerReturn(p);
         costs.processExpReturn(p);
