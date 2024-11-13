@@ -104,7 +104,7 @@ public class RtpExpansion extends PlaceholderExpansion {
         return switch (costIdentifier) {
             case "money" -> getOrDefaultValue(Double.toString(costs.moneyCost()));
             case "hunger" -> getOrDefaultValue(Integer.toString(costs.hungerCost()));
-            case "exp" -> getOrDefaultValue(Double.toString(costs.expCost()));
+            case "exp" -> getOrDefaultValue(Integer.toString(costs.expCost()));
             default -> null;
         };
     }
