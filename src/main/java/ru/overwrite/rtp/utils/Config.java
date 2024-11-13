@@ -89,6 +89,9 @@ public class Config {
 
 
     public String getPrefixed(String message, String prefix) {
+        if (message == null || prefix == null) {
+            return message;
+        }
         return Utils.COLORIZER.colorize(message.replace("%prefix%", prefix));
     }
 
