@@ -329,16 +329,11 @@ public class LocationGenerator {
     private int findSafeNetherYPoint(World world, int x, int z) {
         for (int y = 16; y < 112; y++) {
             Location location = new Location(world, x, y, z);
-            Location above1 = location.clone().add(0, 1, 0);
-            Location above2 = location.clone().add(0, 2, 0);
 
-            if (location.getBlock().getType().isSolid() && !location.getBlock().getType().isAir() &&
-                    above1.getBlock().getType().isAir() &&
-                    above2.getBlock().getType().isAir()) {
+            if (location.getBlock().getType().isSolid() && !location.getBlock().getType().isAir() && !isInsideBlocks(location)) {
                 return location.getBlockY();
             }
         }
-
         return -1;
     }
 
@@ -370,6 +365,12 @@ public class LocationGenerator {
         if (isOutsideWorldBorder(location)) {
             if (Utils.DEBUG) {
                 plugin.getPluginLogger().info("Location " + locationToString(location) + " is outside the world border.");
+            }
+            return true;
+        }
+        if (location.getWorld().getEnvironment() != World.Environment.NETHER && isInsideBlocks(location)) {
+            if (Utils.DEBUG) {
+                plugin.getPluginLogger().info("Location " + locationToString(location) + " is inside blocks.");
             }
             return true;
         }
@@ -409,6 +410,13 @@ public class LocationGenerator {
 
     private boolean isOutsideWorldBorder(Location loc) {
         return !loc.getWorld().getWorldBorder().isInside(loc);
+    }
+
+    private boolean isInsideBlocks(Location location) {
+        Location above1 = location.clone().add(0, 1, 0);
+        Location above2 = location.clone().add(0, 2, 0);
+
+        return !above1.getBlock().getType().isAir() && !above2.getBlock().getType().isAir();
     }
 
     private boolean isDisallowedBlock(Location loc, Avoidance avoidance) {
