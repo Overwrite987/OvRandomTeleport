@@ -3,6 +3,7 @@ package ru.overwrite.rtp;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntSortedMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 import lombok.Getter;
@@ -169,6 +170,7 @@ public class RtpManager {
         double moneyCost = channelCosts.getDouble("money_cost", -1);
         int hungerCost = channelCosts.getInt("hunger_cost", -1);
         int expCost = channelCosts.getInt("experience_cost", -1);
+
         return new Costs(plugin.getEconomy(), moneyType, moneyCost, hungerCost, expCost);
     }
 
@@ -208,6 +210,7 @@ public class RtpManager {
             useLastGroupCooldown = cooldown.getBoolean("use_last_group_cooldown", false);
         }
         int teleportCooldown = cooldown.getInt("teleport_cooldown", -1);
+
         return new Cooldown(defaultCooldown, playerCooldowns, groupCooldownsMap, useLastGroupCooldown, teleportCooldown);
     }
 
@@ -261,6 +264,7 @@ public class RtpManager {
             afterTeleportRadius = afterTeleport.getDouble("radius");
             afterTeleportSpeed = afterTeleport.getDouble("speed");
         }
+
         return new Particles(
                 preTeleportEnabled, preTeleportId, preTeleportDots, preTeleportRadius, preTeleportSpeed, preTeleportInvert, preTeleportJumping, preTeleportMoveNear,
                 afterTeleportParticleEnabled, afterTeleportParticle, afterTeleportCount, afterTeleportRadius, afterTeleportSpeed);
@@ -492,7 +496,7 @@ public class RtpManager {
         if (cooldown.defaultCooldown() < 0) {
             return -1;
         }
-        Object2IntLinkedOpenHashMap<String> groupCooldowns = cooldown.groupCooldowns();
+        Object2IntSortedMap<String> groupCooldowns = cooldown.groupCooldowns();
         if (groupCooldowns.isEmpty()) {
             return cooldown.defaultCooldown();
         }
