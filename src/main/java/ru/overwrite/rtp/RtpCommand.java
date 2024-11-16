@@ -292,7 +292,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
     }
 
     private List<String> getResult(String[] args, List<String> completions) {
-        List<String> result = new ArrayList<>();
+        final List<String> result = new ArrayList<>();
         for (String c : completions) {
             if (Utils.startsWithIgnoreCase(c, args[args.length - 1])) {
                 result.add(c);
