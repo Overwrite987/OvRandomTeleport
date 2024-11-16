@@ -520,8 +520,8 @@ public class RtpManager {
         String z = Integer.toString(loc.getBlockZ());
         final String[] replacementList = {p.getName(), name, cd, x, y, z};
         Bukkit.getScheduler().runTask(plugin, () -> {
-            for (Action action : actions) {
-                action.perform(channel, p, searchList, replacementList);
+            for (int i = 0; i < actions.size(); i++) {
+                actions.get(i).perform(channel, p, searchList, replacementList);
             }
         });
     }
