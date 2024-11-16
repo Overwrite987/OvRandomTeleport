@@ -63,7 +63,6 @@ public class Config {
                 getPrefixed(messages.getString("damaged_on_teleport", "messages.damaged_on_teleport"), messagesPrefix),
                 getPrefixed(messages.getString("damaged_other_on_teleport", "messages.damaged_other_on_teleport"), messagesPrefix),
                 getPrefixed(messages.getString("fail_to_find_location", "messages.fail_to_find_location"), messagesPrefix),
-                getPrefixed(messages.getString("already_teleporting", "messages.already_teleporting"), messagesPrefix)
         );
 
         final ConfigurationSection admin = messages.getConfigurationSection("admin");

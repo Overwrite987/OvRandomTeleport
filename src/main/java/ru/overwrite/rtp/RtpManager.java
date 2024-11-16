@@ -351,7 +351,6 @@ public class RtpManager {
         String damagedOnTeleport = getMessage(messages, "damaged_on_teleport", defaultMessages.damagedOnTeleport(), prefix);
         String damagedOtherOnTeleport = getMessage(messages, "damaged_other_on_teleport", defaultMessages.damagedOtherOnTeleport(), prefix);
         String failToFindLocation = getMessage(messages, "fail_to_find_location", defaultMessages.failToFindLocation(), prefix);
-        String alreadyTeleporting = getMessage(messages, "already_teleporting", defaultMessages.alreadyTeleporting(), prefix);
 
         return new Messages(
                 noPerms,
@@ -365,8 +364,7 @@ public class RtpManager {
                 teleportedOnTeleport,
                 damagedOnTeleport,
                 damagedOtherOnTeleport,
-                failToFindLocation,
-                alreadyTeleporting
+                failToFindLocation
         );
     }
 
@@ -394,7 +392,6 @@ public class RtpManager {
 
     public void preTeleport(Player p, Channel channel, World world) {
         if (teleportingNow.contains(p.getName())) {
-            Utils.sendMessage(channel.messages().alreadyTeleporting(), p);
             return;
         }
         if (Utils.DEBUG) {

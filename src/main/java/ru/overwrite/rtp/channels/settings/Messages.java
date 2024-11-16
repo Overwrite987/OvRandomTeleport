@@ -12,6 +12,5 @@ public record Messages(
         String teleportedOnTeleport,
         String damagedOnTeleport,
         String damagedOtherOnTeleport,
-        String failToFindLocation,
-        String alreadyTeleporting) {
+        String failToFindLocation) {
 }

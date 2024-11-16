@@ -56,7 +56,6 @@ messages:
   damaged_on_teleport: '%prefix% &cВы получили урон! Телепортация отменена.'
   damaged_other_on_teleport: '%prefix% &cВы нанесли урон! Телепортация отменена.'
   fail_to_find_location: '%prefix% &6Не удалось подобрать необходимую локацию. Попробуйте снова позже!'
-  already_teleporting: '%prefix% &cВы уже телепортируетесь!'
   incorrect_channel: '%prefix% &cУказанного канала рандомной телепортации не существует!'
   # Заполнители плейсхолдеров PlaceholderAPI
   placeholders:
