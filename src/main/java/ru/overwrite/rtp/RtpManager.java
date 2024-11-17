@@ -395,6 +395,7 @@ public class RtpManager {
         return !perPlayerActiveRtpTask.isEmpty() && perPlayerActiveRtpTask.containsKey(playerName);
     }
 
+    @Getter
     public final List<String> teleportingNow = new ArrayList<>();
 
     public void preTeleport(Player p, Channel channel, World world) {

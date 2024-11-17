@@ -29,6 +29,7 @@ public class Config {
     public record CommandMessages(
             String incorrectChannel,
             String channelNotSpecified,
+            String cancelled,
             String reload,
             String unknownArgument,
             String playerNotFound,
@@ -71,6 +72,7 @@ public class Config {
         this.commandMessages = new CommandMessages(
                 getPrefixed(messages.getString("incorrect_channel", "messages.incorrect_channel"), messagesPrefix),
                 getPrefixed(messages.getString("channel_not_specified", "messages.channel_not_specified"), messagesPrefix),
+                getPrefixed(messages.getString("canceled", "messages.canceled"), messagesPrefix),
                 getPrefixed(admin.getString("reload"), messagesPrefix),
                 getPrefixed(admin.getString("unknown_argument"), messagesPrefix),
                 getPrefixed(admin.getString("player_not_found"), messagesPrefix),

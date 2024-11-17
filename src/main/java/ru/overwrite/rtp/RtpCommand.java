@@ -57,6 +57,10 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
         if (args.length == 1) {
             Player p = (Player) sender;
             if (rtpManager.hasActiveTasks(p.getName())) {
+                if (args[0].equalsIgnoreCase("cancel")) {
+                    rtpManager.getPerPlayerActiveRtpTask().get(p.getName()).cancel();
+                    Utils.sendMessage(pluginConfig.getCommandMessages().cancelled(), p);
+                }
                 return true;
             }
             if (!rtpManager.getNamedChannels().containsKey(args[0])) {
@@ -253,6 +257,9 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
                 if (sender.hasPermission("rtp.channel." + channelName)) {
                     completions.add(channelName);
                 }
+            }
+            if (sender instanceof Player p && rtpManager.hasActiveTasks(p.getName())) {
+                completions.add("cancel");
             }
         }
         if (sender.hasPermission("rtp.admin")) {
