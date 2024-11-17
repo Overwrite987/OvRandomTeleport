@@ -67,7 +67,7 @@ public record Costs(
         if (expCost <= 0) return true;
 
         if (p.getTotalExperience() < expCost) {
-            Utils.sendMessage(channel.messages().notEnoughExp().replace("%required%", Float.toString(expCost)), p);
+            Utils.sendMessage(channel.messages().notEnoughExp().replace("%required%", Integer.toString(expCost)), p);
             return false;
         }
         p.setTotalExperience(p.getTotalExperience() - expCost);
