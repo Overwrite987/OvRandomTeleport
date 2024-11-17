@@ -6,6 +6,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntSortedMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 import lombok.Getter;
 import org.bukkit.*;
 import org.bukkit.block.Biome;
@@ -194,7 +195,7 @@ public class RtpManager {
     }
 
     private Cooldown setupCooldown(ConfigurationSection cooldown) {
-        Object2IntLinkedOpenHashMap<String> groupCooldownsMap = new Object2IntLinkedOpenHashMap<>();
+        Object2IntSortedMap<String> groupCooldownsMap = new Object2IntLinkedOpenHashMap<>();
         if (isSectionNull(cooldown)) {
             return new Cooldown(-1, null, groupCooldownsMap, false, -1);
         }
@@ -245,7 +246,7 @@ public class RtpManager {
         int afterTeleportCount = 0;
         double afterTeleportRadius = 0;
         double afterTeleportSpeed = 0;
-        ConfigurationSection preTeleport = particles.getConfigurationSection("pre_teleport");
+        final ConfigurationSection preTeleport = particles.getConfigurationSection("pre_teleport");
         if (!isSectionNull(preTeleport)) {
             preTeleportEnabled = preTeleport.getBoolean("enabled", false);
             preTeleportId = Particle.valueOf(preTeleport.getString("id"));
@@ -256,7 +257,7 @@ public class RtpManager {
             preTeleportJumping = preTeleport.getBoolean("jumping");
             preTeleportMoveNear = preTeleport.getBoolean("move_near");
         }
-        ConfigurationSection afterTeleport = particles.getConfigurationSection("after_teleport");
+        final ConfigurationSection afterTeleport = particles.getConfigurationSection("after_teleport");
         if (!isSectionNull(afterTeleport)) {
             afterTeleportParticleEnabled = afterTeleport.getBoolean("enabled", false);
             afterTeleportParticle = Particle.valueOf(afterTeleport.getString("id"));
@@ -283,7 +284,7 @@ public class RtpManager {
 
     private Avoidance setupChannelAvoidance(ConfigurationSection avoid, PluginManager pluginManager) {
         boolean isNullSection = isSectionNull(avoid);
-        Set<Material> avoidBlocks = new ObjectOpenHashSet<>();
+        ObjectSet<Material> avoidBlocks = new ObjectOpenHashSet<>();
         boolean avoidBlocksBlacklist = true;
         if (!isNullSection) {
             avoidBlocksBlacklist = avoid.getBoolean("blocks.blacklist", true);
@@ -291,7 +292,7 @@ public class RtpManager {
                 avoidBlocks.add(Material.valueOf(m.toUpperCase()));
             }
         }
-        Set<Biome> avoidBiomes = new ObjectOpenHashSet<>();
+        ObjectSet<Biome> avoidBiomes = new ObjectOpenHashSet<>();
         boolean avoidBiomesBlacklist = true;
         if (!isNullSection) {
             avoidBiomesBlacklist = avoid.getBoolean("biomes.blacklist", true);
@@ -309,14 +310,14 @@ public class RtpManager {
         boolean isNullSection = isSectionNull(actions);
         List<Action> preTeleportActions = isNullSection ? List.of() : getActionList(actions.getStringList("pre_teleport"));
         Int2ObjectMap<List<Action>> onCooldownActions = new Int2ObjectOpenHashMap<>();
-        ConfigurationSection cdActions = actions.getConfigurationSection("on_cooldown");
-        if (!isSectionNull(cdActions)) {
-            for (String s : cdActions.getKeys(false)) {
-                if (!Utils.isNumeric(s)) {
+        final ConfigurationSection cooldownActions = actions.getConfigurationSection("on_cooldown");
+        if (!isSectionNull(cooldownActions)) {
+            for (String actionId : cooldownActions.getKeys(false)) {
+                if (!Utils.isNumeric(actionId)) {
                     continue;
                 }
-                int time = Integer.parseInt(s);
-                List<Action> actionList = getActionList(cdActions.getStringList(s));
+                int time = Integer.parseInt(actionId);
+                List<Action> actionList = getActionList(cooldownActions.getStringList(actionId));
                 onCooldownActions.put(time, actionList);
             }
         }
