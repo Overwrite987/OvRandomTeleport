@@ -40,11 +40,12 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
         if (args.length == 0) {
             Player p = (Player) sender;
             if (rtpManager.hasActiveTasks(p.getName())) {
-                return false;
+                return true;
             }
             Channel channel = rtpManager.getDefaultChannel();
             if (channel == null) {
                 Utils.sendMessage(pluginConfig.getCommandMessages().channelNotSpecified(), p);
+                return true;
             }
             return processTeleport(p, channel);
         }
@@ -56,17 +57,17 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
         if (args.length == 1) {
             Player p = (Player) sender;
             if (rtpManager.hasActiveTasks(p.getName())) {
-                return false;
+                return true;
             }
             if (!rtpManager.getNamedChannels().containsKey(args[0])) {
                 Utils.sendMessage(pluginConfig.getCommandMessages().incorrectChannel(), p);
-                return false;
+                return true;
             }
             Channel channel = rtpManager.getChannelByName(args[0]);
             return processTeleport(p, channel);
         } else {
             sender.sendMessage(pluginConfig.getCommandMessages().incorrectChannel());
-            return false;
+            return true;
         }
     }
 
@@ -77,23 +78,23 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
         }
         if (!p.hasPermission("rtp.channel." + channel.id())) {
             Utils.sendMessage(channel.messages().noPerms(), p);
-            return false;
+            return true;
         }
         if (channel.cooldown().hasCooldown(p)) {
             Utils.sendMessage(channel.messages().cooldown()
                     .replace("%time%",
                             Utils.getTime((int) (rtpManager.getChannelCooldown(p, channel.cooldown()) - (System.currentTimeMillis() - channel.cooldown().playerCooldowns().get(p.getName())) / 1000))), p);
-            return false;
+            return true;
         }
         if (channel.minPlayersToUse() > 0 && (Bukkit.getOnlinePlayers().size() - 1) < channel.minPlayersToUse()) {
             Utils.sendMessage(channel.messages().notEnoughPlayers().replace("%required%", Integer.toString(channel.minPlayersToUse())), p);
-            return false;
+            return true;
         }
         if (!rtpManager.takeCost(p, channel)) {
             if (Utils.DEBUG) {
                 plugin.getPluginLogger().info("Take cost for channel " + channel.id() + " didn't pass");
             }
-            return false;
+            return true;
         }
         if (!channel.activeWorlds().contains(p.getWorld())) {
             if (Utils.DEBUG) {
@@ -107,7 +108,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
             Utils.sendMessage(channel.messages().invalidWorld(), p);
-            return false;
+            return true;
         }
         rtpManager.preTeleport(p, channel, p.getWorld());
         return true;
@@ -117,7 +118,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
         Config.CommandMessages commandMessages = pluginConfig.getCommandMessages();
         if (!sender.hasPermission("rtp.admin")) {
             sender.sendMessage(commandMessages.incorrectChannel());
-            return false;
+            return true;
         }
         if (args.length < 2) {
             sender.sendMessage(commandMessages.adminHelp());
@@ -137,16 +138,16 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
             case "teleport", "forceteleport", "forcertp": {
                 if (args.length < 4 || args.length > 5) {
                     sender.sendMessage(commandMessages.unknownArgument());
-                    return false;
+                    return true;
                 }
                 Player targetPlayer = Bukkit.getPlayerExact(args[2]);
                 if (targetPlayer == null) {
                     sender.sendMessage(commandMessages.playerNotFound());
-                    return false;
+                    return true;
                 }
                 if (!rtpManager.getNamedChannels().containsKey(args[3])) {
                     sender.sendMessage(commandMessages.incorrectChannel());
-                    return false;
+                    return true;
                 }
                 Channel channel = rtpManager.getChannelByName(args[3]);
                 if (!channel.activeWorlds().contains(targetPlayer.getWorld())) {
@@ -155,7 +156,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
                         return true;
                     }
                     sender.sendMessage(channel.messages().invalidWorld());
-                    return false;
+                    return true;
                 }
                 processForceTeleport(args, targetPlayer, channel, targetPlayer.getWorld());
                 return true;
@@ -178,7 +179,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
             }
         }
         sender.sendMessage(commandMessages.unknownArgument());
-        return false;
+        return true;
     }
 
     public void checkAndUpdatePlugin(CommandSender sender, Main plugin) {
