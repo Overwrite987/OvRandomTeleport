@@ -73,7 +73,7 @@ public class RtpManager {
                 plugin.getPluginLogger().info("Id: " + channelId);
             }
             ConfigurationSection channelSection = config.getConfigurationSection("channels." + channelId);
-            if (!channelSection.getString("file", "").isBlank()) {
+            if (!channelSection.getString("file", "").isEmpty()) {
                 channelSection = pluginConfig.getFile(plugin.getDataFolder().getAbsolutePath() + "/channels", channelSection.getString("file"));
             }
             String name = channelSection.getString("name", "");
