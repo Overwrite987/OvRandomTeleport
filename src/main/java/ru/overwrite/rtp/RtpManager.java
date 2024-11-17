@@ -120,7 +120,7 @@ public class RtpManager {
             namedChannels.put(channelId, newChannel);
             assignChannelToSpecification(channelSection.getConfigurationSection("specifications"), newChannel);
         }
-        this.defaultChannel = getChannelByName(config.getString("main_settings.default_channel"));
+        this.defaultChannel = getChannelByName(config.getString("main_settings.default_channel", ""));
         long endTime = System.currentTimeMillis();
         if (Utils.DEBUG) {
             plugin.getLogger().info("Channels setup done in " + (endTime - startTime) + " ms");
@@ -385,6 +385,9 @@ public class RtpManager {
     }
 
     public Channel getChannelByName(String channelName) {
+        if (channelName.isEmpty()) {
+            return null;
+        }
         return namedChannels.get(channelName);
     }
 

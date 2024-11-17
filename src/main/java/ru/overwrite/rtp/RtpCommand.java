@@ -43,6 +43,9 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
                 return false;
             }
             Channel channel = rtpManager.getDefaultChannel();
+            if (channel == null) {
+                Utils.sendMessage(pluginConfig.getCommandMessages().channelNotSpecified(), p);
+            }
             return processTeleport(p, channel);
         }
 

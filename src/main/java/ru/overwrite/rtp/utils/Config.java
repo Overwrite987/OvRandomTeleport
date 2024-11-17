@@ -28,6 +28,7 @@ public class Config {
 
     public record CommandMessages(
             String incorrectChannel,
+            String channelNotSpecified,
             String reload,
             String unknownArgument,
             String playerNotFound,
@@ -48,6 +49,7 @@ public class Config {
 
     public void setupMessages(FileConfiguration config) {
         final ConfigurationSection messages = config.getConfigurationSection("messages");
+
         messagesPrefix = Utils.COLORIZER.colorize(messages.getString("prefix", "messages.prefix"));
 
         this.defaultChannelMessages = new Messages(
@@ -68,6 +70,7 @@ public class Config {
         final ConfigurationSection admin = messages.getConfigurationSection("admin");
         this.commandMessages = new CommandMessages(
                 getPrefixed(messages.getString("incorrect_channel", "messages.incorrect_channel"), messagesPrefix),
+                getPrefixed(messages.getString("channel_not_specified", "messages.channel_not_specified"), messagesPrefix),
                 getPrefixed(admin.getString("reload"), messagesPrefix),
                 getPrefixed(admin.getString("unknown_argument"), messagesPrefix),
                 getPrefixed(admin.getString("player_not_found"), messagesPrefix),
@@ -85,7 +88,6 @@ public class Config {
         timeMinutes = Utils.COLORIZER.colorize(time.getString("minutes", " мин."));
         timeSeconds = Utils.COLORIZER.colorize(time.getString("seconds", " сек."));
     }
-
 
     public String getPrefixed(String message, String prefix) {
         if (message == null || prefix == null) {

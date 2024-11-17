@@ -14,6 +14,7 @@ main_settings:
   rtp_tab_complete: true
   # Название дефолтного канала.
   # Указанный канал будет использован в качестве основного при вводе команды /rtp
+  # Если канал не указан - то игроку будет необходимо ввести имя канала вручную
   default_channel: 'default'
   # Включить ли поддержку PlaceholderApi?
   papi_support: true
@@ -42,6 +43,7 @@ channels:
 
 # Сообщения плагина (сообщения от prefix до already_teleporting могут применяться к каналам)
 # Формат хекса - &#IIIDDD
+# Если вы хотите отключить сообщение - укажите ''
 messages:
   prefix: '&7&l(&5&lOvRandomTeleport&7&l) &6»&r'
   no_perms: '%prefix% &cУ вас не достаточно прав на использование данного канала.'
@@ -57,6 +59,7 @@ messages:
   damaged_other_on_teleport: '%prefix% &cВы нанесли урон! Телепортация отменена.'
   fail_to_find_location: '%prefix% &6Не удалось подобрать необходимую локацию. Попробуйте снова позже!'
   incorrect_channel: '%prefix% &cУказанного канала рандомной телепортации не существует!'
+  channel_not_specified: '%prefix% &cВам необходимо указать канал рандомной телепортации!'
   # Заполнители плейсхолдеров PlaceholderAPI
   placeholders:
     no_cooldown: '&aКулдаун отсутствует!'
