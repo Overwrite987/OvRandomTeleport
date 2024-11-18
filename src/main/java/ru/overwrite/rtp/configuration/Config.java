@@ -1,4 +1,4 @@
-package ru.overwrite.rtp.utils;
+package ru.overwrite.rtp.configuration;
 
 import lombok.Getter;
 import org.bukkit.configuration.ConfigurationSection;
@@ -6,6 +6,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import ru.overwrite.rtp.Main;
 import ru.overwrite.rtp.channels.settings.Messages;
+import ru.overwrite.rtp.configuration.data.CommandMessages;
+import ru.overwrite.rtp.configuration.data.PlaceholderMessages;
+import ru.overwrite.rtp.utils.Utils;
 
 import java.io.File;
 
@@ -26,25 +29,8 @@ public class Config {
     @Getter
     private CommandMessages commandMessages;
 
-    public record CommandMessages(
-            String incorrectChannel,
-            String channelNotSpecified,
-            String cancelled,
-            String reload,
-            String unknownArgument,
-            String playerNotFound,
-            String adminHelp
-    ) {
-    }
-
     @Getter
     private PlaceholderMessages placeholderMessages;
-
-    public record PlaceholderMessages(
-            String noCooldown,
-            String noValue
-    ) {
-    }
 
     public static String timeHours, timeMinutes, timeSeconds;
 

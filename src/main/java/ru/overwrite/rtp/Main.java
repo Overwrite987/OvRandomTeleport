@@ -14,7 +14,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import ru.overwrite.rtp.utils.Config;
+import ru.overwrite.rtp.configuration.Config;
 import ru.overwrite.rtp.utils.Utils;
 import ru.overwrite.rtp.utils.VersionUtils;
 import ru.overwrite.rtp.utils.regions.WGUtils;

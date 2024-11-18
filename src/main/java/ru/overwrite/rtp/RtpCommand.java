@@ -17,7 +17,8 @@ import org.bukkit.entity.Player;
 
 import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.channels.Channel;
-import ru.overwrite.rtp.utils.Config;
+import ru.overwrite.rtp.configuration.Config;
+import ru.overwrite.rtp.configuration.data.CommandMessages;
 import ru.overwrite.rtp.utils.Utils;
 
 public class RtpCommand implements CommandExecutor, TabCompleter {
@@ -119,7 +120,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean processAdminCommand(CommandSender sender, String[] args) {
-        Config.CommandMessages commandMessages = pluginConfig.getCommandMessages();
+        CommandMessages commandMessages = pluginConfig.getCommandMessages();
         if (!sender.hasPermission("rtp.admin")) {
             sender.sendMessage(commandMessages.incorrectChannel());
             return true;

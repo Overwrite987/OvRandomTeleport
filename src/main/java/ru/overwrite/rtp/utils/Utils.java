@@ -7,6 +7,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.Main;
+import ru.overwrite.rtp.configuration.Config;
 import ru.overwrite.rtp.utils.color.*;
 
 import java.io.BufferedReader;

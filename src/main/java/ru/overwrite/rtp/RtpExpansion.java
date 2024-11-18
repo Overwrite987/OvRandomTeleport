@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.channels.settings.Cooldown;
 import ru.overwrite.rtp.channels.settings.Costs;
-import ru.overwrite.rtp.utils.Config;
+import ru.overwrite.rtp.configuration.Config;
 import ru.overwrite.rtp.utils.Utils;
 
 public class RtpExpansion extends PlaceholderExpansion {
