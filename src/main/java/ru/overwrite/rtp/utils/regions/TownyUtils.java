@@ -4,7 +4,7 @@ import org.bukkit.Location;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Town;
 
-public class TownyUtils {
+public final class TownyUtils {
 
     private static final TownyAPI api = TownyAPI.getInstance();
 

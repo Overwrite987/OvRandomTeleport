@@ -11,7 +11,7 @@ import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 
 import org.bukkit.Location;
 
-public class WGUtils {
+public final class WGUtils {
 
     public static StateFlag RTP_IGNORE_FLAG;
 
