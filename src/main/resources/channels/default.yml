@@ -173,7 +173,7 @@ actions:
   # %time% - время до телепортации
   # %x% %y% %z% - координаты локации
   pre_teleport:
-    - '[MESSAGE] &7&l(&5&lOvRandomTeleport&7) &6» &fВы будете телепортированы через %time% Не двигайтесь и не получайте урона.'
+    - '[MESSAGE] &7&l(&5&lOvRandomTeleport&7) &6» &fВы будете телепортированы через %time% Не двигайтесь и не получайте урона. &6(Отменить РТП - /rtp cancel)'
     - '[SOUND] BLOCK_NOTE_BLOCK_PLING;1;1'
   on_cooldown:
     3:
