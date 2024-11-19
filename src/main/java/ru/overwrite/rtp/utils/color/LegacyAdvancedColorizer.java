@@ -1,8 +1,8 @@
 package ru.overwrite.rtp.utils.color;
 
-public class LegacyAdvancedColorizer implements Colorizer {
+import ru.overwrite.rtp.utils.Utils;
 
-    private static final char COLOR_CHAR = '§';
+public class LegacyAdvancedColorizer implements Colorizer {
 
     @Override
     public String colorize(String message) {
@@ -43,7 +43,7 @@ public class LegacyAdvancedColorizer implements Colorizer {
                     continue;
                 }
                 if (isValidColorCharacter(currentChar)) {
-                    builder.append(COLOR_CHAR).append(currentChar);
+                    builder.append(Utils.COLOR_CHAR).append(currentChar);
                     index++;
                     continue;
                 }
@@ -63,9 +63,9 @@ public class LegacyAdvancedColorizer implements Colorizer {
 
     private boolean processDoubleTag(StringBuilder builder, char[] messageChars, int index) {
         if (index + 3 <= messageChars.length && isValidHexCode(messageChars, index, 3)) {
-            builder.append(COLOR_CHAR).append('x');
+            builder.append(Utils.COLOR_CHAR).append('x');
             for (int i = index; i < index + 3; i++) {
-                builder.append(COLOR_CHAR).append(messageChars[i]).append(COLOR_CHAR).append(messageChars[i]);
+                builder.append(Utils.COLOR_CHAR).append(messageChars[i]).append(Utils.COLOR_CHAR).append(messageChars[i]);
             }
             return true;
         }
@@ -74,9 +74,9 @@ public class LegacyAdvancedColorizer implements Colorizer {
 
     private boolean processSingleTag(StringBuilder builder, char[] messageChars, int index) {
         if (index + 6 <= messageChars.length && isValidHexCode(messageChars, index, 6)) {
-            builder.append(COLOR_CHAR).append('x');
+            builder.append(Utils.COLOR_CHAR).append('x');
             for (int i = index; i < index + 6; i++) {
-                builder.append(COLOR_CHAR).append(messageChars[i]);
+                builder.append(Utils.COLOR_CHAR).append(messageChars[i]);
             }
             return true;
         }

@@ -8,7 +8,6 @@ import java.util.regex.Pattern;
 public class LegacyColorizer implements Colorizer {
 
     private static final Pattern HEX_PATTERN = Pattern.compile("&#([a-fA-F\\d]{6})");
-    private static final char COLOR_CHAR = '§';
 
     @Override
     public String colorize(String message) {
@@ -20,13 +19,13 @@ public class LegacyColorizer implements Colorizer {
         while (matcher.find()) {
             String group = matcher.group(1);
             matcher.appendReplacement(builder,
-                    COLOR_CHAR + "x" +
-                            COLOR_CHAR + group.charAt(0) +
-                            COLOR_CHAR + group.charAt(1) +
-                            COLOR_CHAR + group.charAt(2) +
-                            COLOR_CHAR + group.charAt(3) +
-                            COLOR_CHAR + group.charAt(4) +
-                            COLOR_CHAR + group.charAt(5));
+                    Utils.COLOR_CHAR + "x" +
+                            Utils.COLOR_CHAR + group.charAt(0) +
+                            Utils.COLOR_CHAR + group.charAt(1) +
+                            Utils.COLOR_CHAR + group.charAt(2) +
+                            Utils.COLOR_CHAR + group.charAt(3) +
+                            Utils.COLOR_CHAR + group.charAt(4) +
+                            Utils.COLOR_CHAR + group.charAt(5));
         }
         message = matcher.appendTail(builder).toString();
         return Utils.translateAlternateColorCodes('&', message);

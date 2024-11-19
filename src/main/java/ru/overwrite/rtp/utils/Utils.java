@@ -53,12 +53,14 @@ public final class Utils {
         }, 30);
     }
 
+    public static final char COLOR_CHAR = '§';
+
     public static String translateAlternateColorCodes(char altColorChar, String textToTranslate) {
         char[] b = textToTranslate.toCharArray();
 
         for (int i = 0, length = b.length - 1; i < length; ++i) {
             if (b[i] == altColorChar && isValidColorCharacter(b[i + 1])) {
-                b[i++] = '§';
+                b[i++] = COLOR_CHAR;
                 b[i] |= 0x20;
             }
         }
