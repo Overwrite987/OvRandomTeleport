@@ -1,7 +1,6 @@
 package ru.overwrite.rtp.utils.logging;
 
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import ru.overwrite.rtp.Logger;
 import ru.overwrite.rtp.Main;
 
 public class PaperLogger implements Logger {
@@ -14,10 +13,12 @@ public class PaperLogger implements Logger {
         this.plugin = plugin;
     }
 
+    @Override
     public void info(String msg) {
         plugin.getComponentLogger().info(legacySection.deserialize(msg));
     }
 
+    @Override
     public void warn(String msg) {
         plugin.getComponentLogger().warn(legacySection.deserialize(msg));
     }

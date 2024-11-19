@@ -1,4 +1,4 @@
-package ru.overwrite.rtp;
+package ru.overwrite.rtp.utils.logging;
 
 public interface Logger {
 

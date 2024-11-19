@@ -1,6 +1,5 @@
 package ru.overwrite.rtp.utils.logging;
 
-import ru.overwrite.rtp.Logger;
 import ru.overwrite.rtp.Main;
 
 public class BukkitLogger implements Logger {
@@ -11,10 +10,12 @@ public class BukkitLogger implements Logger {
         this.plugin = plugin;
     }
 
+    @Override
     public void info(String msg) {
         plugin.getLogger().info(msg);
     }
 
+    @Override
     public void warn(String msg) {
         plugin.getLogger().warning(msg);
     }
