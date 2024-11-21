@@ -18,7 +18,7 @@ public record Channel(
         @NotNull Costs costs,
         @NotNull LocationGenOptions locationGenOptions,
         @NotNull Cooldown cooldown,
-        @NotNull BossBar bossBar,
+        @NotNull Bossbar bossbar,
         @NotNull Particles particles,
         @NotNull Restrictions restrictions,
         @NotNull Avoidance avoidance,

@@ -96,7 +96,7 @@ public class RtpManager {
                 continue;
             }
             Cooldown cooldown = setupCooldown(channelSection.getConfigurationSection("cooldown"));
-            BossBar bossBar = setupChannelBossBar(channelSection.getConfigurationSection("bossbar"));
+            Bossbar bossBar = setupChannelBossBar(channelSection.getConfigurationSection("bossbar"));
             Particles particles = setupChannelParticles(channelSection.getConfigurationSection("particles"));
             Restrictions restrictions = setupChannelRestrictions(channelSection.getConfigurationSection("restrictions"));
             Avoidance avoidance = setupChannelAvoidance(channelSection.getConfigurationSection("avoid"), pluginManager);
@@ -216,16 +216,16 @@ public class RtpManager {
         return new Cooldown(defaultCooldown, playerCooldowns, groupCooldownsMap, useLastGroupCooldown, teleportCooldown);
     }
 
-    private BossBar setupChannelBossBar(ConfigurationSection bossbar) {
+    private Bossbar setupChannelBossBar(ConfigurationSection bossbar) {
         if (isSectionNull(bossbar)) {
-            return new BossBar(false, null, null, null);
+            return new Bossbar(false, null, null, null);
         }
         boolean enabled = bossbar.getBoolean("enabled");
         String title = Utils.COLORIZER.colorize(bossbar.getString("title"));
         BarColor color = BarColor.valueOf(bossbar.getString("color").toUpperCase());
         BarStyle style = BarStyle.valueOf(bossbar.getString("style").toUpperCase());
 
-        return new BossBar(enabled, title, color, style);
+        return new Bossbar(enabled, title, color, style);
     }
 
     private Particles setupChannelParticles(ConfigurationSection particles) {

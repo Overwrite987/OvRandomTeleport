@@ -9,6 +9,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.channels.settings.Actions;
+import ru.overwrite.rtp.channels.settings.Bossbar;
 import ru.overwrite.rtp.channels.settings.Cooldown;
 import ru.overwrite.rtp.channels.settings.Particles;
 import ru.overwrite.rtp.utils.Utils;
@@ -37,8 +38,8 @@ public class RtpTask {
     public void startPreTeleportTimer(Player p, Channel channel, Location location) {
         Cooldown cooldown = channel.cooldown();
         this.preTeleportCooldown = cooldown.teleportCooldown();
-        if (channel.bossBar().bossbarEnabled()) {
-            this.setupBossBar(p, channel, cooldown);
+        if (channel.bossbar().bossbarEnabled()) {
+            this.setupBossBar(p, channel.bossbar(), cooldown);
         }
         startParticleAnimation(p, preTeleportCooldown * 20, channel.particles());
         this.runnable = new BukkitRunnable() {
@@ -125,9 +126,9 @@ public class RtpTask {
         }.runTaskTimer(plugin, 0, 1);
     }
 
-    private void setupBossBar(Player player, Channel channel, Cooldown cooldown) {
-        String title = Utils.COLORIZER.colorize(channel.bossBar().bossbarTitle().replace("%time%", Utils.getTime(cooldown.teleportCooldown())));
-        this.bossBar = Bukkit.createBossBar(title, channel.bossBar().bossbarColor(), channel.bossBar().bossbarType());
+    private void setupBossBar(Player player, Bossbar bossbar, Cooldown cooldown) {
+        String title = Utils.COLORIZER.colorize(bossbar.bossbarTitle().replace("%time%", Utils.getTime(cooldown.teleportCooldown())));
+        this.bossBar = Bukkit.createBossBar(title, bossbar.bossbarColor(), bossbar.bossbarType());
         this.bossBar.addPlayer(player);
     }
 
@@ -148,7 +149,7 @@ public class RtpTask {
         if (progress < 1 && progress > 0) {
             bossBar.setProgress(progress);
         }
-        String title = Utils.COLORIZER.colorize(channel.bossBar().bossbarTitle().replace("%time%", Utils.getTime(preTeleportCooldown)));
+        String title = Utils.COLORIZER.colorize(channel.bossbar().bossbarTitle().replace("%time%", Utils.getTime(preTeleportCooldown)));
         bossBar.setTitle(title);
     }
 
