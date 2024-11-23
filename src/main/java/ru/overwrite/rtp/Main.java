@@ -160,5 +160,4 @@ public final class Main extends JavaPlugin {
     public void onDisable() {
         server.getScheduler().cancelTasks(this);
     }
-
 }
