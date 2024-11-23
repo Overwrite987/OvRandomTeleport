@@ -220,6 +220,9 @@ public class RtpListener implements Listener {
     }
 
     private void cancelTeleportation(String playerName) {
+        if (Utils.DEBUG) {
+            plugin.getPluginLogger().info("Teleportation for player " + playerName + " was cancelled because of restrictions");
+        }
         rtpManager.getPerPlayerActiveRtpTask().get(playerName).cancel();
         rtpManager.teleportingNow.remove(playerName);
         rtpManager.getPerPlayerActiveRtpTask().remove(playerName);
