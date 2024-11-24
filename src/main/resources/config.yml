@@ -75,7 +75,7 @@ messages:
   # Раздел для админских команд
   admin:
     reload: '%prefix% &aПлагин успешно перезагружен!'
-    unknown_argument: '%prefix% &cВы введи недопустимы(й/е) аргумент(ы) к команде!'
+    unknown_argument: '%prefix% &cВы ввели недопустимы(й/е) аргумент(ы) к команде!'
     player_not_found: '%prefix% &cУказанный игрок не найден!'
     admin_help: |-
       %prefix% Помощь по админ.командам.
