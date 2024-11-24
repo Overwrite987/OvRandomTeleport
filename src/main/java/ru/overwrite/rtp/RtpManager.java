@@ -457,14 +457,14 @@ public class RtpManager {
                 Bukkit.getScheduler().runTaskLater(plugin, () -> p.setInvulnerable(false), channel.invulnerableTicks());
             }
             p.teleport(loc);
-            this.spawnParticles(p, channel.particles());
+            this.spawnParticleSphere(p, channel.particles());
             teleportingNow.remove(p.getName());
             this.handlePlayerCooldown(p, channel.cooldown());
             this.executeActions(p, channel, channel.actions().afterTeleportActions(), loc);
         });
     }
 
-    public void spawnParticles(Player p, Particles particles) {
+    public void spawnParticleSphere(Player p, Particles particles) {
         if (particles == null || !particles.afterTeleportEnabled()) {
             return;
         }
