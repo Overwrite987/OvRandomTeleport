@@ -254,13 +254,16 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
         final List<String> completions = new ArrayList<>();
         if (args.length == 1) {
-            for (String channelName : rtpManager.getNamedChannels().keySet()) {
-                if (sender.hasPermission("rtp.channel." + channelName)) {
-                    completions.add(channelName);
+            if (sender instanceof Player p) {
+                if (rtpManager.hasActiveTasks(p.getName())) {
+                    completions.add("cancel");
+                    return getResult(args, completions);
                 }
-            }
-            if (sender instanceof Player p && rtpManager.hasActiveTasks(p.getName())) {
-                completions.add("cancel");
+                for (String channelName : rtpManager.getNamedChannels().keySet()) {
+                    if (p.hasPermission("rtp.channel." + channelName)) {
+                        completions.add(channelName);
+                    }
+                }
             }
         }
         if (sender.hasPermission("rtp.admin")) {
