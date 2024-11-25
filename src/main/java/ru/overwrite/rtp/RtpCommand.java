@@ -255,7 +255,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
         final List<String> completions = new ArrayList<>();
         if (args.length == 1) {
             if (sender instanceof Player p) {
-                if (rtpManager.hasActiveTasks(p.getName())) {
+                if (rtpManager.hasActiveTasks(p.getName()) && p.hasPermission("rtp.cancel")) {
                     completions.add("cancel");
                     return getResult(args, completions);
                 }
