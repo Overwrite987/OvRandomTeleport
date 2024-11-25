@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ActionRegistry {
+public final class ActionRegistry {
 
     private static final Pattern ACTION_PATTERN = Pattern.compile("\\[(\\S+)] ?(.*)");
 

@@ -9,7 +9,7 @@ import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.actions.ActionType;
 import ru.overwrite.rtp.channels.Channel;
 
-public class SoundActionType implements ActionType {
+public final class SoundActionType implements ActionType {
 
     private static final Key KEY = Key.key("ovrandomteleport:sound");
 

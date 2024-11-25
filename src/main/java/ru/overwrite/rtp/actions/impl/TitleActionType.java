@@ -9,7 +9,7 @@ import ru.overwrite.rtp.actions.ActionType;
 import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.utils.Utils;
 
-public class TitleActionType implements ActionType {
+public final class TitleActionType implements ActionType {
 
     private static final Key KEY = Key.key("ovrandomteleport:title");
 

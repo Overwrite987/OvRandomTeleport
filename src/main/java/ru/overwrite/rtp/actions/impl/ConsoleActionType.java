@@ -10,7 +10,7 @@ import ru.overwrite.rtp.actions.ActionType;
 import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.utils.Utils;
 
-public class ConsoleActionType implements ActionType {
+public final class ConsoleActionType implements ActionType {
 
     private static final Key KEY = Key.key("ovrandomteleport:console");
 
