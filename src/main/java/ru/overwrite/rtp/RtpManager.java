@@ -451,15 +451,15 @@ public class RtpManager {
         if (Utils.DEBUG) {
             plugin.getPluginLogger().info("Teleporting player " + p.getName() + " with channel " + channel.id() + " to location " + loc.toString());
         }
+        if (channel.invulnerableTicks() > 0) {
+            p.setInvulnerable(true);
+            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> p.setInvulnerable(false), channel.invulnerableTicks());
+        }
+        this.handlePlayerCooldown(p, channel.cooldown());
         Bukkit.getScheduler().runTask(plugin, () -> {
-            if (channel.invulnerableTicks() > 0) {
-                p.setInvulnerable(true);
-                Bukkit.getScheduler().runTaskLater(plugin, () -> p.setInvulnerable(false), channel.invulnerableTicks());
-            }
             p.teleport(loc);
-            this.spawnParticleSphere(p, channel.particles());
             teleportingNow.remove(p.getName());
-            this.handlePlayerCooldown(p, channel.cooldown());
+            this.spawnParticleSphere(p, channel.particles());
             this.executeActions(p, channel, channel.actions().afterTeleportActions(), loc);
         });
     }
