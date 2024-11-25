@@ -1,5 +1,6 @@
 package ru.overwrite.rtp;
 
+import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
@@ -202,7 +203,7 @@ public class RtpManager {
         }
         int defaultCooldown = cooldown.getInt("default_cooldown", -1);
         TimedExpiringMap<String, Long> playerCooldowns = defaultCooldown > 0 ? new TimedExpiringMap<>(TimeUnit.SECONDS) : null;
-        ConfigurationSection groupCooldowns = cooldown.getConfigurationSection("group_cooldowns");
+        final ConfigurationSection groupCooldowns = cooldown.getConfigurationSection("group_cooldowns");
         boolean useLastGroupCooldown = false;
         if (!isSectionNull(groupCooldowns) && plugin.getPerms() != null) {
             for (String groupName : groupCooldowns.getKeys(false)) {
@@ -327,7 +328,7 @@ public class RtpManager {
         return new Actions(preTeleportActions, onCooldownActions, afterTeleportActions);
     }
 
-    private List<Action> getActionList(List<String> actionStrings) {
+    private ImmutableList<Action> getActionList(List<String> actionStrings) {
         List<Action> actions = new ArrayList<>(actionStrings.size());
         for (String actionStr : actionStrings) {
             try {
@@ -336,7 +337,7 @@ public class RtpManager {
                 plugin.getSLF4JLogger().warn("Couldn't create action for string '{}'", actionStr, ex);
             }
         }
-        return actions;
+        return ImmutableList.copyOf(actions);
     }
 
     private Messages setupChannelMessages(ConfigurationSection messages) {
@@ -515,8 +516,8 @@ public class RtpManager {
 
     private final String[] searchList = {"%player%", "%name%", "%time%", "%x%", "%y%", "%z%"};
 
-    public void executeActions(Player p, Channel channel, List<Action> actions, Location loc) {
-        if (actions.isEmpty()) {
+    public void executeActions(Player p, Channel channel, List<Action> actionList, Location loc) {
+        if (actionList.isEmpty()) {
             return;
         }
         String name = channel.name();
@@ -526,8 +527,8 @@ public class RtpManager {
         String z = Integer.toString(loc.getBlockZ());
         final String[] replacementList = {p.getName(), name, cd, x, y, z};
         Bukkit.getScheduler().runTask(plugin, () -> {
-            for (int i = 0; i < actions.size(); i++) {
-                actions.get(i).perform(channel, p, searchList, replacementList);
+            for (Action action : actionList) {
+                action.perform(channel, p, searchList, replacementList);
             }
         });
     }
