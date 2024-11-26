@@ -6,10 +6,10 @@ import com.palmergames.bukkit.towny.object.Town;
 
 public final class TownyUtils {
 
-    private static final TownyAPI api = TownyAPI.getInstance();
+    private static final TownyAPI API = TownyAPI.getInstance();
 
     public static Town getTownByLocation(Location loc) {
-        return api.getTown(loc);
+        return API.getTown(loc);
     }
 
 }

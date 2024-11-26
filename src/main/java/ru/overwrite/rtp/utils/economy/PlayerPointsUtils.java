@@ -6,21 +6,21 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-public class PlayerPointsUtils {
+public final class PlayerPointsUtils {
 
-    private static final PlayerPointsAPI ppAPI = PlayerPoints.getInstance().getAPI();
+    private static final PlayerPointsAPI API = PlayerPoints.getInstance().getAPI();
 
     public static void withdraw(Player p, int amount) {
         UUID uuid = p.getUniqueId();
-        ppAPI.take(uuid, amount);
+        API.take(uuid, amount);
     }
 
     public static void deposit(Player p, int amount) {
         UUID uuid = p.getUniqueId();
-        ppAPI.give(uuid, amount);
+        API.give(uuid, amount);
     }
 
     public static int getBalance(Player p) {
-        return ppAPI.look(p.getUniqueId());
+        return API.look(p.getUniqueId());
     }
 }
