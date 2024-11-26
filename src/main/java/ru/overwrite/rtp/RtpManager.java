@@ -62,6 +62,7 @@ public class RtpManager {
     }
 
     private void registerDefaultActions() {
+        actionRegistry.register(new ActionBarActionType());
         actionRegistry.register(new ConsoleActionType());
         actionRegistry.register(new EffectActionType());
         actionRegistry.register(new MessageActionType());
