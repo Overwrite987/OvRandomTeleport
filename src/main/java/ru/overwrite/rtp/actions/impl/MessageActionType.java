@@ -85,7 +85,7 @@ public final class MessageActionType implements ActionType {
             }
             Component component = LegacyComponentSerializer.legacySection().deserialize(messageToPlayer);
             if (hoverText != null) {
-                component = createHoverEvent(component, hoverText);
+                component = createHoverText(component, hoverText);
             }
             if (clickEvent != null) {
                 component = createClickEvent(component, clickEvent);
@@ -93,7 +93,7 @@ public final class MessageActionType implements ActionType {
             player.sendMessage(component);
         }
 
-        private Component createHoverEvent(Component message, Component hoverText) {
+        private Component createHoverText(Component message, Component hoverText) {
             HoverEvent<Component> hover = HoverEvent.showText(hoverText);
             return message.hoverEvent(hover);
         }
