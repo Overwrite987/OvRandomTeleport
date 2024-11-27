@@ -60,8 +60,24 @@
                         <filter>
                             <artifact>*:*</artifact>
                             <excludes>
-                                <exclude>META-INF/maven/</exclude>
+                                <exclude>META-INF/**</exclude>
+                                <exclude>javax/**</exclude>
+                                <exclude>org/checkerframework/**</exclude>
+                                <exclude>org/apache/**</exclude>
+                                <exclude>org/slf4j/**</exclude>
+                                <exclude>com/**</exclude>
+                                <exclude>ch/**</exclude>
+                                <exclude>assets/**</exclude>
+                                <exclude>*.dtd</exclude>
                             </excludes>
+                        </filter>
+                        <filter>
+                            <artifact>it.unimi.dsi:**</artifact>
+                            <includes>
+                                <include>it/unimi/dsi/util/XoRoShiRo128PlusRandomGenerator.class</include>
+                                <include>it/unimi/dsi/util/XoRoShiRo128PlusRandom.class</include>
+                                <include>it/unimi/dsi/Util.class</include>
+                            </includes>
                         </filter>
                     </filters>
                     <minimizeJar>true</minimizeJar>
@@ -175,7 +191,6 @@
             <groupId>it.unimi.dsi</groupId>
             <artifactId>dsiutils</artifactId>
             <version>2.7.3</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
