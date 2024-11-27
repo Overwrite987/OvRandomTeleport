@@ -1,6 +1,7 @@
 package ru.overwrite.rtp.channels.settings;
 
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.utils.economy.PlayerPointsUtils;
@@ -54,6 +55,7 @@ public record Costs(
 
     public boolean processHungerCost(Player p, Channel channel) {
         if (hungerCost <= 0) return true;
+        if (p.getGameMode() == GameMode.CREATIVE) return true;
 
         if (p.getFoodLevel() < hungerCost) {
             Utils.sendMessage(channel.messages().notEnoughHunger().replace("%required%", Integer.toString(hungerCost)), p);
