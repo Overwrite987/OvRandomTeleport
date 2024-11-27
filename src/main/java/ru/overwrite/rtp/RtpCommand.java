@@ -133,6 +133,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
             case "reload": {
                 plugin.reloadConfig();
                 final FileConfiguration config = plugin.getConfig();
+                Utils.setupColorizer(config.getConfigurationSection("main_settings"));
                 pluginConfig.setupMessages(config);
                 rtpManager.getNamedChannels().clear();
                 rtpManager.getSpecifications().clearAll();
