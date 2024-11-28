@@ -183,9 +183,11 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage(message);
                 return true;
             }
+            default: {
+                sender.sendMessage(commandMessages.unknownArgument());
+                return true;
+            }
         }
-        sender.sendMessage(commandMessages.unknownArgument());
-        return true;
     }
 
     public void checkAndUpdatePlugin(CommandSender sender, Main plugin) {
