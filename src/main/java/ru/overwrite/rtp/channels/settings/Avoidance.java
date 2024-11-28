@@ -1,14 +1,15 @@
 package ru.overwrite.rtp.channels.settings;
 
-import it.unimi.dsi.fastutil.objects.ObjectSet;
 import org.bukkit.Material;
 import org.bukkit.block.Biome;
 
+import java.util.Set;
+
 public record Avoidance(
         boolean avoidBlocksBlacklist,
-        ObjectSet<Material> avoidBlocks,
+        Set<Material> avoidBlocks,
         boolean avoidBiomesBlacklist,
-        ObjectSet<Biome> avoidBiomes,
+        Set<Biome> avoidBiomes,
         boolean avoidRegions,
         boolean avoidTowns) {
 }

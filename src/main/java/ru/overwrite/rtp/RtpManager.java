@@ -287,7 +287,7 @@ public class RtpManager {
 
     private Avoidance setupChannelAvoidance(ConfigurationSection avoid, PluginManager pluginManager) {
         boolean isNullSection = isSectionNull(avoid);
-        ObjectSet<Material> avoidBlocks = new ObjectOpenHashSet<>();
+        Set<Material> avoidBlocks = EnumSet.noneOf(Material.class);
         boolean avoidBlocksBlacklist = true;
         if (!isNullSection) {
             avoidBlocksBlacklist = avoid.getBoolean("blocks.blacklist", true);
@@ -295,7 +295,7 @@ public class RtpManager {
                 avoidBlocks.add(Material.valueOf(m.toUpperCase()));
             }
         }
-        ObjectSet<Biome> avoidBiomes = new ObjectOpenHashSet<>();
+        Set<Biome> avoidBiomes = EnumSet.noneOf(Biome.class);
         boolean avoidBiomesBlacklist = true;
         if (!isNullSection) {
             avoidBiomesBlacklist = avoid.getBoolean("biomes.blacklist", true);
