@@ -1,6 +1,7 @@
 package ru.overwrite.rtp;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.boss.BossBar;
@@ -14,6 +15,7 @@ import ru.overwrite.rtp.channels.settings.Cooldown;
 import ru.overwrite.rtp.channels.settings.Particles;
 import ru.overwrite.rtp.utils.Utils;
 
+@RequiredArgsConstructor
 public class RtpTask {
 
     private final Main plugin;
@@ -27,13 +29,6 @@ public class RtpTask {
     private BossBar bossBar;
     private BukkitTask runnable;
     private BukkitTask particleTask;
-
-    public RtpTask(Main plugin, RtpManager rtpManager, String playerName, Channel channel) {
-        this.plugin = plugin;
-        this.rtpManager = rtpManager;
-        this.playerName = playerName;
-        this.activeChannel = channel;
-    }
 
     public void startPreTeleportTimer(Player p, Channel channel, Location location) {
         Cooldown cooldown = channel.cooldown();
