@@ -168,10 +168,10 @@ public class RtpTask {
         if (bossBar != null) {
             bossBar.removeAll();
         }
-        runnable.cancel();
         if (particleTask != null) {
             particleTask.cancel();
         }
+        runnable.cancel();
         rtpManager.getPerPlayerActiveRtpTask().remove(playerName);
         rtpManager.getTeleportingNow().remove(playerName);
         if (Utils.DEBUG) {
