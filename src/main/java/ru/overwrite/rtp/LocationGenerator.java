@@ -6,10 +6,10 @@ import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import ru.overwrite.rtp.channels.settings.Avoidance;
 import ru.overwrite.rtp.channels.Channel;
+import ru.overwrite.rtp.channels.settings.Avoidance;
 import ru.overwrite.rtp.channels.settings.LocationGenOptions;
-import ru.overwrite.rtp.utils.*;
+import ru.overwrite.rtp.utils.Utils;
 import ru.overwrite.rtp.utils.regions.TownyUtils;
 import ru.overwrite.rtp.utils.regions.WGUtils;
 

@@ -1,11 +1,5 @@
 package ru.overwrite.rtp;
 
-import java.io.*;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -14,12 +8,20 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-
 import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.configuration.Config;
 import ru.overwrite.rtp.configuration.data.CommandMessages;
 import ru.overwrite.rtp.utils.Utils;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RtpCommand implements CommandExecutor, TabCompleter {
 

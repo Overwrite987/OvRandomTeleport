@@ -1,11 +1,10 @@
 package ru.overwrite.rtp.channels;
 
-import java.util.List;
-
+import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.channels.settings.*;
 
-import org.bukkit.World;
+import java.util.List;
 
 public record Channel(
         String id,
