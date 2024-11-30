@@ -52,7 +52,7 @@ public class RtpExpansion extends PlaceholderExpansion {
         }
 
         final String placeholderType = args[0].toLowerCase();
-        final Channel channel = rtpManager.getChannelByName(args[1]);
+        final Channel channel = rtpManager.getChannelById(args[1]);
         final Cooldown channelCooldown = channel.cooldown();
 
         return switch (placeholderType) {

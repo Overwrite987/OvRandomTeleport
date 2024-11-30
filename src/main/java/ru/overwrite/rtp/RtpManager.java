@@ -122,16 +122,16 @@ public class RtpManager {
             namedChannels.put(channelId, newChannel);
             assignChannelToSpecification(channelSection.getConfigurationSection("specifications"), newChannel);
         }
-        this.defaultChannel = getChannelByName(config.getString("main_settings.default_channel", ""));
+        this.defaultChannel = getChannelById(config.getString("main_settings.default_channel", ""));
         long endTime = System.currentTimeMillis();
         if (Utils.DEBUG) {
             plugin.getLogger().info("Channels setup done in " + (endTime - startTime) + " ms");
         }
     }
 
-    public record Specifications(Set<Channel> joinChannels,
-                                 Map<Channel, List<World>> voidChannels,
-                                 Map<Channel, List<World>> respawnChannels) {
+    public record Specifications(Set<String> joinChannels,
+                                 Map<String, List<World>> voidChannels,
+                                 Map<String, List<World>> respawnChannels) {
 
         public static Specifications createEmpty() {
             return new Specifications(new HashSet<>(), new HashMap<>(), new HashMap<>());
@@ -147,15 +147,15 @@ public class RtpManager {
             if (section == null) return;
 
             if (section.getBoolean("teleport_on_first_join", false)) {
-                joinChannels.add(newChannel);
+                joinChannels.add(newChannel.id());
             }
             List<World> voidWorlds = Utils.getWorldList(section.getStringList("void_worlds"));
             if (!voidWorlds.isEmpty() && !voidWorlds.equals(Collections.singletonList(null))) {
-                voidChannels.put(newChannel, voidWorlds);
+                voidChannels.put(newChannel.id(), voidWorlds);
             }
             List<World> respawnWorlds = Utils.getWorldList(section.getStringList("respawn_worlds"));
             if (!respawnWorlds.isEmpty() && !respawnWorlds.equals(Collections.singletonList(null))) {
-                respawnChannels.put(newChannel, respawnWorlds);
+                respawnChannels.put(newChannel.id(), respawnWorlds);
             }
         }
     }
@@ -386,11 +386,11 @@ public class RtpManager {
         return section == null;
     }
 
-    public Channel getChannelByName(String channelName) {
-        if (channelName.isEmpty()) {
+    public Channel getChannelById(String channelId) {
+        if (channelId.isEmpty()) {
             return null;
         }
-        return namedChannels.get(channelName);
+        return namedChannels.get(channelId);
     }
 
     public boolean hasActiveTasks(String playerName) {

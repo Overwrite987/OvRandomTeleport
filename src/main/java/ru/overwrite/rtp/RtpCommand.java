@@ -70,7 +70,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
                 Utils.sendMessage(pluginConfig.getCommandMessages().incorrectChannel(), p);
                 return true;
             }
-            Channel channel = rtpManager.getChannelByName(args[0]);
+            Channel channel = rtpManager.getChannelById(args[0]);
             return processTeleport(p, channel);
         } else {
             sender.sendMessage(pluginConfig.getCommandMessages().incorrectChannel());
@@ -157,7 +157,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
                     sender.sendMessage(commandMessages.incorrectChannel());
                     return true;
                 }
-                Channel channel = rtpManager.getChannelByName(args[3]);
+                Channel channel = rtpManager.getChannelById(args[3]);
                 if (!channel.activeWorlds().contains(targetPlayer.getWorld())) {
                     if (channel.teleportToFirstAllowedWorld()) {
                         processForceTeleport(args, targetPlayer, channel, channel.activeWorlds().get(0));

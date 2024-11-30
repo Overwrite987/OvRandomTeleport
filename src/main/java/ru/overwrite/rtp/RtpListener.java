@@ -36,18 +36,18 @@ public class RtpListener implements Listener {
         }
         Player p = e.getPlayer();
         if (e.getTo().getBlockY() < VersionUtils.VOID_LEVEL) {
-            Map<Channel, List<World>> voidChannels = rtpManager.getSpecifications().voidChannels();
+            Map<String, List<World>> voidChannels = rtpManager.getSpecifications().voidChannels();
             if (voidChannels.isEmpty()) {
                 return;
             }
-            for (Channel channel : voidChannels.keySet()) {
-                if (!voidChannels.get(channel).contains(p.getWorld())) {
+            for (String channelId : voidChannels.keySet()) {
+                if (!voidChannels.get(channelId).contains(p.getWorld())) {
                     continue;
                 }
-                if (!p.hasPermission("rtp.channel." + channel.id())) {
+                if (!p.hasPermission("rtp.channel." + channelId)) {
                     continue;
                 }
-                processTeleport(p, channel);
+                processTeleport(p, rtpManager.getChannelById(channelId));
                 return;
             }
         }
@@ -83,12 +83,12 @@ public class RtpListener implements Listener {
         if (p.hasPlayedBefore()) {
             return;
         }
-        Set<Channel> joinChannels = rtpManager.getSpecifications().joinChannels();
-        for (Channel channel : joinChannels) {
-            if (!p.hasPermission("rtp.channel." + channel.id())) {
+        Set<String> joinChannels = rtpManager.getSpecifications().joinChannels();
+        for (String channelId : joinChannels) {
+            if (!p.hasPermission("rtp.channel." + channelId)) {
                 continue;
             }
-            processTeleport(p, channel);
+            processTeleport(p, rtpManager.getChannelById(channelId));
             return;
         }
     }
@@ -96,18 +96,18 @@ public class RtpListener implements Listener {
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e) {
         Player p = e.getPlayer();
-        Map<Channel, List<World>> respawnChannels = rtpManager.getSpecifications().respawnChannels();
+        Map<String, List<World>> respawnChannels = rtpManager.getSpecifications().respawnChannels();
         if (respawnChannels.isEmpty()) {
             return;
         }
-        for (Channel channel : respawnChannels.keySet()) {
-            if (!respawnChannels.get(channel).contains(p.getWorld())) {
+        for (String channelId : respawnChannels.keySet()) {
+            if (!respawnChannels.get(channelId).contains(p.getWorld())) {
                 continue;
             }
-            if (!p.hasPermission("rtp.channel." + channel.id())) {
+            if (!p.hasPermission("rtp.channel." + channelId)) {
                 continue;
             }
-            processTeleport(p, channel);
+            processTeleport(p, rtpManager.getChannelById(channelId));
             return;
         }
     }
