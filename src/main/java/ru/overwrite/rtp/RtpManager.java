@@ -79,7 +79,9 @@ public class RtpManager {
                 channelSection = pluginConfig.getFile(plugin.getDataFolder().getAbsolutePath() + "/channels", channelSection.getString("file"));
             }
             String name = channelSection.getString("name", "");
-            ChannelType type = channelSection.getString("type") == null ? ChannelType.DEFAULT : ChannelType.valueOf(channelSection.getString("type").toUpperCase());
+            ChannelType type = channelSection.getString("type") == null ?
+                    ChannelType.DEFAULT :
+                    ChannelType.valueOf(channelSection.getString("type").toUpperCase());
             if (type == ChannelType.NEAR_REGION && !pluginManager.isPluginEnabled("WorldGuard")) {
                 type = ChannelType.DEFAULT;
             }
@@ -91,7 +93,7 @@ public class RtpManager {
             LocationGenOptions locationGenOptions = setupChannelGenOptions(channelSection.getConfigurationSection("location_generation_options"));
             if (locationGenOptions == null) {
                 if (Utils.DEBUG) {
-                    plugin.getPluginLogger().info("Could not setup location generator options for channel " + channelId);
+                    plugin.getPluginLogger().warn("Could not setup location generator options for channel " + channelId + ". Skipping...");
                 }
                 continue;
             }

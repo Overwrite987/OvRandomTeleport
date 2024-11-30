@@ -34,7 +34,7 @@ public final class Utils {
     }
 
     public static List<World> getWorldList(List<String> worldNames) {
-        List<World> worldList = new ArrayList<>();
+        final List<World> worldList = new ArrayList<>(worldNames.size());
         for (String w : worldNames) {
             worldList.add(Bukkit.getWorld(w));
         }
@@ -136,8 +136,7 @@ public final class Utils {
         if (cs == null || cs.isEmpty()) {
             return false;
         }
-        int sz = cs.length();
-        for (int i = 0; i < sz; ++i) {
+        for (int i = 0, length = cs.length(); i < length; ++i) {
             if (!Character.isDigit(cs.charAt(i))) {
                 return false;
             }
