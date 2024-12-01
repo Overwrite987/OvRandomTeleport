@@ -93,7 +93,7 @@ public class RtpManager {
             LocationGenOptions locationGenOptions = setupChannelGenOptions(channelSection.getConfigurationSection("location_generation_options"));
             if (locationGenOptions == null) {
                 if (Utils.DEBUG) {
-                    plugin.getPluginLogger().warn("Could not setup location generator options for channel " + channelId + ". Skipping...");
+                    plugin.getPluginLogger().warn("Could not setup location generator options for channel '" + channelId + "'. Skipping...");
                 }
                 continue;
             }
@@ -407,7 +407,7 @@ public class RtpManager {
             return;
         }
         if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("Pre teleporting player " + p.getName() + " with channel " + channel.id() + " in world " + world.getName());
+            plugin.getPluginLogger().info("Pre teleporting player '" + p.getName() + "' with channel '" + channel.id() + "' in world " + world.getName());
         }
         teleportingNow.add(p.getName());
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
@@ -451,7 +451,7 @@ public class RtpManager {
 
     public void teleportPlayer(Player p, Channel channel, Location loc) {
         if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("Teleporting player " + p.getName() + " with channel " + channel.id() + " to location " + loc.toString());
+            plugin.getPluginLogger().info("Teleporting player '" + p.getName() + "' with channel '" + channel.id() + "' to location " + loc.toString());
         }
         if (channel.invulnerableTicks() > 0) {
             p.setInvulnerable(true);

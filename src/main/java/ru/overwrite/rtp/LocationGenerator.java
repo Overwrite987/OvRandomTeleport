@@ -54,7 +54,7 @@ public class LocationGenerator {
             return generateRandomLocation(p, channel, world);
         } else {
             if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Location for player " + p.getName() + " found in " + iterationsPerPlayer.getInt(p.getName()) + " iterations");
+                plugin.getPluginLogger().info("Location for player '" + p.getName() + "' found in " + iterationsPerPlayer.getInt(p.getName()) + " iterations");
             }
             iterationsPerPlayer.removeInt(p.getName());
             return location;
@@ -89,7 +89,7 @@ public class LocationGenerator {
             return generateRandomLocationNearPlayer(p, channel, world);
         } else {
             if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Location for player " + p.getName() + " found in " + iterationsPerPlayer.getInt(p.getName()) + " iterations");
+                plugin.getPluginLogger().info("Location for player '" + p.getName() + "' found in " + iterationsPerPlayer.getInt(p.getName()) + " iterations");
             }
             iterationsPerPlayer.removeInt(p.getName());
             return location;
@@ -119,7 +119,7 @@ public class LocationGenerator {
 
     public boolean hasReachedMaxIterations(Player p, LocationGenOptions locationGenOptions) {
         if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("Iterations for player " + p.getName() + ": " + iterationsPerPlayer.getInt(p.getName()));
+            plugin.getPluginLogger().info("Iterations for player '" + p.getName() + "': " + iterationsPerPlayer.getInt(p.getName()));
         }
         if (iterationsPerPlayer.getInt(p.getName()) >= locationGenOptions.maxLocationAttempts()) {
             iterationsPerPlayer.removeInt(p.getName());
@@ -365,48 +365,41 @@ public class LocationGenerator {
     private boolean isLocationRestricted(Location location, Avoidance avoidance) {
         if (isOutsideWorldBorder(location)) {
             if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Location " + locationToString(location) + " is outside the world border.");
+                plugin.getPluginLogger().info("Location " + Utils.locationToString(location) + " is outside the world border.");
             }
             return true;
         }
         if (location.getWorld().getEnvironment() != World.Environment.NETHER && isInsideBlocks(location)) {
             if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Location " + locationToString(location) + " is inside blocks.");
+                plugin.getPluginLogger().info("Location " + Utils.locationToString(location) + " is inside blocks.");
             }
             return true;
         }
         if (isDisallowedBlock(location, avoidance)) {
             if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Location " + locationToString(location) + " contains a disallowed block.");
+                plugin.getPluginLogger().info("Location " + Utils.locationToString(location) + " contains a disallowed block.");
             }
             return true;
         }
         if (isDisallowedBiome(location, avoidance)) {
             if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Location " + locationToString(location) + " is in a disallowed biome.");
+                plugin.getPluginLogger().info("Location " + Utils.locationToString(location) + " is in a disallowed biome.");
             }
             return true;
         }
         if (isInsideRegion(location, avoidance)) {
             if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Location " + locationToString(location) + " is inside a disallowed region.");
+                plugin.getPluginLogger().info("Location " + Utils.locationToString(location) + " is inside a disallowed region.");
             }
             return true;
         }
         if (isInsideTown(location, avoidance)) {
             if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Location " + locationToString(location) + " is inside a disallowed town.");
+                plugin.getPluginLogger().info("Location " + Utils.locationToString(location) + " is inside a disallowed town.");
             }
             return true;
         }
         return false;
-    }
-
-    public static String locationToString(Location location) {
-        return "(" + location.getWorld().getName() + "/"
-                + location.getBlockX() + "/"
-                + location.getBlockY() + "/"
-                + location.getBlockZ() + ")";
     }
 
     private boolean isOutsideWorldBorder(Location loc) {

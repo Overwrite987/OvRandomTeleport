@@ -2,6 +2,7 @@ package ru.overwrite.rtp.utils;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -98,6 +99,13 @@ public final class Utils {
             message = PlaceholderAPI.setPlaceholders(p, message);
         }
         return message;
+    }
+
+    public static String locationToString(Location location) {
+        return "(" + location.getWorld().getName() + "/"
+                + location.getBlockX() + "/"
+                + location.getBlockY() + "/"
+                + location.getBlockZ() + ")";
     }
 
     public static String getTime(int time) {
