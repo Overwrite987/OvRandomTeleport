@@ -38,6 +38,6 @@ public final class ActionRegistry {
         if (!matcher.matches()) return null;
         ActionType type = getType(matcher.group(1));
         if (type == null) return null;
-        return type.instance(matcher.group(2), plugin);
+        return type.instance(matcher.group(2).trim(), plugin);
     }
 }
