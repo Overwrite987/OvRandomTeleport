@@ -19,7 +19,7 @@ import java.util.List;
 
 public class WGLocationGenerator {
 
-    LocationGenerator locationGenerator;
+    private final LocationGenerator locationGenerator;
 
     public WGLocationGenerator(LocationGenerator locationGenerator) {
         this.locationGenerator = locationGenerator;
