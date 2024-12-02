@@ -86,6 +86,9 @@ public class RtpListener implements Listener {
             return;
         }
         Set<String> joinChannels = rtpManager.getSpecifications().joinChannels();
+        if (joinChannels.isEmpty()) {
+            return;
+        }
         for (String channelId : joinChannels) {
             if (!p.hasPermission("rtp.channel." + channelId)) {
                 continue;
