@@ -4,8 +4,8 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import ru.overwrite.rtp.channels.Channel;
-import ru.overwrite.rtp.utils.economy.PlayerPointsUtils;
 import ru.overwrite.rtp.utils.Utils;
+import ru.overwrite.rtp.utils.economy.PlayerPointsUtils;
 
 public record Costs(
         Economy economy,
