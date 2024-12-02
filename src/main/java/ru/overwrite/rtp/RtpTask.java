@@ -150,11 +150,12 @@ public class RtpTask {
 
     private void handleCooldownActions(Player player, Channel channel) {
         Actions actions = channel.actions();
-        if (!actions.onCooldownActions().isEmpty()) {
-            for (int time : actions.onCooldownActions().keySet()) {
-                if (time == preTeleportCooldown) {
-                    rtpManager.executeActions(player, channel, actions.onCooldownActions().get(time), player.getLocation());
-                }
+        if (actions.onCooldownActions().isEmpty()) {
+            return;
+        }
+        for (int time : actions.onCooldownActions().keySet()) {
+            if (time == preTeleportCooldown) {
+                rtpManager.executeActions(player, channel, actions.onCooldownActions().get(time), player.getLocation());
             }
         }
     }
