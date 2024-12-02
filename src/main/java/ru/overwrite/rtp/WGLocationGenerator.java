@@ -76,10 +76,10 @@ public class WGLocationGenerator {
         Location location = locationGenerator.generateRandomLocationNearPoint(shape, p, centerX, centerZ, channel, world);
 
         if (location == null) {
-            locationGenerator.iterationsPerPlayer.addTo(p.getName(), 1);
+            locationGenerator.getIterationsPerPlayer().addTo(p.getName(), 1);
             return generateRandomLocationNearRandomRegion(p, channel, world);
         } else {
-            locationGenerator.iterationsPerPlayer.removeInt(p.getName());
+            locationGenerator.getIterationsPerPlayer().removeInt(p.getName());
             return location;
         }
     }

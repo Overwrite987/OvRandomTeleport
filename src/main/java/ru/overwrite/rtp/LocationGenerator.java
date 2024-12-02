@@ -22,14 +22,13 @@ public class LocationGenerator {
     protected final XoRoShiRo128PlusRandom random = new XoRoShiRo128PlusRandom();
 
     @Getter
-    private final WGLocationGenerator wgLocationGenerator;
+    private final Object2IntOpenHashMap<String> iterationsPerPlayer = new Object2IntOpenHashMap<>();
 
     @Getter
-    protected final Object2IntOpenHashMap<String> iterationsPerPlayer;
+    private final WGLocationGenerator wgLocationGenerator;
 
     public LocationGenerator(Main plugin) {
         this.plugin = plugin;
-        this.iterationsPerPlayer = new Object2IntOpenHashMap<>();
         if (plugin.hasWorldGuard()) {
             wgLocationGenerator = new WGLocationGenerator(this);
         } else {
