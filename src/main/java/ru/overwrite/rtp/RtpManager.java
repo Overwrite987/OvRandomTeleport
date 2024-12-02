@@ -95,7 +95,7 @@ public class RtpManager {
                 }
                 continue;
             }
-            Cooldown cooldown = setupCooldown(channelSection.getConfigurationSection("cooldown"));
+            Cooldown cooldown = setupChannelCooldown(channelSection.getConfigurationSection("cooldown"));
             Bossbar bossBar = setupChannelBossBar(channelSection.getConfigurationSection("bossbar"));
             Particles particles = setupChannelParticles(channelSection.getConfigurationSection("particles"));
             Restrictions restrictions = setupChannelRestrictions(channelSection.getConfigurationSection("restrictions"));
@@ -200,7 +200,7 @@ public class RtpManager {
         return new LocationGenOptions(shape, genFormat, minX, maxX, minZ, maxZ, nearRadiusMin, nearRadiusMax, centerX, centerZ, maxLocationAttempts);
     }
 
-    private Cooldown setupCooldown(ConfigurationSection cooldown) {
+    private Cooldown setupChannelCooldown(ConfigurationSection cooldown) {
         Object2IntSortedMap<String> groupCooldownsMap = new Object2IntLinkedOpenHashMap<>();
         if (isSectionNull(cooldown)) {
             return new Cooldown(-1, null, groupCooldownsMap, false, -1);
@@ -216,6 +216,9 @@ public class RtpManager {
             }
             useLastGroupCooldown = cooldown.getBoolean("use_last_group_cooldown", false);
         }
+        defaultCooldown = useLastGroupCooldown
+                ? groupCooldowns.getInt(new ArrayList<>(groupCooldownsMap.keySet()).get(groupCooldownsMap.size() - 1))
+                : defaultCooldown;
         int teleportCooldown = cooldown.getInt("teleport_cooldown", -1);
 
         return new Cooldown(defaultCooldown, playerCooldowns, groupCooldownsMap, useLastGroupCooldown, teleportCooldown);
@@ -511,10 +514,7 @@ public class RtpManager {
             return cooldown.defaultCooldown();
         }
         final String playerGroup = plugin.getPerms().getPrimaryGroup(p);
-        int defaultCooldown = cooldown.useLastGroupCooldown()
-                ? groupCooldowns.getInt(new ArrayList<>(groupCooldowns.keySet()).get(groupCooldowns.size() - 1))
-                : cooldown.defaultCooldown();
-        return groupCooldowns.getOrDefault(playerGroup, defaultCooldown);
+        return groupCooldowns.getOrDefault(playerGroup, cooldown.defaultCooldown());
     }
 
     private final String[] searchList = {"%player%", "%name%", "%time%", "%x%", "%y%", "%z%"};
