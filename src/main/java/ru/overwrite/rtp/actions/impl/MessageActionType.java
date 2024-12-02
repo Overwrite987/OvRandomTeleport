@@ -17,6 +17,7 @@ import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.utils.Utils;
 
 import java.util.Collections;
+import java.util.Locale;
 
 public final class MessageActionType implements ActionType {
 
@@ -34,7 +35,7 @@ public final class MessageActionType implements ActionType {
         String hoverTextString = extractValue(text, HOVER_TEXT_PREFIX, SUFFIX);
         Component hoverText = hoverTextString != null ? LegacyComponentSerializer.legacySection().deserialize(hoverTextString) : null;
         String clickEventText = extractValue(text, CLICK_EVENT_PREFIX, SUFFIX);
-        String[] clickEvent =  clickEventText != null ? clickEventText.split(";", 2) : null;
+        String[] clickEvent = clickEventText != null ? clickEventText.split(";", 2) : null;
         return new MessageAction(
                 message,
                 hoverText,
