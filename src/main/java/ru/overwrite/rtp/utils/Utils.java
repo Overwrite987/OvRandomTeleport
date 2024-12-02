@@ -21,6 +21,8 @@ import java.util.function.Consumer;
 
 public final class Utils {
 
+    private Utils() {}
+
     public static boolean DEBUG = false;
 
     public static Colorizer COLORIZER;

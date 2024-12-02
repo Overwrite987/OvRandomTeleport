@@ -8,6 +8,8 @@ import java.util.UUID;
 
 public final class PlayerPointsUtils {
 
+    private PlayerPointsUtils() {}
+
     private static final PlayerPointsAPI API = PlayerPoints.getInstance().getAPI();
 
     public static void withdraw(Player p, int amount) {

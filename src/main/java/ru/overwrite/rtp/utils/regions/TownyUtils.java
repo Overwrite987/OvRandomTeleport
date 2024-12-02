@@ -6,6 +6,8 @@ import org.bukkit.Location;
 
 public final class TownyUtils {
 
+    private TownyUtils() {}
+
     private static final TownyAPI API = TownyAPI.getInstance();
 
     public static Town getTownByLocation(Location loc) {

@@ -12,6 +12,8 @@ import org.bukkit.Location;
 
 public final class WGUtils {
 
+    private WGUtils() {}
+
     public static StateFlag RTP_IGNORE_FLAG;
 
     public static void setupRtpFlag() {
