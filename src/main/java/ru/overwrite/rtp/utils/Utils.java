@@ -84,7 +84,7 @@ public final class Utils {
     public static boolean USE_PAPI = false;
 
     public static void sendMessage(String message, Player p) {
-        if (message.isEmpty() || message.isBlank()) {
+        if (message.isBlank()) {
             return;
         }
         if (USE_PAPI) {
