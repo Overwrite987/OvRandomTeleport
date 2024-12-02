@@ -1,5 +1,6 @@
 package ru.overwrite.rtp;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
@@ -22,23 +23,20 @@ import ru.overwrite.rtp.utils.regions.WGUtils;
 
 import java.lang.reflect.Constructor;
 
+@Getter
 public final class Main extends JavaPlugin {
 
+    @Getter(AccessLevel.NONE)
     private final Server server = getServer();
 
-    @Getter
     private final Logger pluginLogger = VersionUtils.SUB_VERSION >= 19 ? new PaperLogger(this) : new BukkitLogger(this);
 
-    @Getter
     private final Config pluginConfig = new Config(this);
 
-    @Getter
     private final RtpManager rtpManager = new RtpManager(this);
 
-    @Getter
     private Economy economy;
 
-    @Getter
     private Permission perms;
 
     @Override
@@ -52,6 +50,7 @@ public final class Main extends JavaPlugin {
         }
     }
 
+    @Getter(AccessLevel.NONE)
     private Boolean hasWorldGuard = null;
 
     public boolean hasWorldGuard() {

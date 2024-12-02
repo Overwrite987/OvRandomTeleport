@@ -1,5 +1,6 @@
 package ru.overwrite.rtp.configuration;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -12,24 +13,22 @@ import ru.overwrite.rtp.utils.Utils;
 
 import java.io.File;
 
+@Getter
 public class Config {
 
+    @Getter(AccessLevel.NONE)
     private final Main plugin;
 
     public Config(Main plugin) {
         this.plugin = plugin;
     }
 
-    @Getter
     private String messagesPrefix;
 
-    @Getter
     private Messages defaultChannelMessages;
 
-    @Getter
     private CommandMessages commandMessages;
 
-    @Getter
     private PlaceholderMessages placeholderMessages;
 
     public static String timeHours, timeMinutes, timeSeconds;

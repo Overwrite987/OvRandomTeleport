@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntSortedMap;
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.bukkit.*;
 import org.bukkit.block.Biome;
@@ -28,27 +29,24 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+@Getter
 public class RtpManager {
 
+    @Getter(AccessLevel.NONE)
     private final Main plugin;
+    @Getter(AccessLevel.NONE)
     private final Config pluginConfig;
 
-    @Getter
     private final ActionRegistry actionRegistry;
 
-    @Getter
     private Channel defaultChannel;
 
-    @Getter
     private final Map<String, Channel> namedChannels = new HashMap<>();
 
-    @Getter
     private final Specifications specifications = Specifications.createEmpty();
 
-    @Getter
     private final Map<String, RtpTask> perPlayerActiveRtpTask = new ConcurrentHashMap<>();
 
-    @Getter
     private final LocationGenerator locationGenerator;
 
     public RtpManager(Main plugin) {
@@ -402,8 +400,7 @@ public class RtpManager {
         return !perPlayerActiveRtpTask.isEmpty() && perPlayerActiveRtpTask.containsKey(playerName);
     }
 
-    @Getter
-    public final List<String> teleportingNow = new ArrayList<>();
+    private final List<String> teleportingNow = new ArrayList<>();
 
     public void preTeleport(Player p, Channel channel, World world) {
         if (teleportingNow.contains(p.getName())) {
