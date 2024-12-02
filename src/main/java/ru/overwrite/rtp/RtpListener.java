@@ -216,7 +216,6 @@ public class RtpListener implements Listener {
             if (rtpManager.hasActiveTasks(playerName)) {
                 cancelTeleportation(playerName);
             }
-            rtpManager.getLocationGenerator().getIterationsPerPlayer().removeInt(playerName);
         });
     }
 
