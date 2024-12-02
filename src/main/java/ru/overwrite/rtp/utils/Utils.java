@@ -23,7 +23,7 @@ public final class Utils {
 
     private Utils() {}
 
-    public static boolean DEBUG = false;
+    public static boolean DEBUG;
 
     public static Colorizer COLORIZER;
 
@@ -53,7 +53,7 @@ public final class Utils {
             } catch (IOException ex) {
                 plugin.getLogger().warning("Unable to check for updates: " + ex.getMessage());
             }
-        }, 30);
+        }, 30L);
     }
 
     public static final char COLOR_CHAR = '§';
@@ -83,7 +83,7 @@ public final class Utils {
                 c == 'X';
     }
 
-    public static boolean USE_PAPI = false;
+    public static boolean USE_PAPI;
 
     public static void sendMessage(String message, Player p) {
         if (message.isBlank()) {

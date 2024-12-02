@@ -34,8 +34,9 @@ public class WGLocationGenerator {
         RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer()
                 .get(BukkitAdapter.adapt(world));
 
-        if (regionManager == null || regionManager.getRegions().isEmpty())
+        if (regionManager == null || regionManager.getRegions().isEmpty()) {
             return null;
+        }
 
         int minX = locationGenOptions.minX();
         int maxX = locationGenOptions.maxX();

@@ -20,7 +20,9 @@ public record Costs(
     }
 
     public boolean processMoneyCost(Player p, Channel channel) {
-        if (moneyCost <= 0) return true;
+        if (moneyCost <= 0) {
+            return true;
+        }
 
         return switch (moneyType()) {
             case VAULT -> processVaultMoneyCost(p, channel);
@@ -54,8 +56,12 @@ public record Costs(
     }
 
     public boolean processHungerCost(Player p, Channel channel) {
-        if (hungerCost <= 0) return true;
-        if (p.getGameMode() == GameMode.CREATIVE) return true;
+        if (hungerCost <= 0) {
+            return true;
+        }
+        if (p.getGameMode() == GameMode.CREATIVE) {
+            return true;
+        }
 
         if (p.getFoodLevel() < hungerCost) {
             Utils.sendMessage(channel.messages().notEnoughHunger().replace("%required%", Integer.toString(hungerCost)), p);
@@ -66,7 +72,9 @@ public record Costs(
     }
 
     public boolean processExpCost(Player p, Channel channel) {
-        if (expCost <= 0) return true;
+        if (expCost <= 0) {
+            return true;
+        }
 
         if (p.getTotalExperience() < expCost) {
             Utils.sendMessage(channel.messages().notEnoughExp().replace("%required%", Integer.toString(expCost)), p);
@@ -77,7 +85,9 @@ public record Costs(
     }
 
     public void processMoneyReturn(Player p) {
-        if (moneyCost <= 0) return;
+        if (moneyCost <= 0) {
+            return;
+        }
 
         switch (moneyType()) {
             case VAULT -> processVaultMoneyReturn(p);

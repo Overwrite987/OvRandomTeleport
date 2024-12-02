@@ -35,9 +35,13 @@ public final class ActionRegistry {
 
     public @Nullable Action resolveAction(@NotNull String actionStr) {
         Matcher matcher = ACTION_PATTERN.matcher(actionStr);
-        if (!matcher.matches()) return null;
+        if (!matcher.matches()) {
+            return null;
+        }
         ActionType type = getType(matcher.group(1));
-        if (type == null) return null;
+        if (type == null) {
+            return null;
+        }
         return type.instance(matcher.group(2).trim(), plugin);
     }
 }

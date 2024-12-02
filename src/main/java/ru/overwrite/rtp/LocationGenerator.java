@@ -217,7 +217,7 @@ public class LocationGenerator {
         if (isLocationRestricted(location, channel.avoidance())) {
             return null;
         } else {
-            location.setY(y + 1);
+            location.setY(y + 1D);
             return location;
         }
     }

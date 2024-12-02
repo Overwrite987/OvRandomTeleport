@@ -54,9 +54,9 @@ public class RtpTask {
 
     public void startParticleAnimation(Player player, int duration, Particles particles) {
         this.particleTask = new BukkitRunnable() {
-            double angle = 0;
+            double angle;
             double yOffset = particles.preTeleportInvert() ? 0.0 : 2.0;
-            int tickCounter = 0;
+            int tickCounter;
 
             final double initialRadius = particles.preTeleportRadius();
             final double radiusStep = particles.preTeleportMoveNear() ? initialRadius / duration : 0;

@@ -147,7 +147,9 @@ public class RtpManager {
         }
 
         public void assign(Channel newChannel, ConfigurationSection section) {
-            if (section == null) return;
+            if (section == null) {
+                return;
+            }
 
             if (section.getBoolean("teleport_on_first_join", false)) {
                 joinChannels.add(newChannel.id());

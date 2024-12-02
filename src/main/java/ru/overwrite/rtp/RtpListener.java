@@ -95,15 +95,17 @@ public class RtpListener implements Listener {
 
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e) {
-        Player p = e.getPlayer();
         Map<String, List<World>> respawnChannels = rtpManager.getSpecifications().respawnChannels();
         if (respawnChannels.isEmpty()) {
             return;
         }
-        for (String channelId : respawnChannels.keySet()) {
-            if (!respawnChannels.get(channelId).contains(p.getWorld())) {
+        Player p = e.getPlayer();
+        for (Map.Entry<String, List<World>> entry : respawnChannels.entrySet()) {
+            List<World> worlds = entry.getValue();
+            if (!worlds.contains(p.getWorld())) {
                 continue;
             }
+            String channelId = entry.getKey();
             if (!p.hasPermission("rtp.channel." + channelId)) {
                 continue;
             }
@@ -116,7 +118,6 @@ public class RtpListener implements Listener {
         if (!channel.activeWorlds().contains(p.getWorld())) {
             if (channel.teleportToFirstAllowedWorld()) {
                 rtpManager.preTeleport(p, channel, channel.activeWorlds().get(0));
-                return;
             }
             return;
         }

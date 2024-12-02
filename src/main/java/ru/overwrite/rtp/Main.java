@@ -51,7 +51,7 @@ public final class Main extends JavaPlugin {
     }
 
     @Getter(AccessLevel.NONE)
-    private Boolean hasWorldGuard = null;
+    private Boolean hasWorldGuard;
 
     public boolean hasWorldGuard() {
         if (hasWorldGuard == null) {
