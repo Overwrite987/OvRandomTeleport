@@ -260,7 +260,7 @@ public class RtpManager {
         final ConfigurationSection preTeleport = particles.getConfigurationSection("pre_teleport");
         if (!isSectionNull(preTeleport)) {
             preTeleportEnabled = preTeleport.getBoolean("enabled", false);
-            preTeleportId = Particle.valueOf(preTeleport.getString("id"));
+            preTeleportId = Particle.valueOf(preTeleport.getString("id").toUpperCase(Locale.ROOT));
             preTeleportDots = preTeleport.getInt("dots");
             preTeleportRadius = preTeleport.getDouble("radius");
             preTeleportSpeed = preTeleport.getDouble("speed");
@@ -271,7 +271,7 @@ public class RtpManager {
         final ConfigurationSection afterTeleport = particles.getConfigurationSection("after_teleport");
         if (!isSectionNull(afterTeleport)) {
             afterTeleportParticleEnabled = afterTeleport.getBoolean("enabled", false);
-            afterTeleportParticle = Particle.valueOf(afterTeleport.getString("id"));
+            afterTeleportParticle = Particle.valueOf(afterTeleport.getString("id").toUpperCase(Locale.ROOT));
             afterTeleportCount = afterTeleport.getInt("count");
             afterTeleportRadius = afterTeleport.getDouble("radius");
             afterTeleportSpeed = afterTeleport.getDouble("speed");
