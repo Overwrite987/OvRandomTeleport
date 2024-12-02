@@ -216,9 +216,11 @@ public class RtpManager {
             }
             useLastGroupCooldown = cooldown.getBoolean("use_last_group_cooldown", false);
         }
-        defaultCooldown = useLastGroupCooldown
-                ? groupCooldowns.getInt(new ArrayList<>(groupCooldownsMap.keySet()).get(groupCooldownsMap.size() - 1))
-                : defaultCooldown;
+        if (!groupCooldownsMap.isEmpty()) {
+            defaultCooldown = useLastGroupCooldown
+                    ? groupCooldowns.getInt(new ArrayList<>(groupCooldownsMap.keySet()).get(groupCooldownsMap.size() - 1))
+                    : defaultCooldown;
+        }
         int teleportCooldown = cooldown.getInt("teleport_cooldown", -1);
 
         return new Cooldown(defaultCooldown, playerCooldowns, groupCooldownsMap, useLastGroupCooldown, teleportCooldown);
