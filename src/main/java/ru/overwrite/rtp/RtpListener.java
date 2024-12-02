@@ -40,10 +40,12 @@ public class RtpListener implements Listener {
             if (voidChannels.isEmpty()) {
                 return;
             }
-            for (String channelId : voidChannels.keySet()) {
-                if (!voidChannels.get(channelId).contains(p.getWorld())) {
+            for (Map.Entry<String, List<World>> entry : voidChannels.entrySet()) {
+                List<World> worlds = entry.getValue();
+                if (!worlds.contains(p.getWorld())) {
                     continue;
                 }
+                String channelId = entry.getKey();
                 if (!p.hasPermission("rtp.channel." + channelId)) {
                     continue;
                 }
