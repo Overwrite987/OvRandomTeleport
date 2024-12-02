@@ -79,7 +79,7 @@ public class RtpManager {
             String name = channelSection.getString("name", "");
             ChannelType type = channelSection.getString("type") == null ?
                     ChannelType.DEFAULT :
-                    ChannelType.valueOf(channelSection.getString("type").toUpperCase());
+                    ChannelType.valueOf(channelSection.getString("type").toUpperCase(Locale.ROOT));
             if (type == ChannelType.NEAR_REGION && !pluginManager.isPluginEnabled("WorldGuard")) {
                 type = ChannelType.DEFAULT;
             }
@@ -173,7 +173,7 @@ public class RtpManager {
         if (channelCosts == null) {
             return new Costs(null, null, -1, -1, -1);
         }
-        Costs.MoneyType moneyType = Costs.MoneyType.valueOf(channelCosts.getString("money_type", "VAULT").toUpperCase());
+        Costs.MoneyType moneyType = Costs.MoneyType.valueOf(channelCosts.getString("money_type", "VAULT").toUpperCase(Locale.ROOT));
         double moneyCost = channelCosts.getDouble("money_cost", -1);
         int hungerCost = channelCosts.getInt("hunger_cost", -1);
         int expCost = channelCosts.getInt("experience_cost", -1);
@@ -185,8 +185,8 @@ public class RtpManager {
         if (locationGenOptions == null) {
             return null;
         }
-        LocationGenOptions.Shape shape = LocationGenOptions.Shape.valueOf(locationGenOptions.getString("shape", "SQUARE").toUpperCase());
-        LocationGenOptions.GenFormat genFormat = LocationGenOptions.GenFormat.valueOf(locationGenOptions.getString("gen_format", "RECTANGULAR").toUpperCase());
+        LocationGenOptions.Shape shape = LocationGenOptions.Shape.valueOf(locationGenOptions.getString("shape", "SQUARE").toUpperCase(Locale.ROOT));
+        LocationGenOptions.GenFormat genFormat = LocationGenOptions.GenFormat.valueOf(locationGenOptions.getString("gen_format", "RECTANGULAR").toUpperCase(Locale.ROOT));
         int minX = locationGenOptions.getInt("min_x");
         int maxX = locationGenOptions.getInt("max_x");
         int minZ = locationGenOptions.getInt("min_z");
@@ -227,8 +227,8 @@ public class RtpManager {
         }
         boolean enabled = bossbar.getBoolean("enabled");
         String title = Utils.COLORIZER.colorize(bossbar.getString("title"));
-        BarColor color = BarColor.valueOf(bossbar.getString("color").toUpperCase());
-        BarStyle style = BarStyle.valueOf(bossbar.getString("style").toUpperCase());
+        BarColor color = BarColor.valueOf(bossbar.getString("color").toUpperCase(Locale.ROOT));
+        BarStyle style = BarStyle.valueOf(bossbar.getString("style").toUpperCase(Locale.ROOT));
 
         return new Bossbar(enabled, title, color, style);
     }
@@ -294,16 +294,16 @@ public class RtpManager {
         boolean avoidBlocksBlacklist = true;
         if (!isNullSection) {
             avoidBlocksBlacklist = avoid.getBoolean("blocks.blacklist", true);
-            for (String m : avoid.getStringList("blocks.list")) {
-                avoidBlocks.add(Material.valueOf(m.toUpperCase()));
+            for (String material : avoid.getStringList("blocks.list")) {
+                avoidBlocks.add(Material.valueOf(material.toUpperCase(Locale.ROOT)));
             }
         }
         Set<Biome> avoidBiomes = EnumSet.noneOf(Biome.class);
         boolean avoidBiomesBlacklist = true;
         if (!isNullSection) {
             avoidBiomesBlacklist = avoid.getBoolean("biomes.blacklist", true);
-            for (String b : avoid.getStringList("biomes.list")) {
-                avoidBiomes.add(Biome.valueOf(b.toUpperCase()));
+            for (String biome : avoid.getStringList("biomes.list")) {
+                avoidBiomes.add(Biome.valueOf(biome.toUpperCase(Locale.ROOT)));
             }
         }
         boolean avoidRegions = !isNullSection && avoid.getBoolean("regions", false) && pluginManager.isPluginEnabled("WorldGuard");

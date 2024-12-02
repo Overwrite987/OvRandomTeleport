@@ -28,7 +28,7 @@ public final class Utils {
     public static Colorizer COLORIZER;
 
     public static void setupColorizer(ConfigurationSection mainSettings) {
-        COLORIZER = switch (mainSettings.getString("serializer", "LEGACY").toUpperCase()) {
+        COLORIZER = switch (mainSettings.getString("serializer", "LEGACY").toUpperCase(Locale.ROOT)) {
             case "MINIMESSAGE" -> new MiniMessageColorizer();
             case "LEGACY" -> new LegacyColorizer();
             case "LEGACY_ADVANCED" -> new LegacyAdvancedColorizer();
