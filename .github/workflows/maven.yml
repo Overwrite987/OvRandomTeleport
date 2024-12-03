@@ -7,29 +7,39 @@ on:
 
 jobs:
   build:
-
     if: "! contains(toJSON(github.event.commits.*.message), '[SKIP-CI]')"
 
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        build-java-version: [ 16, 17, 21 ]
+
     steps:
-      - uses: actions/checkout@main
+      - uses: actions/checkout@v3
+
       - name: Set up JDK 21
-        uses: actions/setup-java@main
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: 21
 
-      - uses: actions/cache@main
+      - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          key: ${{ runner.os }}-maven-${{ matrix.build-java-version }}-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ runner.os }}-maven-
+            ${{ runner.os }}-maven-${{ matrix.build-java-version }}-
+
+      - name: Update Maven Java Version to ${{ matrix.build-java-version }}
+        run: |
+          sed -i "s|<java.version>.*</java.version>|<java.version>${{ matrix.build-java-version }}</java.version>|" pom.xml
 
       - name: Build with Maven
         run: mvn -B clean install --file pom.xml
-      - uses: actions/upload-artifact@main
+
+      - name: Upload artifact for Java ${{ matrix.build-java-version }}
+        uses: actions/upload-artifact@v3
         with:
-          name: OvRandomTeleport
+          name: OvRandomTeleport-java${{ matrix.build-java-version }}
           path: target/OvRandomTeleport-*.jar
