@@ -173,7 +173,8 @@ actions:
   # %name% - имя канала телепортации
   # %time% - время до телепортации
   # %x% %y% %z% - координаты локации
-  # Для [MESSAGE] доступен ховертекст и клик-ивент. Указывать через hoverEvent={Текст-при-наведении} и clickEvent={/команда-при-клике}
+  # Для [MESSAGE] доступен ховертекст и клик-ивент. Указывать через hoverEvent={Текст-при-наведении} и clickEvent={айди-действия;действие-при-клике}
+  # Доступные действия для clickEvent: https://www.javadoc.io/static/net.kyori/adventure-api/4.17.0/net/kyori/adventure/text/event/ClickEvent.Action.html
   pre_teleport:
     - '[MESSAGE] &7&l(&5&lOvRandomTeleport&7&l) &6» &fВы будете телепортированы через %time% Не двигайтесь и не получайте урона. &6(Отменить РТП - /rtp cancel)'
     - '[SOUND] BLOCK_NOTE_BLOCK_PLING;1;1'
