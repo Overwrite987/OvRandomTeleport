@@ -76,6 +76,7 @@
                             <includes>
                                 <include>it/unimi/dsi/util/XoRoShiRo128PlusRandomGenerator.class</include>
                                 <include>it/unimi/dsi/util/XoRoShiRo128PlusRandom.class</include>
+                                <include>it/unimi/dsi/util/SplitMix64RandomGenerator.class</include>
                                 <include>it/unimi/dsi/Util.class</include>
                             </includes>
                         </filter>
