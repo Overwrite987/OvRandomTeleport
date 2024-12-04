@@ -49,6 +49,8 @@ public class RtpManager {
 
     private final LocationGenerator locationGenerator;
 
+    private Map<String, String> proxyCalls;
+
     public RtpManager(Main plugin) {
         this.plugin = plugin;
         this.pluginConfig = plugin.getPluginConfig();
@@ -64,6 +66,10 @@ public class RtpManager {
         actionRegistry.register(new MessageActionType());
         actionRegistry.register(new SoundActionType());
         actionRegistry.register(new TitleActionType());
+    }
+
+    public void initProxyCalls() {
+        proxyCalls = new HashMap<>();
     }
 
     public void setupChannels(FileConfiguration config, PluginManager pluginManager) {
@@ -85,6 +91,7 @@ public class RtpManager {
             }
             List<World> activeWorlds = Utils.getWorldList(channelSection.getStringList("active_worlds"));
             boolean teleportToFirstAllowedWorld = channelSection.getBoolean("teleport_to_first_world", false);
+            String serverToMove = channelSection.getString("server_to_move", "");
             int minPlayersToUse = channelSection.getInt("min_players_to_use", -1);
             int invulnerableTicks = channelSection.getInt("invulnerable_after_teleport", 1);
             Costs costs = setupChannelCosts(channelSection.getConfigurationSection("costs"));
@@ -108,6 +115,7 @@ public class RtpManager {
                     type,
                     activeWorlds,
                     teleportToFirstAllowedWorld,
+                    serverToMove,
                     minPlayersToUse,
                     invulnerableTicks,
                     costs,
@@ -411,6 +419,15 @@ public class RtpManager {
 
     public void preTeleport(Player p, Channel channel, World world) {
         if (teleportingNow.contains(p.getName())) {
+            return;
+        }
+        if (proxyCalls != null && !channel.serverToMove().isEmpty()) {
+            if (Utils.DEBUG) {
+                plugin.getPluginLogger().info("Moving player '" + p.getName() + "' with channel '" + channel.id() + "' to server " + channel.serverToMove());
+            }
+            plugin.getPluginMessage().sendCrossProxy(p, channel.serverToMove() + " " + p.getName() + "$" + channel.id() + ";" + world.getName());
+            teleportingNow.remove(p.getName());
+            plugin.getPluginMessage().connectToServer(p, channel.serverToMove());
             return;
         }
         if (Utils.DEBUG) {

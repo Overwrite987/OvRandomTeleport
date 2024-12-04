@@ -1,6 +1,7 @@
 package ru.overwrite.rtp;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -80,8 +81,21 @@ public class RtpListener implements Listener {
     }
 
     @EventHandler
-    public void onFirstJoin(PlayerJoinEvent e) {
+    public void onJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
+        if (rtpManager.getProxyCalls() != null && !rtpManager.getProxyCalls().isEmpty()) {
+            System.out.println(rtpManager.getProxyCalls());
+            String data = rtpManager.getProxyCalls().get(p.getName());
+            if (data == null) {
+                return;
+            }
+            int separatorIndex = data.indexOf(';');
+            Channel channel = rtpManager.getChannelById(data.substring(0, separatorIndex));
+            World world = Bukkit.getWorld(data.substring(separatorIndex + 1));
+            rtpManager.preTeleport(p, channel, world);
+            rtpManager.getProxyCalls().remove(p.getName());
+            return;
+        }
         if (p.hasPlayedBefore()) {
             return;
         }
