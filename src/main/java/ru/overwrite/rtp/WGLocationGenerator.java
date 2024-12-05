@@ -3,7 +3,7 @@ package ru.overwrite.rtp;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.protection.flags.StateFlag;
+import com.sk89q.worldguard.protection.flags.BooleanFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionType;
@@ -45,20 +45,18 @@ public class WGLocationGenerator {
 
         List<ProtectedRegion> regionsInRange = new ArrayList<>();
         for (ProtectedRegion region : regionManager.getRegions().values()) {
-            if (region.getType() == RegionType.GLOBAL) {
+            if (region.getType() == RegionType.GLOBAL || region.getMembers().contains(p.getName())) {
                 continue;
             }
 
-            StateFlag ignoreFlag = WGUtils.RTP_IGNORE_FLAG;
-            StateFlag.State flag = region.getFlag(ignoreFlag);
-            if (flag == StateFlag.State.ALLOW) {
+            boolean flag = Boolean.TRUE.equals(region.getFlag(WGUtils.RTP_IGNORE_FLAG));
+            if (flag) {
                 continue;
             }
 
             BlockVector3 minPoint = region.getMinimumPoint();
             BlockVector3 maxPoint = region.getMaximumPoint();
-            if (minPoint.getX() >= minX && maxPoint.getX() <= maxX &&
-                    minPoint.getZ() >= minZ && maxPoint.getZ() <= maxZ) {
+            if (minPoint.getX() >= minX && maxPoint.getX() <= maxX && minPoint.getZ() >= minZ && maxPoint.getZ() <= maxZ) {
                 regionsInRange.add(region);
             }
         }
