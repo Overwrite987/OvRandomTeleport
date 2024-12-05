@@ -16,6 +16,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import ru.overwrite.rtp.configuration.Config;
+import ru.overwrite.rtp.utils.PluginMessage;
 import ru.overwrite.rtp.utils.Utils;
 import ru.overwrite.rtp.utils.VersionUtils;
 import ru.overwrite.rtp.utils.logging.*;
@@ -38,6 +39,8 @@ public final class Main extends JavaPlugin {
     private Economy economy;
 
     private Permission perms;
+
+    private PluginMessage pluginMessage;
 
     @Override
     public void onLoad() {
@@ -83,6 +86,7 @@ public final class Main extends JavaPlugin {
             setupPerms(servicesManager);
         }
         setupPlaceholders(mainSettings, pluginManager);
+        setupProxy(mainSettings);
         pluginManager.registerEvents(new RtpListener(this), this);
         checkForUpdates(mainSettings);
         server.getScheduler().runTaskAsynchronously(this, () -> rtpManager.setupChannels(config, pluginManager));
@@ -132,6 +136,17 @@ public final class Main extends JavaPlugin {
         Utils.USE_PAPI = true;
         new RtpExpansion(this).register();
         pluginLogger.info("§eПлейсхолдеры подключены!");
+    }
+
+    private void setupProxy(ConfigurationSection mainSettings) {
+        ConfigurationSection proxy = mainSettings.getConfigurationSection("proxy");
+        if (proxy.getBoolean("enabled", false)) {
+            server.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+            String serverId = proxy.getString("server_id");
+            pluginMessage = new PluginMessage(this, serverId);
+            server.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", pluginMessage);
+            rtpManager.initProxyCalls();
+        }
     }
 
     private void registerCommand(PluginManager pluginManager, ConfigurationSection mainSettings) {

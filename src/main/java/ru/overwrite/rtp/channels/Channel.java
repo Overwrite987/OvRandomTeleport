@@ -12,6 +12,7 @@ public record Channel(
         ChannelType type,
         List<World> activeWorlds,
         boolean teleportToFirstAllowedWorld,
+        String serverToMove,
         int minPlayersToUse,
         int invulnerableTicks,
         @NotNull Costs costs,
