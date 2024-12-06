@@ -41,16 +41,16 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         if (args.length == 0) {
-            Player p = (Player) sender;
-            if (rtpManager.hasActiveTasks(p.getName())) {
+            Player player = (Player) sender;
+            if (rtpManager.hasActiveTasks(player.getName())) {
                 return true;
             }
             Channel channel = rtpManager.getDefaultChannel();
             if (channel == null) {
-                Utils.sendMessage(pluginConfig.getCommandMessages().channelNotSpecified(), p);
+                Utils.sendMessage(pluginConfig.getCommandMessages().channelNotSpecified(), player);
                 return true;
             }
-            return processTeleport(p, channel);
+            return processTeleport(player, channel);
         }
 
         if (args[0].equalsIgnoreCase("admin")) {
@@ -58,66 +58,66 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
         }
 
         if (args.length == 1) {
-            Player p = (Player) sender;
-            if (rtpManager.hasActiveTasks(p.getName())) {
-                if (args[0].equalsIgnoreCase("cancel") && p.hasPermission("rtp.cancel")) {
-                    rtpManager.getPerPlayerActiveRtpTask().get(p.getName()).cancel();
-                    Utils.sendMessage(pluginConfig.getCommandMessages().cancelled(), p);
+            Player player = (Player) sender;
+            if (rtpManager.hasActiveTasks(player.getName())) {
+                if (args[0].equalsIgnoreCase("cancel") && player.hasPermission("rtp.cancel")) {
+                    rtpManager.getPerPlayerActiveRtpTask().get(player.getName()).cancel();
+                    Utils.sendMessage(pluginConfig.getCommandMessages().cancelled(), player);
                 }
                 return true;
             }
             if (!rtpManager.getNamedChannels().containsKey(args[0])) {
-                Utils.sendMessage(pluginConfig.getCommandMessages().incorrectChannel(), p);
+                Utils.sendMessage(pluginConfig.getCommandMessages().incorrectChannel(), player);
                 return true;
             }
             Channel channel = rtpManager.getChannelById(args[0]);
-            return processTeleport(p, channel);
+            return processTeleport(player, channel);
         } else {
             sender.sendMessage(pluginConfig.getCommandMessages().incorrectChannel());
             return true;
         }
     }
 
-    private boolean processTeleport(Player p, Channel channel) {
+    private boolean processTeleport(Player player, Channel channel) {
         if (Utils.DEBUG) {
             plugin.getPluginLogger().info("Channel name: " + channel.name() + " Channel permission: " + "rtp.channel." + channel.id());
-            plugin.getPluginLogger().info("Player permission status: " + p.hasPermission("rtp.channel." + channel.id()));
+            plugin.getPluginLogger().info("Player permission status: " + player.hasPermission("rtp.channel." + channel.id()));
         }
-        if (!p.hasPermission("rtp.channel." + channel.id())) {
-            Utils.sendMessage(channel.messages().noPerms(), p);
+        if (!player.hasPermission("rtp.channel." + channel.id())) {
+            Utils.sendMessage(channel.messages().noPerms(), player);
             return true;
         }
-        if (channel.cooldown().hasCooldown(p)) {
+        if (channel.cooldown().hasCooldown(player)) {
             Utils.sendMessage(channel.messages().cooldown()
                     .replace("%time%",
-                            Utils.getTime((int) (rtpManager.getChannelCooldown(p, channel.cooldown()) - (System.currentTimeMillis() - channel.cooldown().playerCooldowns().get(p.getName())) / 1000))), p);
+                            Utils.getTime((int) (rtpManager.getChannelCooldown(player, channel.cooldown()) - (System.currentTimeMillis() - channel.cooldown().playerCooldowns().get(player.getName())) / 1000))), player);
             return true;
         }
         if (channel.minPlayersToUse() > 0 && (Bukkit.getOnlinePlayers().size() - 1) < channel.minPlayersToUse()) {
-            Utils.sendMessage(channel.messages().notEnoughPlayers().replace("%required%", Integer.toString(channel.minPlayersToUse())), p);
+            Utils.sendMessage(channel.messages().notEnoughPlayers().replace("%required%", Integer.toString(channel.minPlayersToUse())), player);
             return true;
         }
-        if (!rtpManager.takeCost(p, channel)) {
+        if (!rtpManager.takeCost(player, channel)) {
             if (Utils.DEBUG) {
                 plugin.getPluginLogger().info("Take cost for channel " + channel.id() + " didn't pass");
             }
             return true;
         }
-        if (!channel.activeWorlds().contains(p.getWorld())) {
+        if (!channel.activeWorlds().contains(player.getWorld())) {
             if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Active worlds for channel " + channel.id() + " does not includes player's world: " + p.getWorld().getName());
+                plugin.getPluginLogger().info("Active worlds for channel " + channel.id() + " does not includes player's world: " + player.getWorld().getName());
             }
             if (channel.teleportToFirstAllowedWorld()) {
                 if (Utils.DEBUG) {
                     plugin.getPluginLogger().info("Teleporting to first allowed world: " + channel.activeWorlds().get(0));
                 }
-                rtpManager.preTeleport(p, channel, channel.activeWorlds().get(0));
+                rtpManager.preTeleport(player, channel, channel.activeWorlds().get(0));
                 return true;
             }
-            Utils.sendMessage(channel.messages().invalidWorld(), p);
+            Utils.sendMessage(channel.messages().invalidWorld(), player);
             return true;
         }
-        rtpManager.preTeleport(p, channel, p.getWorld());
+        rtpManager.preTeleport(player, channel, player.getWorld());
         return true;
     }
 
@@ -258,13 +258,13 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
         final List<String> completions = new ArrayList<>();
-        if (args.length == 1 && sender instanceof Player p) {
-            if (rtpManager.hasActiveTasks(p.getName()) && p.hasPermission("rtp.cancel")) {
+        if (args.length == 1 && sender instanceof Player player) {
+            if (rtpManager.hasActiveTasks(player.getName()) && player.hasPermission("rtp.cancel")) {
                 completions.add("cancel");
                 return getResult(args, completions);
             }
             for (String channelName : rtpManager.getNamedChannels().keySet()) {
-                if (p.hasPermission("rtp.channel." + channelName)) {
+                if (player.hasPermission("rtp.channel." + channelName)) {
                     completions.add(channelName);
                 }
             }
@@ -297,8 +297,8 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 
     private void getForceRtpTabCompletion(String[] args, List<String> completions) {
         if (args.length == 3) {
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                completions.add(p.getName());
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                completions.add(player.getName());
             }
         }
         if (args.length == 4) {

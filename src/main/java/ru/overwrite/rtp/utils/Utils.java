@@ -86,20 +86,20 @@ public final class Utils {
 
     public static boolean USE_PAPI;
 
-    public static void sendMessage(String message, Player p) {
+    public static void sendMessage(String message, Player player) {
         if (message.isBlank()) {
             return;
         }
         if (USE_PAPI) {
-            p.sendMessage(parsePlaceholders(message, p));
+            player.sendMessage(parsePlaceholders(message, player));
             return;
         }
-        p.sendMessage(message);
+        player.sendMessage(message);
     }
 
-    public static String parsePlaceholders(String message, Player p) {
+    public static String parsePlaceholders(String message, Player player) {
         if (PlaceholderAPI.containsPlaceholders(message)) {
-            message = PlaceholderAPI.setPlaceholders(p, message);
+            message = PlaceholderAPI.setPlaceholders(player, message);
         }
         return message;
     }

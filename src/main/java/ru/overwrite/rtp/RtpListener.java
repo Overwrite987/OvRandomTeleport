@@ -34,7 +34,7 @@ public class RtpListener implements Listener {
         if (!e.hasChangedBlock()) {
             return;
         }
-        Player p = e.getPlayer();
+        Player player = e.getPlayer();
         if (e.getTo().getBlockY() < VersionUtils.VOID_LEVEL) {
             Map<String, List<World>> voidChannels = rtpManager.getSpecifications().voidChannels();
             if (voidChannels.isEmpty()) {
@@ -42,22 +42,22 @@ public class RtpListener implements Listener {
             }
             for (Map.Entry<String, List<World>> entry : voidChannels.entrySet()) {
                 List<World> worlds = entry.getValue();
-                if (!worlds.contains(p.getWorld())) {
+                if (!worlds.contains(player.getWorld())) {
                     continue;
                 }
                 String channelId = entry.getKey();
-                if (!p.hasPermission("rtp.channel." + channelId)) {
+                if (!player.hasPermission("rtp.channel." + channelId)) {
                     continue;
                 }
-                processTeleport(p, rtpManager.getChannelById(channelId));
+                processTeleport(player, rtpManager.getChannelById(channelId));
                 return;
             }
         }
-        String playerName = p.getName();
+        String playerName = player.getName();
         if (rtpManager.hasActiveTasks(playerName)) {
             Channel activeChannel = getActiveChannel(playerName);
             if (activeChannel.restrictions().restrictMove()) {
-                Utils.sendMessage(activeChannel.messages().movedOnTeleport(), p);
+                Utils.sendMessage(activeChannel.messages().movedOnTeleport(), player);
                 cancelTeleportation(playerName);
             }
         }
@@ -68,12 +68,12 @@ public class RtpListener implements Listener {
         if (e.getCause() == PlayerTeleportEvent.TeleportCause.PLUGIN) {
             return;
         }
-        Player p = e.getPlayer();
-        String playerName = p.getName();
+        Player player = e.getPlayer();
+        String playerName = player.getName();
         if (rtpManager.hasActiveTasks(playerName)) {
             Channel activeChannel = getActiveChannel(playerName);
             if (activeChannel.restrictions().restrictTeleport()) {
-                Utils.sendMessage(activeChannel.messages().teleportedOnTeleport(), p);
+                Utils.sendMessage(activeChannel.messages().teleportedOnTeleport(), player);
                 cancelTeleportation(playerName);
             }
         }
@@ -81,20 +81,20 @@ public class RtpListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
-        Player p = e.getPlayer();
+        Player player = e.getPlayer();
         if (rtpManager.getProxyCalls() != null && !rtpManager.getProxyCalls().isEmpty()) {
-            String data = rtpManager.getProxyCalls().get(p.getName());
+            String data = rtpManager.getProxyCalls().get(player.getName());
             if (data == null) {
                 return;
             }
             int separatorIndex = data.indexOf(';');
             Channel channel = rtpManager.getChannelById(data.substring(0, separatorIndex));
             World world = Bukkit.getWorld(data.substring(separatorIndex + 1));
-            rtpManager.preTeleport(p, channel, world);
-            rtpManager.getProxyCalls().remove(p.getName());
+            rtpManager.preTeleport(player, channel, world);
+            rtpManager.getProxyCalls().remove(player.getName());
             return;
         }
-        if (p.hasPlayedBefore()) {
+        if (player.hasPlayedBefore()) {
             return;
         }
         Set<String> joinChannels = rtpManager.getSpecifications().joinChannels();
@@ -102,10 +102,10 @@ public class RtpListener implements Listener {
             return;
         }
         for (String channelId : joinChannels) {
-            if (!p.hasPermission("rtp.channel." + channelId)) {
+            if (!player.hasPermission("rtp.channel." + channelId)) {
                 continue;
             }
-            processTeleport(p, rtpManager.getChannelById(channelId));
+            processTeleport(player, rtpManager.getChannelById(channelId));
             return;
         }
     }
@@ -116,41 +116,41 @@ public class RtpListener implements Listener {
         if (respawnChannels.isEmpty()) {
             return;
         }
-        Player p = e.getPlayer();
+        Player player = e.getPlayer();
         for (Map.Entry<String, List<World>> entry : respawnChannels.entrySet()) {
             List<World> worlds = entry.getValue();
-            if (!worlds.contains(p.getWorld())) {
+            if (!worlds.contains(player.getWorld())) {
                 continue;
             }
             String channelId = entry.getKey();
-            if (!p.hasPermission("rtp.channel." + channelId)) {
+            if (!player.hasPermission("rtp.channel." + channelId)) {
                 continue;
             }
-            processTeleport(p, rtpManager.getChannelById(channelId));
+            processTeleport(player, rtpManager.getChannelById(channelId));
             return;
         }
     }
 
-    private void processTeleport(Player p, Channel channel) {
-        if (!channel.activeWorlds().contains(p.getWorld())) {
+    private void processTeleport(Player player, Channel channel) {
+        if (!channel.activeWorlds().contains(player.getWorld())) {
             if (channel.teleportToFirstAllowedWorld()) {
-                rtpManager.preTeleport(p, channel, channel.activeWorlds().get(0));
+                rtpManager.preTeleport(player, channel, channel.activeWorlds().get(0));
             }
             return;
         }
-        rtpManager.preTeleport(p, channel, p.getWorld());
+        rtpManager.preTeleport(player, channel, player.getWorld());
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onDamage(EntityDamageEvent e) {
-        if (!(e.getEntity() instanceof Player p)) {
+        if (!(e.getEntity() instanceof Player player)) {
             return;
         }
-        String playerName = p.getName();
+        String playerName = player.getName();
         if (rtpManager.hasActiveTasks(playerName)) {
             Channel activeChannel = rtpManager.getPerPlayerActiveRtpTask().get(playerName).getActiveChannel();
             if (activeChannel.restrictions().restrictDamage() && !activeChannel.restrictions().damageCheckOnlyPlayers()) {
-                Utils.sendMessage(activeChannel.messages().damagedOnTeleport(), p);
+                Utils.sendMessage(activeChannel.messages().damagedOnTeleport(), player);
                 cancelTeleportation(playerName);
             }
         }
@@ -203,13 +203,13 @@ public class RtpListener implements Listener {
     }
 
     private Player getDamager(Entity damagerEntity) {
-        if (damagerEntity instanceof Player p) {
-            return p;
+        if (damagerEntity instanceof Player player) {
+            return player;
         }
         if (damagerEntity instanceof Projectile projectile) {
             ProjectileSource projectileSource = projectile.getShooter();
-            if (projectileSource instanceof Player p) {
-                return p;
+            if (projectileSource instanceof Player player) {
+                return player;
             }
         }
         return null;
@@ -217,19 +217,19 @@ public class RtpListener implements Listener {
 
     @EventHandler
     public void onLeave(PlayerQuitEvent e) {
-        Player p = e.getPlayer();
-        handlePlayerLeave(p);
+        Player player = e.getPlayer();
+        handlePlayerLeave(player);
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onKick(PlayerKickEvent e) {
-        Player p = e.getPlayer();
-        handlePlayerLeave(p);
+        Player player = e.getPlayer();
+        handlePlayerLeave(player);
     }
 
-    private void handlePlayerLeave(Player p) {
+    private void handlePlayerLeave(Player player) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            String playerName = p.getName();
+            String playerName = player.getName();
             if (rtpManager.hasActiveTasks(playerName)) {
                 cancelTeleportation(playerName);
             }

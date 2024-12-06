@@ -249,10 +249,11 @@ public class RtpManager {
     private Particles setupChannelParticles(ConfigurationSection particles) {
         if (isSectionNull(particles)) {
             return new Particles(
-                    false, null, -1, -1, -1, false, false, false,
-                    false, null, -1, -1, -1);
+                    false, false, null, -1, -1, -1, false, false, false,
+                    false, false, null, -1, -1, -1);
         }
         boolean preTeleportEnabled = false;
+        boolean preTeleportSendOnlyToPlayer = false;
         Particle preTeleportId = null;
         int preTeleportDots = 0;
         double preTeleportRadius = 0;
@@ -261,6 +262,7 @@ public class RtpManager {
         boolean preTeleportJumping = false;
         boolean preTeleportMoveNear = false;
         boolean afterTeleportParticleEnabled = false;
+        boolean afterTeleportSendOnlyToPlayer = false;
         Particle afterTeleportParticle = null;
         int afterTeleportCount = 0;
         double afterTeleportRadius = 0;
@@ -268,6 +270,7 @@ public class RtpManager {
         final ConfigurationSection preTeleport = particles.getConfigurationSection("pre_teleport");
         if (!isSectionNull(preTeleport)) {
             preTeleportEnabled = preTeleport.getBoolean("enabled", false);
+            preTeleportSendOnlyToPlayer = preTeleport.getBoolean("send-only-to-player", false);
             preTeleportId = Particle.valueOf(preTeleport.getString("id").toUpperCase(Locale.ROOT));
             preTeleportDots = preTeleport.getInt("dots");
             preTeleportRadius = preTeleport.getDouble("radius");
@@ -279,6 +282,7 @@ public class RtpManager {
         final ConfigurationSection afterTeleport = particles.getConfigurationSection("after_teleport");
         if (!isSectionNull(afterTeleport)) {
             afterTeleportParticleEnabled = afterTeleport.getBoolean("enabled", false);
+            afterTeleportSendOnlyToPlayer = afterTeleport.getBoolean("send-only-to-player", false);
             afterTeleportParticle = Particle.valueOf(afterTeleport.getString("id").toUpperCase(Locale.ROOT));
             afterTeleportCount = afterTeleport.getInt("count");
             afterTeleportRadius = afterTeleport.getDouble("radius");
@@ -286,8 +290,8 @@ public class RtpManager {
         }
 
         return new Particles(
-                preTeleportEnabled, preTeleportId, preTeleportDots, preTeleportRadius, preTeleportSpeed, preTeleportInvert, preTeleportJumping, preTeleportMoveNear,
-                afterTeleportParticleEnabled, afterTeleportParticle, afterTeleportCount, afterTeleportRadius, afterTeleportSpeed);
+                preTeleportEnabled, preTeleportSendOnlyToPlayer, preTeleportId, preTeleportDots, preTeleportRadius, preTeleportSpeed, preTeleportInvert, preTeleportJumping, preTeleportMoveNear,
+                afterTeleportParticleEnabled, afterTeleportSendOnlyToPlayer, afterTeleportParticle, afterTeleportCount, afterTeleportRadius, afterTeleportSpeed);
     }
 
     private Restrictions setupChannelRestrictions(ConfigurationSection restrictions) {
@@ -417,89 +421,91 @@ public class RtpManager {
 
     private final List<String> teleportingNow = new ArrayList<>();
 
-    public void preTeleport(Player p, Channel channel, World world) {
-        if (teleportingNow.contains(p.getName())) {
+    public void preTeleport(Player player, Channel channel, World world) {
+        if (teleportingNow.contains(player.getName())) {
             return;
         }
         if (proxyCalls != null && !channel.serverToMove().isEmpty()) {
             if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Moving player '" + p.getName() + "' with channel '" + channel.id() + "' to server " + channel.serverToMove());
+                plugin.getPluginLogger().info("Moving player '" + player.getName() + "' with channel '" + channel.id() + "' to server " + channel.serverToMove());
             }
-            plugin.getPluginMessage().sendCrossProxy(p, channel.serverToMove() + " " + p.getName() + "$" + channel.id() + ";" + world.getName());
-            teleportingNow.remove(p.getName());
-            plugin.getPluginMessage().connectToServer(p, channel.serverToMove());
+            plugin.getPluginMessage().sendCrossProxy(player, channel.serverToMove() + " " + player.getName() + "$" + channel.id() + ";" + world.getName());
+            teleportingNow.remove(player.getName());
+            plugin.getPluginMessage().connectToServer(player, channel.serverToMove());
             return;
         }
         if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("Pre teleporting player '" + p.getName() + "' with channel '" + channel.id() + "' in world " + world.getName());
+            plugin.getPluginLogger().info("Pre teleporting player '" + player.getName() + "' with channel '" + channel.id() + "' in world " + world.getName());
         }
-        teleportingNow.add(p.getName());
+        teleportingNow.add(player.getName());
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            locationGenerator.getIterationsPerPlayer().put(p.getName(), 1);
+            locationGenerator.getIterationsPerPlayer().put(player.getName(), 1);
             Location loc = switch (channel.type()) {
-                case DEFAULT -> locationGenerator.generateRandomLocation(p, channel, world);
-                case NEAR_PLAYER -> locationGenerator.generateRandomLocationNearPlayer(p, channel, world);
+                case DEFAULT -> locationGenerator.generateRandomLocation(player, channel, world);
+                case NEAR_PLAYER -> locationGenerator.generateRandomLocationNearPlayer(player, channel, world);
                 case NEAR_REGION -> locationGenerator.getWgLocationGenerator() != null ?
-                        locationGenerator.getWgLocationGenerator().generateRandomLocationNearRandomRegion(p, channel, world) :
-                        locationGenerator.generateRandomLocation(p, channel, world);
+                        locationGenerator.getWgLocationGenerator().generateRandomLocationNearRandomRegion(player, channel, world) :
+                        locationGenerator.generateRandomLocation(player, channel, world);
             };
             if (loc == null) {
-                teleportingNow.remove(p.getName());
-                Utils.sendMessage(channel.messages().failToFindLocation(), p);
-                this.returnCost(p, channel);
+                teleportingNow.remove(player.getName());
+                Utils.sendMessage(channel.messages().failToFindLocation(), player);
+                this.returnCost(player, channel);
                 return;
             }
             if (channel.cooldown().teleportCooldown() > 0) {
-                this.executeActions(p, channel, channel.actions().preTeleportActions(), p.getLocation());
-                RtpTask rtpTask = new RtpTask(plugin, this, p.getName(), channel);
-                rtpTask.startPreTeleportTimer(p, channel, loc);
+                this.executeActions(player, channel, channel.actions().preTeleportActions(), player.getLocation());
+                RtpTask rtpTask = new RtpTask(plugin, this, player.getName(), channel);
+                rtpTask.startPreTeleportTimer(player, channel, loc);
                 return;
             }
-            this.teleportPlayer(p, channel, loc);
+            this.teleportPlayer(player, channel, loc);
         });
     }
 
-    public boolean takeCost(Player p, Channel channel) {
+    public boolean takeCost(Player player, Channel channel) {
         Costs costs = channel.costs();
-        return costs.processMoneyCost(p, channel) &&
-                costs.processHungerCost(p, channel) &&
-                costs.processExpCost(p, channel);
+        return costs.processMoneyCost(player, channel) &&
+                costs.processHungerCost(player, channel) &&
+                costs.processExpCost(player, channel);
     }
 
-    private void returnCost(Player p, Channel channel) {
+    private void returnCost(Player player, Channel channel) {
         Costs costs = channel.costs();
-        costs.processMoneyReturn(p);
-        costs.processHungerReturn(p);
-        costs.processExpReturn(p);
+        costs.processMoneyReturn(player);
+        costs.processHungerReturn(player);
+        costs.processExpReturn(player);
     }
 
-    public void teleportPlayer(Player p, Channel channel, Location loc) {
+    public void teleportPlayer(Player player, Channel channel, Location loc) {
         if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("Teleporting player '" + p.getName() + "' with channel '" + channel.id() + "' to location " + loc.toString());
+            plugin.getPluginLogger().info("Teleporting player '" + player.getName() + "' with channel '" + channel.id() + "' to location " + loc.toString());
         }
         if (channel.invulnerableTicks() > 0) {
-            p.setInvulnerable(true);
-            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> p.setInvulnerable(false), channel.invulnerableTicks());
+            player.setInvulnerable(true);
+            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> player.setInvulnerable(false), channel.invulnerableTicks());
         }
-        this.handlePlayerCooldown(p, channel.cooldown());
+        this.handlePlayerCooldown(player, channel.cooldown());
         Bukkit.getScheduler().runTask(plugin, () -> {
-            p.teleport(loc);
-            teleportingNow.remove(p.getName());
-            this.spawnParticleSphere(p, channel.particles());
-            this.executeActions(p, channel, channel.actions().afterTeleportActions(), loc);
+            player.teleport(loc);
+            teleportingNow.remove(player.getName());
+            this.spawnParticleSphere(player, channel.particles());
+            this.executeActions(player, channel, channel.actions().afterTeleportActions(), loc);
         });
     }
 
-    public void spawnParticleSphere(Player p, Particles particles) {
+    public void spawnParticleSphere(Player player, Particles particles) {
         if (particles == null || !particles.afterTeleportEnabled()) {
             return;
         }
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
-            final Location loc = p.getLocation();
+            final Location loc = player.getLocation();
             loc.add(0, 1, 0);
             final World world = loc.getWorld();
 
             final double goldenAngle = Math.PI * (3 - Math.sqrt(5));
+
+            final List<Player> receivers = particles.afterTeleportSendOnlyToPlayer() ? List.of(player) : null;
 
             for (int i = 0; i < particles.afterTeleportCount(); i++) {
                 double yOffset = 1 - (2.0 * i) / (particles.afterTeleportCount() - 1);
@@ -512,19 +518,31 @@ public class RtpManager {
 
                 Location particleLocation = loc.clone().add(xOffset, yOffset * particles.afterTeleportRadius(), zOffset);
 
-                world.spawnParticle(particles.afterTeleportId(), particleLocation, 1, 0, 0, 0, particles.afterTeleportSpeed());
+                world.spawnParticle(
+                        particles.afterTeleportId(),
+                        receivers,
+                        player,
+                        particleLocation.getX(),
+                        particleLocation.getY(),
+                        particleLocation.getZ(),
+                        1,
+                        0,
+                        0,
+                        0,
+                        particles.afterTeleportSpeed(),
+                        null);
             }
         }, 1L);
     }
 
-    private void handlePlayerCooldown(Player p, Cooldown cooldown) {
-        int cooldownTime = getChannelCooldown(p, cooldown);
-        if (getChannelCooldown(p, cooldown) > 0 && !p.hasPermission("rtp.bypasscooldown")) {
-            cooldown.playerCooldowns().put(p.getName(), System.currentTimeMillis(), cooldownTime);
+    private void handlePlayerCooldown(Player player, Cooldown cooldown) {
+        int cooldownTime = getChannelCooldown(player, cooldown);
+        if (getChannelCooldown(player, cooldown) > 0 && !player.hasPermission("rtp.bypasscooldown")) {
+            cooldown.playerCooldowns().put(player.getName(), System.currentTimeMillis(), cooldownTime);
         }
     }
 
-    public int getChannelCooldown(Player p, Cooldown cooldown) {
+    public int getChannelCooldown(Player player, Cooldown cooldown) {
         if (cooldown.defaultCooldown() < 0) {
             return -1;
         }
@@ -532,13 +550,13 @@ public class RtpManager {
         if (groupCooldowns.isEmpty()) {
             return cooldown.defaultCooldown();
         }
-        final String playerGroup = plugin.getPerms().getPrimaryGroup(p);
+        final String playerGroup = plugin.getPerms().getPrimaryGroup(player);
         return groupCooldowns.getOrDefault(playerGroup, cooldown.defaultCooldown());
     }
 
     private final String[] searchList = {"%player%", "%name%", "%time%", "%x%", "%y%", "%z%"};
 
-    public void executeActions(Player p, Channel channel, List<Action> actionList, Location loc) {
+    public void executeActions(Player player, Channel channel, List<Action> actionList, Location loc) {
         if (actionList.isEmpty()) {
             return;
         }
@@ -547,10 +565,10 @@ public class RtpManager {
         String x = Integer.toString(loc.getBlockX());
         String y = Integer.toString(loc.getBlockY());
         String z = Integer.toString(loc.getBlockZ());
-        final String[] replacementList = {p.getName(), name, cd, x, y, z};
+        final String[] replacementList = {player.getName(), name, cd, x, y, z};
         Bukkit.getScheduler().runTask(plugin, () -> {
             for (Action action : actionList) {
-                action.perform(channel, p, searchList, replacementList);
+                action.perform(channel, player, searchList, replacementList);
             }
         });
     }

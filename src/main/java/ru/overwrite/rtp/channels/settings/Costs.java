@@ -19,101 +19,101 @@ public record Costs(
         PLAYERPOINTS
     }
 
-    public boolean processMoneyCost(Player p, Channel channel) {
+    public boolean processMoneyCost(Player player, Channel channel) {
         if (moneyCost <= 0) {
             return true;
         }
 
         return switch (moneyType()) {
-            case VAULT -> processVaultMoneyCost(p, channel);
-            case PLAYERPOINTS -> processPlayerPointsMoneyCost(p, channel);
+            case VAULT -> processVaultMoneyCost(player, channel);
+            case PLAYERPOINTS -> processPlayerPointsMoneyCost(player, channel);
         };
     }
 
-    private boolean processVaultMoneyCost(Player p, Channel channel) {
+    private boolean processVaultMoneyCost(Player player, Channel channel) {
         if (economy == null) {
             return true;
         }
-        if (economy.getBalance(p) < moneyCost) {
-            sendNotEnoughMoneyMessage(channel, p);
+        if (economy.getBalance(player) < moneyCost) {
+            sendNotEnoughMoneyMessage(channel, player);
             return false;
         }
-        economy.withdrawPlayer(p, moneyCost);
+        economy.withdrawPlayer(player, moneyCost);
         return true;
     }
 
-    private boolean processPlayerPointsMoneyCost(Player p, Channel channel) {
-        if (PlayerPointsUtils.getBalance(p) < moneyCost) {
-            sendNotEnoughMoneyMessage(channel, p);
+    private boolean processPlayerPointsMoneyCost(Player player, Channel channel) {
+        if (PlayerPointsUtils.getBalance(player) < moneyCost) {
+            sendNotEnoughMoneyMessage(channel, player);
             return false;
         }
-        PlayerPointsUtils.withdraw(p, (int) moneyCost);
+        PlayerPointsUtils.withdraw(player, (int) moneyCost);
         return true;
     }
 
-    private void sendNotEnoughMoneyMessage(Channel channel, Player p) {
-        Utils.sendMessage(channel.messages().notEnoughMoney().replace("%required%", Double.toString(moneyCost)), p);
+    private void sendNotEnoughMoneyMessage(Channel channel, Player player) {
+        Utils.sendMessage(channel.messages().notEnoughMoney().replace("%required%", Double.toString(moneyCost)), player);
     }
 
-    public boolean processHungerCost(Player p, Channel channel) {
+    public boolean processHungerCost(Player player, Channel channel) {
         if (hungerCost <= 0) {
             return true;
         }
-        if (p.getGameMode() == GameMode.CREATIVE) {
+        if (player.getGameMode() == GameMode.CREATIVE) {
             return true;
         }
 
-        if (p.getFoodLevel() < hungerCost) {
-            Utils.sendMessage(channel.messages().notEnoughHunger().replace("%required%", Integer.toString(hungerCost)), p);
+        if (player.getFoodLevel() < hungerCost) {
+            Utils.sendMessage(channel.messages().notEnoughHunger().replace("%required%", Integer.toString(hungerCost)), player);
             return false;
         }
-        p.setFoodLevel(p.getFoodLevel() - hungerCost);
+        player.setFoodLevel(player.getFoodLevel() - hungerCost);
         return true;
     }
 
-    public boolean processExpCost(Player p, Channel channel) {
+    public boolean processExpCost(Player player, Channel channel) {
         if (expCost <= 0) {
             return true;
         }
 
-        if (p.getTotalExperience() < expCost) {
-            Utils.sendMessage(channel.messages().notEnoughExp().replace("%required%", Integer.toString(expCost)), p);
+        if (player.getTotalExperience() < expCost) {
+            Utils.sendMessage(channel.messages().notEnoughExp().replace("%required%", Integer.toString(expCost)), player);
             return false;
         }
-        p.setTotalExperience(p.getTotalExperience() - expCost);
+        player.setTotalExperience(player.getTotalExperience() - expCost);
         return true;
     }
 
-    public void processMoneyReturn(Player p) {
+    public void processMoneyReturn(Player player) {
         if (moneyCost <= 0) {
             return;
         }
 
         switch (moneyType()) {
-            case VAULT -> processVaultMoneyReturn(p);
-            case PLAYERPOINTS -> processPlayerPointsMoneyReturn(p);
+            case VAULT -> processVaultMoneyReturn(player);
+            case PLAYERPOINTS -> processPlayerPointsMoneyReturn(player);
         }
     }
 
-    private void processVaultMoneyReturn(Player p) {
+    private void processVaultMoneyReturn(Player player) {
         if (economy != null) {
-            economy.depositPlayer(p, moneyCost);
+            economy.depositPlayer(player, moneyCost);
         }
     }
 
-    private void processPlayerPointsMoneyReturn(Player p) {
-        PlayerPointsUtils.deposit(p, (int) moneyCost);
+    private void processPlayerPointsMoneyReturn(Player player) {
+        PlayerPointsUtils.deposit(player, (int) moneyCost);
     }
 
-    public void processHungerReturn(Player p) {
+    public void processHungerReturn(Player player) {
         if (hungerCost > 0) {
-            p.setFoodLevel(p.getFoodLevel() + hungerCost);
+            player.setFoodLevel(player.getFoodLevel() + hungerCost);
         }
     }
 
-    public void processExpReturn(Player p) {
+    public void processExpReturn(Player player) {
         if (expCost > 0) {
-            p.setExp(p.getExp() + expCost);
+            player.setExp(player.getExp() + expCost);
         }
     }
 }

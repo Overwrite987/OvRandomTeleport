@@ -4,6 +4,7 @@ import org.bukkit.Particle;
 
 public record Particles(
         boolean preTeleportEnabled,
+        boolean preTeleportSendOnlyToPlayer,
         Particle preTeleportId,
         int preTeleportDots,
         double preTeleportRadius,
@@ -12,6 +13,7 @@ public record Particles(
         boolean preTeleportJumping,
         boolean preTeleportMoveNear,
         boolean afterTeleportEnabled,
+        boolean afterTeleportSendOnlyToPlayer,
         Particle afterTeleportId,
         int afterTeleportCount,
         double afterTeleportRadius,

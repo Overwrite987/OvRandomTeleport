@@ -12,17 +12,17 @@ public final class PlayerPointsUtils {
 
     private static final PlayerPointsAPI API = PlayerPoints.getInstance().getAPI();
 
-    public static void withdraw(Player p, int amount) {
-        UUID uuid = p.getUniqueId();
+    public static void withdraw(Player player, int amount) {
+        UUID uuid = player.getUniqueId();
         API.take(uuid, amount);
     }
 
-    public static void deposit(Player p, int amount) {
-        UUID uuid = p.getUniqueId();
+    public static void deposit(Player player, int amount) {
+        UUID uuid = player.getUniqueId();
         API.give(uuid, amount);
     }
 
-    public static int getBalance(Player p) {
-        return API.look(p.getUniqueId());
+    public static int getBalance(Player player) {
+        return API.look(player.getUniqueId());
     }
 }

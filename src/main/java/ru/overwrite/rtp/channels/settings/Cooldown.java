@@ -11,7 +11,7 @@ public record Cooldown(
         boolean useLastGroupCooldown,
         int teleportCooldown) {
 
-    public boolean hasCooldown(Player p) {
-        return playerCooldowns != null && playerCooldowns.containsKey(p.getName());
+    public boolean hasCooldown(Player player) {
+        return playerCooldowns != null && playerCooldowns.containsKey(player.getName());
     }
 }

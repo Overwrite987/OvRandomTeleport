@@ -25,9 +25,9 @@ public class WGLocationGenerator {
         this.locationGenerator = locationGenerator;
     }
 
-    public Location generateRandomLocationNearRandomRegion(Player p, Channel channel, World world) {
+    public Location generateRandomLocationNearRandomRegion(Player player, Channel channel, World world) {
         LocationGenOptions locationGenOptions = channel.locationGenOptions();
-        if (locationGenerator.hasReachedMaxIterations(p, locationGenOptions)) {
+        if (locationGenerator.hasReachedMaxIterations(player, locationGenOptions)) {
             return null;
         }
 
@@ -45,7 +45,7 @@ public class WGLocationGenerator {
 
         List<ProtectedRegion> regionsInRange = new ArrayList<>();
         for (ProtectedRegion region : regionManager.getRegions().values()) {
-            if (region.getType() == RegionType.GLOBAL || region.getMembers().contains(p.getName())) {
+            if (region.getType() == RegionType.GLOBAL || region.getMembers().contains(player.getName())) {
                 continue;
             }
 
@@ -71,13 +71,13 @@ public class WGLocationGenerator {
         int centerZ = (randomRegion.getMinimumPoint().getZ() + randomRegion.getMaximumPoint().getZ()) / 2;
 
         LocationGenOptions.Shape shape = locationGenOptions.shape();
-        Location location = locationGenerator.generateRandomLocationNearPoint(shape, p, centerX, centerZ, channel, world);
+        Location location = locationGenerator.generateRandomLocationNearPoint(shape, player, centerX, centerZ, channel, world);
 
         if (location == null) {
-            locationGenerator.getIterationsPerPlayer().addTo(p.getName(), 1);
-            return generateRandomLocationNearRandomRegion(p, channel, world);
+            locationGenerator.getIterationsPerPlayer().addTo(player.getName(), 1);
+            return generateRandomLocationNearRandomRegion(player, channel, world);
         } else {
-            locationGenerator.getIterationsPerPlayer().removeInt(p.getName());
+            locationGenerator.getIterationsPerPlayer().removeInt(player.getName());
             return location;
         }
     }

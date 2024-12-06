@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -14,6 +15,8 @@ import ru.overwrite.rtp.channels.settings.Bossbar;
 import ru.overwrite.rtp.channels.settings.Cooldown;
 import ru.overwrite.rtp.channels.settings.Particles;
 import ru.overwrite.rtp.utils.Utils;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 public class RtpTask {
@@ -30,23 +33,23 @@ public class RtpTask {
     private BukkitTask runnable;
     private BukkitTask particleTask;
 
-    public void startPreTeleportTimer(Player p, Channel channel, Location location) {
+    public void startPreTeleportTimer(Player player, Channel channel, Location location) {
         Cooldown cooldown = channel.cooldown();
         this.preTeleportCooldown = cooldown.teleportCooldown();
         if (channel.bossbar().bossbarEnabled()) {
-            this.setupBossBar(p, channel.bossbar(), cooldown);
+            this.setupBossBar(player, channel.bossbar(), cooldown);
         }
-        startParticleAnimation(p, preTeleportCooldown * 20, channel.particles());
+        startParticleAnimation(player, preTeleportCooldown * 20, channel.particles());
         this.runnable = new BukkitRunnable() {
             @Override
             public void run() {
                 preTeleportCooldown--;
                 if (preTeleportCooldown <= 0) {
-                    cleanupAndTeleport(p, channel, location);
+                    cleanupAndTeleport(player, channel, location);
                     return;
                 }
                 updateBossBar(channel, cooldown);
-                handleCooldownActions(p, channel);
+                handleCooldownActions(player, channel);
             }
         }.runTaskTimerAsynchronously(plugin, 20L, 20L);
         rtpManager.getPerPlayerActiveRtpTask().put(this.playerName, this);
@@ -65,6 +68,8 @@ public class RtpTask {
             final double yStep = particles.preTeleportInvert() ? (2.0 / duration) : (-2.0 / duration);
             final double verticalRotationSpeed = 2 * Math.PI * 2 / duration;
 
+            final List<Player> receivers = particles.preTeleportSendOnlyToPlayer() ? List.of(player) : null;
+
             @Override
             public void run() {
                 tickCounter++;
@@ -74,6 +79,7 @@ public class RtpTask {
                 }
 
                 final Location location = player.getLocation();
+                final World world = location.getWorld();
                 final double yRingOffset = Math.sin((Math.PI * tickCounter) / duration) * 2;
 
                 double currentRadius = particles.preTeleportMoveNear() ? initialRadius - (radiusStep * tickCounter) : initialRadius;
@@ -104,7 +110,21 @@ public class RtpTask {
                     }
 
                     location.add(x, y, z);
-                    player.getWorld().spawnParticle(particles.preTeleportId(), location, 1, 0, 0, 0, 0);
+
+                    world.spawnParticle(
+                            particles.afterTeleportId(),
+                            receivers,
+                            player,
+                            location.getX(),
+                            location.getY(),
+                            location.getZ(),
+                            1,
+                            0,
+                            0,
+                            0,
+                            particles.afterTeleportSpeed(),
+                            null);
+
                     location.subtract(x, y, z);
                 }
 

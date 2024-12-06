@@ -36,36 +36,36 @@ public class LocationGenerator {
         }
     }
 
-    public Location generateRandomLocation(Player p, Channel channel, World world) {
+    public Location generateRandomLocation(Player player, Channel channel, World world) {
         LocationGenOptions locationGenOptions = channel.locationGenOptions();
-        if (hasReachedMaxIterations(p, locationGenOptions)) {
+        if (hasReachedMaxIterations(player, locationGenOptions)) {
             return null;
         }
 
         LocationGenOptions.Shape shape = channel.locationGenOptions().shape();
         Location location = switch (shape) {
-            case SQUARE -> generateRandomSquareLocation(p, channel, world);
-            case ROUND -> generateRandomRoundLocation(p, channel, world);
+            case SQUARE -> generateRandomSquareLocation(player, channel, world);
+            case ROUND -> generateRandomRoundLocation(player, channel, world);
         };
 
         if (location == null) {
-            iterationsPerPlayer.addTo(p.getName(), 1);
-            return generateRandomLocation(p, channel, world);
+            iterationsPerPlayer.addTo(player.getName(), 1);
+            return generateRandomLocation(player, channel, world);
         } else {
             if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Location for player '" + p.getName() + "' found in " + iterationsPerPlayer.getInt(p.getName()) + " iterations");
+                plugin.getPluginLogger().info("Location for player '" + player.getName() + "' found in " + iterationsPerPlayer.getInt(player.getName()) + " iterations");
             }
-            iterationsPerPlayer.removeInt(p.getName());
+            iterationsPerPlayer.removeInt(player.getName());
             return location;
         }
     }
 
-    public Location generateRandomLocationNearPlayer(Player p, Channel channel, World world) {
+    public Location generateRandomLocationNearPlayer(Player player, Channel channel, World world) {
         LocationGenOptions locationGenOptions = channel.locationGenOptions();
-        if (hasReachedMaxIterations(p, locationGenOptions)) {
+        if (hasReachedMaxIterations(player, locationGenOptions)) {
             return null;
         }
-        List<Player> nearbyPlayers = getNearbyPlayers(p, locationGenOptions, world);
+        List<Player> nearbyPlayers = getNearbyPlayers(player, locationGenOptions, world);
 
         if (nearbyPlayers.isEmpty()) {
             if (Utils.DEBUG) {
@@ -81,16 +81,16 @@ public class LocationGenerator {
         int centerZ = loc.getBlockZ();
 
         LocationGenOptions.Shape shape = locationGenOptions.shape();
-        Location location = generateRandomLocationNearPoint(shape, p, centerX, centerZ, channel, world);
+        Location location = generateRandomLocationNearPoint(shape, player, centerX, centerZ, channel, world);
 
         if (location == null) {
-            iterationsPerPlayer.addTo(p.getName(), 1);
-            return generateRandomLocationNearPlayer(p, channel, world);
+            iterationsPerPlayer.addTo(player.getName(), 1);
+            return generateRandomLocationNearPlayer(player, channel, world);
         } else {
             if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Location for player '" + p.getName() + "' found in " + iterationsPerPlayer.getInt(p.getName()) + " iterations");
+                plugin.getPluginLogger().info("Location for player '" + player.getName() + "' found in " + iterationsPerPlayer.getInt(player.getName()) + " iterations");
             }
-            iterationsPerPlayer.removeInt(p.getName());
+            iterationsPerPlayer.removeInt(player.getName());
             return location;
         }
     }
@@ -102,10 +102,10 @@ public class LocationGenerator {
         int maxZ = locationGenOptions.maxZ();
         List<Player> nearbyPlayers = new ArrayList<>();
         for (Player p : world.getPlayers()) {
-            if (p.hasPermission("rtp.near.bypass")) {
+            if (player.hasPermission("rtp.near.bypass")) {
                 continue;
             }
-            Location loc = p.getLocation();
+            Location loc = player.getLocation();
             int px = loc.getBlockX();
             int pz = loc.getBlockZ();
             if (px >= minX && px <= maxX && pz >= minZ && pz <= maxZ) {
@@ -116,21 +116,21 @@ public class LocationGenerator {
         return nearbyPlayers;
     }
 
-    public boolean hasReachedMaxIterations(Player p, LocationGenOptions locationGenOptions) {
+    public boolean hasReachedMaxIterations(Player player, LocationGenOptions locationGenOptions) {
         if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("Iterations for player '" + p.getName() + "': " + iterationsPerPlayer.getInt(p.getName()));
+            plugin.getPluginLogger().info("Iterations for player '" + player.getName() + "': " + iterationsPerPlayer.getInt(player.getName()));
         }
-        if (iterationsPerPlayer.getInt(p.getName()) >= locationGenOptions.maxLocationAttempts()) {
-            iterationsPerPlayer.removeInt(p.getName());
+        if (iterationsPerPlayer.getInt(player.getName()) >= locationGenOptions.maxLocationAttempts()) {
+            iterationsPerPlayer.removeInt(player.getName());
             if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Max iterations reached for player " + p.getName());
+                plugin.getPluginLogger().info("Max iterations reached for player " + player.getName());
             }
             return true;
         }
         return false;
     }
 
-    public Location generateRandomSquareLocation(Player p, Channel channel, World world) {
+    public Location generateRandomSquareLocation(Player player, Channel channel, World world) {
         LocationGenOptions locationGenOptions = channel.locationGenOptions();
         int minX = locationGenOptions.minX();
         int maxX = locationGenOptions.maxX();
@@ -161,7 +161,7 @@ public class LocationGenerator {
             return null;
         }
 
-        Location location = new Location(world, x + 0.5, y, z + 0.5, p.getLocation().getYaw(), p.getLocation().getPitch());
+        Location location = new Location(world, x + 0.5, y, z + 0.5, player.getLocation().getYaw(), player.getLocation().getPitch());
         if (isLocationRestricted(location, channel.avoidance())) {
             return null;
         } else {
@@ -170,7 +170,7 @@ public class LocationGenerator {
         }
     }
 
-    public Location generateRandomRoundLocation(Player p, Channel channel, World world) {
+    public Location generateRandomRoundLocation(Player player, Channel channel, World world) {
         LocationGenOptions locationGenOptions = channel.locationGenOptions();
         int minX = locationGenOptions.minX();
         int maxX = locationGenOptions.maxX();
@@ -212,7 +212,7 @@ public class LocationGenerator {
             return null;
         }
 
-        Location location = new Location(world, x + 0.5, y, z + 0.5, p.getLocation().getYaw(), p.getLocation().getPitch());
+        Location location = new Location(world, x + 0.5, y, z + 0.5, player.getLocation().getYaw(), player.getLocation().getPitch());
         if (isLocationRestricted(location, channel.avoidance())) {
             return null;
         } else {
@@ -221,14 +221,14 @@ public class LocationGenerator {
         }
     }
 
-    public Location generateRandomLocationNearPoint(LocationGenOptions.Shape shape, Player p, int centerX, int centerZ, Channel channel, World world) {
+    public Location generateRandomLocationNearPoint(LocationGenOptions.Shape shape, Player player, int centerX, int centerZ, Channel channel, World world) {
         return switch (shape) {
-            case SQUARE -> generateRandomSquareLocationNearPoint(p, centerX, centerZ, channel, world);
-            case ROUND -> generateRandomRoundLocationNearPoint(p, centerX, centerZ, channel, world);
+            case SQUARE -> generateRandomSquareLocationNearPoint(player, centerX, centerZ, channel, world);
+            case ROUND -> generateRandomRoundLocationNearPoint(player, centerX, centerZ, channel, world);
         };
     }
 
-    private Location generateRandomSquareLocationNearPoint(Player p, int centerX, int centerZ, Channel channel, World world) {
+    private Location generateRandomSquareLocationNearPoint(Player player, int centerX, int centerZ, Channel channel, World world) {
         LocationGenOptions locationGenOptions = channel.locationGenOptions();
         int minX = locationGenOptions.minX();
         int maxX = locationGenOptions.maxX();
@@ -266,7 +266,7 @@ public class LocationGenerator {
             return null;
         }
 
-        Location location = new Location(world, x + 0.5, y, z + 0.5, p.getLocation().getYaw(), p.getLocation().getPitch());
+        Location location = new Location(world, x + 0.5, y, z + 0.5, player.getLocation().getYaw(), player.getLocation().getPitch());
         if (isLocationRestricted(location, channel.avoidance())) {
             return null;
         } else {
@@ -275,7 +275,7 @@ public class LocationGenerator {
         }
     }
 
-    private Location generateRandomRoundLocationNearPoint(Player p, int centerX, int centerZ, Channel channel, World world) {
+    private Location generateRandomRoundLocationNearPoint(Player player, int centerX, int centerZ, Channel channel, World world) {
         LocationGenOptions locationGenOptions = channel.locationGenOptions();
         int minX = locationGenOptions.minX();
         int maxX = locationGenOptions.maxX();
@@ -313,7 +313,7 @@ public class LocationGenerator {
             return null;
         }
 
-        Location location = new Location(world, x + 0.5, y, z + 0.5, p.getLocation().getYaw(), p.getLocation().getPitch());
+        Location location = new Location(world, x + 0.5, y, z + 0.5, player.getLocation().getYaw(), player.getLocation().getPitch());
         if (isLocationRestricted(location, channel.avoidance())) {
             return null;
         } else {
