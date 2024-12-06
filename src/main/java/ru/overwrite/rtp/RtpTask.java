@@ -118,7 +118,7 @@ public class RtpTask {
                     yOffset += yStep;
                 }
             }
-        }.runTaskTimer(plugin, 0, 1);
+        }.runTaskTimerAsynchronously(plugin, 0, 1);
     }
 
     private void setupBossBar(Player player, Bossbar bossbar, Cooldown cooldown) {

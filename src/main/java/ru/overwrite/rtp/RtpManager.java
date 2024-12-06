@@ -494,7 +494,7 @@ public class RtpManager {
         if (particles == null || !particles.afterTeleportEnabled()) {
             return;
         }
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
             final Location loc = p.getLocation();
             loc.add(0, 1, 0);
             final World world = loc.getWorld();
