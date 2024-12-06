@@ -32,7 +32,6 @@ public final class PluginMessage implements PluginMessageListener {
             String data = input.readUTF();
             int spaceIndex = data.indexOf(' ');
             String serverId = data.substring(0, spaceIndex);
-            System.out.println(serverId);
             if (!this.serverId.equals(serverId)) {
                 return;
             }

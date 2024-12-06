@@ -83,7 +83,6 @@ public class RtpListener implements Listener {
     public void onJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
         if (rtpManager.getProxyCalls() != null && !rtpManager.getProxyCalls().isEmpty()) {
-            System.out.println(rtpManager.getProxyCalls());
             String data = rtpManager.getProxyCalls().get(p.getName());
             if (data == null) {
                 return;
