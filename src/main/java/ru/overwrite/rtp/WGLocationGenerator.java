@@ -3,7 +3,8 @@ package ru.overwrite.rtp;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.protection.flags.BooleanFlag;
+import com.sk89q.worldguard.bukkit.BukkitPlayer;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionType;
@@ -43,9 +44,10 @@ public class WGLocationGenerator {
         int minZ = locationGenOptions.minZ();
         int maxZ = locationGenOptions.maxZ();
 
+        BukkitPlayer bukkitPlayer = new BukkitPlayer(WorldGuardPlugin.inst(), player);
         List<ProtectedRegion> regionsInRange = new ArrayList<>();
         for (ProtectedRegion region : regionManager.getRegions().values()) {
-            if (region.getType() == RegionType.GLOBAL || region.getMembers().contains(player.getName())) {
+            if (region.getType() == RegionType.GLOBAL || region.isMember(bukkitPlayer)) {
                 continue;
             }
 
