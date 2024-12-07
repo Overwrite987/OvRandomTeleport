@@ -6,6 +6,7 @@ import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.MetadataValue;
 import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.channels.settings.Avoidance;
 import ru.overwrite.rtp.channels.settings.LocationGenOptions;
@@ -102,7 +103,7 @@ public class LocationGenerator {
         int maxZ = locationGenOptions.maxZ();
         List<Player> nearbyPlayers = new ArrayList<>();
         for (Player p : world.getPlayers()) {
-            if (player.hasPermission("rtp.near.bypass")) {
+            if (player.hasPermission("rtp.near.bypass") || isVanished(player)) {
                 continue;
             }
             Location loc = player.getLocation();
@@ -114,6 +115,10 @@ public class LocationGenerator {
         }
         nearbyPlayers.remove(player);
         return nearbyPlayers;
+    }
+
+    private boolean isVanished(Player player) {
+        return player.hasMetadata("vanished") && player.getMetadata("vanished").get(0).asBoolean();
     }
 
     public boolean hasReachedMaxIterations(Player player, LocationGenOptions locationGenOptions) {
