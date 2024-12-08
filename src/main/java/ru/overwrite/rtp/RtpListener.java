@@ -49,7 +49,7 @@ public class RtpListener implements Listener {
                 if (!player.hasPermission("rtp.channel." + channelId)) {
                     continue;
                 }
-                processTeleport(player, rtpManager.getChannelById(channelId));
+                processTeleport(player, rtpManager.getChannelById(channelId), true);
                 return;
             }
         }
@@ -90,7 +90,7 @@ public class RtpListener implements Listener {
             int separatorIndex = data.indexOf(';');
             Channel channel = rtpManager.getChannelById(data.substring(0, separatorIndex));
             World world = Bukkit.getWorld(data.substring(separatorIndex + 1));
-            rtpManager.preTeleport(player, channel, world);
+            rtpManager.preTeleport(player, channel, world, false);
             rtpManager.getProxyCalls().remove(player.getName());
             return;
         }
@@ -105,7 +105,7 @@ public class RtpListener implements Listener {
             if (!player.hasPermission("rtp.channel." + channelId)) {
                 continue;
             }
-            processTeleport(player, rtpManager.getChannelById(channelId));
+            processTeleport(player, rtpManager.getChannelById(channelId), false);
             return;
         }
     }
@@ -126,19 +126,19 @@ public class RtpListener implements Listener {
             if (!player.hasPermission("rtp.channel." + channelId)) {
                 continue;
             }
-            processTeleport(player, rtpManager.getChannelById(channelId));
+            processTeleport(player, rtpManager.getChannelById(channelId), false);
             return;
         }
     }
 
-    private void processTeleport(Player player, Channel channel) {
+    private void processTeleport(Player player, Channel channel, boolean force) {
         if (!channel.activeWorlds().contains(player.getWorld())) {
             if (channel.teleportToFirstAllowedWorld()) {
-                rtpManager.preTeleport(player, channel, channel.activeWorlds().get(0));
+                rtpManager.preTeleport(player, channel, channel.activeWorlds().get(0), force);
             }
             return;
         }
-        rtpManager.preTeleport(player, channel, player.getWorld());
+        rtpManager.preTeleport(player, channel, player.getWorld(), force);
     }
 
     @EventHandler(ignoreCancelled = true)

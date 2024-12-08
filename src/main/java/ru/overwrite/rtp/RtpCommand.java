@@ -111,13 +111,13 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
                 if (Utils.DEBUG) {
                     plugin.getPluginLogger().info("Teleporting to first allowed world: " + channel.activeWorlds().get(0));
                 }
-                rtpManager.preTeleport(player, channel, channel.activeWorlds().get(0));
+                rtpManager.preTeleport(player, channel, channel.activeWorlds().get(0), false);
                 return true;
             }
             Utils.sendMessage(channel.messages().invalidWorld(), player);
             return true;
         }
-        rtpManager.preTeleport(player, channel, player.getWorld());
+        rtpManager.preTeleport(player, channel, player.getWorld(), false);
         return true;
     }
 
@@ -249,10 +249,10 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 
     private void processForceTeleport(String[] args, Player targetPlayer, Channel channel, World world) {
         if (args.length == 5 && args[4].equalsIgnoreCase("force")) {
-            rtpManager.teleportPlayer(targetPlayer, channel, rtpManager.getLocationGenerator().generateRandomLocation(targetPlayer, channel, world));
+            rtpManager.preTeleport(targetPlayer, channel, world, true);
             return;
         }
-        rtpManager.preTeleport(targetPlayer, channel, world);
+        rtpManager.preTeleport(targetPlayer, channel, world, false);
     }
 
     @Override
