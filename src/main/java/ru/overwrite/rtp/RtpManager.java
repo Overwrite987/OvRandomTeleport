@@ -496,7 +496,7 @@ public class RtpManager {
     }
 
     public void spawnParticleSphere(Player player, Particles particles) {
-        if (particles == null || !particles.afterTeleportEnabled()) {
+        if (!particles.afterTeleportEnabled()) {
             return;
         }
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
