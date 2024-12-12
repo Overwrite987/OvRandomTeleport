@@ -48,7 +48,7 @@ public class TimedExpiringMap<K, V> {
         this.cache.invalidate(key);
     }
 
-    public boolean idEmpty() {
+    public boolean isEmpty() {
         return this.size() == 0;
     }
 
