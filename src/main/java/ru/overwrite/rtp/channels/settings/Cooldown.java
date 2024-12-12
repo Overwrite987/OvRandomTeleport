@@ -12,6 +12,6 @@ public record Cooldown(
         int teleportCooldown) {
 
     public boolean hasCooldown(Player player) {
-        return playerCooldowns != null && playerCooldowns.containsKey(player.getName());
+        return playerCooldowns != null && !playerCooldowns.isEmpty() && playerCooldowns.containsKey(player.getName());
     }
 }
