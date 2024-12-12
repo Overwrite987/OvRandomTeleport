@@ -194,7 +194,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 
     public void checkAndUpdatePlugin(CommandSender sender, Main plugin) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> Utils.checkUpdates(plugin, version -> {
-            sender.sendMessage("§6========================================");
+            sender.sendMessage("§6Подождите немного...");
 
             String currentVersion = plugin.getDescription().getVersion();
 
@@ -215,7 +215,6 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
                     sender.sendMessage("§cОшибка при загрузке обновления: " + ex.getMessage());
                 }
             }
-            sender.sendMessage("§6========================================");
         }));
     }
 
@@ -241,7 +240,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
                     lastPercentage = progressPercentage;
                     int downloadedKB = totalBytesRead / 1024;
                     int fullSizeKB = fileSize / 1024;
-                    sender.sendMessage("§aЗагрузка: " + downloadedKB + "/" + fullSizeKB + "KB) (" + progressPercentage + "%)");
+                    sender.sendMessage("§aЗагрузка: " + downloadedKB + "/" + fullSizeKB + "KB (" + progressPercentage + "%)");
                 }
             }
         }
