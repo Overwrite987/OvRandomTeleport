@@ -270,7 +270,7 @@ public class RtpManager {
         final ConfigurationSection preTeleport = particles.getConfigurationSection("pre_teleport");
         if (!isSectionNull(preTeleport)) {
             preTeleportEnabled = preTeleport.getBoolean("enabled", false);
-            preTeleportSendOnlyToPlayer = preTeleport.getBoolean("send-only-to-player", false);
+            preTeleportSendOnlyToPlayer = preTeleport.getBoolean("send_only_to_player", false);
             preTeleportId = Particle.valueOf(preTeleport.getString("id").toUpperCase(Locale.ROOT));
             preTeleportDots = preTeleport.getInt("dots");
             preTeleportRadius = preTeleport.getDouble("radius");
@@ -282,7 +282,7 @@ public class RtpManager {
         final ConfigurationSection afterTeleport = particles.getConfigurationSection("after_teleport");
         if (!isSectionNull(afterTeleport)) {
             afterTeleportParticleEnabled = afterTeleport.getBoolean("enabled", false);
-            afterTeleportSendOnlyToPlayer = afterTeleport.getBoolean("send-only-to-player", false);
+            afterTeleportSendOnlyToPlayer = afterTeleport.getBoolean("send_only_to_player", false);
             afterTeleportParticle = Particle.valueOf(afterTeleport.getString("id").toUpperCase(Locale.ROOT));
             afterTeleportCount = afterTeleport.getInt("count");
             afterTeleportRadius = afterTeleport.getDouble("radius");
