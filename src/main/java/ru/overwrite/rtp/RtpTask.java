@@ -112,7 +112,7 @@ public class RtpTask {
                     location.add(x, y, z);
 
                     world.spawnParticle(
-                            particles.afterTeleportId(),
+                            particles.preTeleportId(),
                             receivers,
                             player,
                             location.getX(),
