@@ -153,11 +153,11 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
                     sender.sendMessage(commandMessages.playerNotFound());
                     return true;
                 }
-                if (!rtpManager.getNamedChannels().containsKey(args[3])) {
+                Channel channel = rtpManager.getChannelById(args[3]);
+                if (channel == null) {
                     sender.sendMessage(commandMessages.incorrectChannel());
                     return true;
                 }
-                Channel channel = rtpManager.getChannelById(args[3]);
                 if (!channel.activeWorlds().contains(targetPlayer.getWorld())) {
                     if (channel.teleportToFirstAllowedWorld()) {
                         processForceTeleport(args, targetPlayer, channel, channel.activeWorlds().get(0));
