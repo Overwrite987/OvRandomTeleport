@@ -539,7 +539,7 @@ public class RtpManager {
     private void handlePlayerCooldown(Player player, Cooldown cooldown) {
         int cooldownTime = getChannelCooldown(player, cooldown);
         if (getChannelCooldown(player, cooldown) > 0 && !player.hasPermission("rtp.bypasscooldown")) {
-            cooldown.playerCooldowns().put(player.getName(), System.currentTimeMillis(), cooldownTime);
+            cooldown.setCooldown(player.getName(), cooldownTime);
         }
     }
 

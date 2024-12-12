@@ -14,4 +14,8 @@ public record Cooldown(
     public boolean hasCooldown(Player player) {
         return playerCooldowns != null && !playerCooldowns.isEmpty() && playerCooldowns.containsKey(player.getName());
     }
+
+    public void setCooldown(String name, long cooldownTime) {
+        playerCooldowns.put(name, System.currentTimeMillis(), cooldownTime);
+    }
 }
