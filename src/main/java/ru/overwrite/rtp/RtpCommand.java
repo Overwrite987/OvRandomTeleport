@@ -291,7 +291,9 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean isForceRtp(String arg) {
-        return arg.equalsIgnoreCase("forceteleport") || arg.equalsIgnoreCase("forcertp");
+        return arg.equalsIgnoreCase("forceteleport")
+                || arg.equalsIgnoreCase("forcertp") 
+                || arg.equalsIgnoreCase("teleport");
     }
 
     private void getForceRtpTabCompletion(String[] args, List<String> completions) {
