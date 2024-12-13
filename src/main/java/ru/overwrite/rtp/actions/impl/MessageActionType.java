@@ -80,6 +80,9 @@ public final class MessageActionType implements ActionType {
         @Override
         public void perform(@NotNull Channel channel, @NotNull Player player, @NotNull String[] searchList, @NotNull String[] replacementList) {
             String messageToPlayer = Utils.replaceEach(message, searchList, replacementList);
+            if (Utils.USE_PAPI) {
+                messageToPlayer = Utils.parsePlaceholders(messageToPlayer, player);
+            }
             if (hoverText == null && clickEvent == null) {
                 player.sendMessage(messageToPlayer);
                 return;
