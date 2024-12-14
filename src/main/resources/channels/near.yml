@@ -8,7 +8,7 @@ active_worlds:
 # Необязательный параметр
 teleport_to_first_world: true
 # Необязательный параметр
-move_to_server: ''
+server_to_move: ''
 # Необязательный параметр
 min_players_to_use: 5
 # Необязательный параметр
