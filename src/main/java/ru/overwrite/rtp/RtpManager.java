@@ -315,7 +315,7 @@ public class RtpManager {
                 avoidBlocks.add(Material.valueOf(material.toUpperCase(Locale.ROOT)));
             }
         }
-        Set<Biome> avoidBiomes = EnumSet.noneOf(Biome.class);
+        Set<Biome> avoidBiomes = new HashSet<>();
         boolean avoidBiomesBlacklist = true;
         if (!isNullSection) {
             avoidBiomesBlacklist = avoid.getBoolean("biomes.blacklist", true);
