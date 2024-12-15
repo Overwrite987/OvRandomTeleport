@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.projectiles.ProjectileSource;
 import ru.overwrite.rtp.channels.Channel;
@@ -213,6 +214,14 @@ public class RtpListener implements Listener {
             }
         }
         return null;
+    }
+
+    @EventHandler
+    public void onDeath(EntityDeathEvent e) {
+        if (!(e.getEntity() instanceof Player player)) {
+            return;
+        }
+        handlePlayerLeave(player);
     }
 
     @EventHandler
