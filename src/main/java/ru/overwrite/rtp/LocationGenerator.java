@@ -99,15 +99,15 @@ public class LocationGenerator {
         int minZ = locationGenOptions.minZ();
         int maxZ = locationGenOptions.maxZ();
         List<Player> nearbyPlayers = new ArrayList<>();
-        for (Player p : world.getPlayers()) {
+        for (Player worldPlayer : world.getPlayers()) {
             if (player.hasPermission("rtp.near.bypass") || isVanished(player)) {
                 continue;
             }
-            Location loc = player.getLocation();
+            Location loc = worldPlayer.getLocation();
             int px = loc.getBlockX();
             int pz = loc.getBlockZ();
             if (px >= minX && px <= maxX && pz >= minZ && pz <= maxZ) {
-                nearbyPlayers.add(p);
+                nearbyPlayers.add(worldPlayer);
             }
         }
         nearbyPlayers.remove(player);

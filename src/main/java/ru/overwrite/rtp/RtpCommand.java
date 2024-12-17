@@ -298,8 +298,8 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
 
     private void getForceRtpTabCompletion(String[] args, List<String> completions) {
         if (args.length == 3) {
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                completions.add(player.getName());
+            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                completions.add(onlinePlayer.getName());
             }
         }
         if (args.length == 4) {
