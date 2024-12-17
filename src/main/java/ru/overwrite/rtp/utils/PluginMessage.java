@@ -32,10 +32,18 @@ public final class PluginMessage implements PluginMessageListener {
             String data = input.readUTF();
             int spaceIndex = data.indexOf(' ');
             String serverId = data.substring(0, spaceIndex);
+            if (Utils.DEBUG) {
+                plugin.getPluginLogger().info("Received plugin message from another server.");
+                plugin.getPluginLogger().info("ServerID specified: " + this.serverId);
+                plugin.getPluginLogger().info("ServerID received: " + serverId);
+            }
             if (!this.serverId.equals(serverId)) {
                 return;
             }
             String teleportData = data.substring(spaceIndex + 1);
+            if (Utils.DEBUG) {
+                plugin.getPluginLogger().info("Teleport data: " + teleportData);
+            }
             int separatorIndex = teleportData.indexOf('$');
             String playerName = teleportData.substring(0, separatorIndex);
             String teleportInfo = teleportData.substring(separatorIndex + 1);
