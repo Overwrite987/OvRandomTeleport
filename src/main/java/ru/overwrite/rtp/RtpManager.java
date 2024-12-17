@@ -436,7 +436,7 @@ public class RtpManager {
         }
         boolean finalForce = force || channel.cooldown().teleportCooldown() <= 0;
         if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("Pre teleporting player '" + player.getName() + "' with channel '" + channel.id() + "' in world " + world.getName() + " (force: " + finalForce + ")");
+            plugin.getPluginLogger().info("Pre teleporting player '" + player.getName() + "' with channel '" + channel.id() + "' in world '" + world.getName() + "' (force: " + finalForce + ")");
         }
         teleportingNow.add(player.getName());
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
