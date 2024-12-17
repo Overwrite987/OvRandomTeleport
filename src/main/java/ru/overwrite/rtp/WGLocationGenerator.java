@@ -78,9 +78,8 @@ public class WGLocationGenerator {
         if (location == null) {
             locationGenerator.getIterationsPerPlayer().addTo(player.getName(), 1);
             return generateRandomLocationNearRandomRegion(player, channel, world);
-        } else {
-            locationGenerator.getIterationsPerPlayer().removeInt(player.getName());
-            return location;
         }
+        locationGenerator.getIterationsPerPlayer().removeInt(player.getName());
+        return location;
     }
 }
