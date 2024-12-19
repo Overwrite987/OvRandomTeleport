@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.configuration.Config;
@@ -313,7 +314,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
     private List<String> getResult(String[] args, List<String> completions) {
         final List<String> result = new ArrayList<>();
         for (String c : completions) {
-            if (Utils.startsWithIgnoreCase(c, args[args.length - 1])) {
+            if (StringUtil.startsWithIgnoreCase(c, args[args.length - 1])) {
                 result.add(c);
             }
         }

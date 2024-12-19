@@ -180,11 +180,4 @@ public final class Utils {
 
         return result.toString();
     }
-
-    public static boolean startsWithIgnoreCase(@NotNull String str, String prefix) {
-        if (prefix == null) {
-            return false;
-        }
-        return str.regionMatches(true, 0, prefix, 0, prefix.length());
-    }
 }
