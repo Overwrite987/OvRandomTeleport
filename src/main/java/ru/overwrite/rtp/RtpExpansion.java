@@ -42,9 +42,6 @@ public class RtpExpansion extends PlaceholderExpansion {
 
     @Override
     public String onPlaceholderRequest(Player player, @NotNull String params) {
-        if (isPlayerInvalid(player)) {
-            return "Player is not online! Can't parse placeholder";
-        }
 
         final String[] args = params.split("_");
         if (args.length < 2) {
@@ -57,8 +54,23 @@ public class RtpExpansion extends PlaceholderExpansion {
 
         return switch (placeholderType) {
             case "hascooldown" -> getBooleanPlaceholder(channelCooldown.hasCooldown(player));
-            case "cooldown" -> processCooldownPlaceholder(player, args, channelCooldown);
+            case "cooldown" -> getCooldownValue(player, args, channelCooldown);
+            case "settings" -> getSettingValue(player, channel, args);
+            default -> null;
+        };
+    }
+
+    private String getSettingValue(Player player, Channel channel, String[] args) {
+        if (args.length < 3) {
+            return null;
+        }
+        String settingName = args[2].toLowerCase();
+        return switch (settingName) {
+            case "name" -> channel.name();
+            case "type" -> channel.type().toString();
+            case "players_required" -> Integer.toString(channel.minPlayersToUse());
             case "cost" -> getCostValue(channel, args);
+            case "cooldown" -> getCooldownValue(player, channel, args);
             default -> null;
         };
     }
@@ -67,7 +79,7 @@ public class RtpExpansion extends PlaceholderExpansion {
         return player == null || !player.isOnline();
     }
 
-    private String processCooldownPlaceholder(Player player, String[] args, Cooldown channelCooldown) {
+    private String getCooldownValue(Player player, String[] args, Cooldown channelCooldown) {
         if (!channelCooldown.hasCooldown(player)) {
             return pluginConfig.getPlaceholderMessages().noCooldown();
         }
@@ -93,24 +105,41 @@ public class RtpExpansion extends PlaceholderExpansion {
     }
 
     private String getCostValue(Channel channel, String[] args) {
-        if (args.length < 3) {
+        if (args.length < 4) {
             return null;
         }
         Costs costs = channel.costs();
-        final String costIdentifier = args[2];
+        String costIdentifier = args[3];
         return switch (costIdentifier) {
-            case "money" -> getOrDefaultValue(Double.toString(costs.moneyCost()));
-            case "hunger" -> getOrDefaultValue(Integer.toString(costs.hungerCost()));
-            case "exp" -> getOrDefaultValue(Integer.toString(costs.expCost()));
+            case "money" -> getValueIfPositiveOrDefault(costs.moneyCost());
+            case "hunger" -> getValueIfPositiveOrDefault(costs.hungerCost());
+            case "exp" -> getValueIfPositiveOrDefault(costs.expCost());
             default -> null;
         };
     }
 
-    private <T> String getOrDefaultValue(T value) {
-        return value != null ? value.toString() : pluginConfig.getPlaceholderMessages().noValue();
+    private String getCooldownValue(Player player, Channel channel, String[] args) {
+        if (args.length < 4) {
+            return null;
+        }
+        Cooldown cooldown = channel.cooldown();
+        String cooldownIdentifier = args[3];
+        return switch (cooldownIdentifier) {
+            case "default" -> getValueIfPositiveOrDefault(cooldown.defaultCooldown());
+            case "by_player_group" -> isPlayerInvalid(player) ? getValueIfPositiveOrDefault(rtpManager.getChannelCooldown(player, cooldown)) : null;
+            default -> null;
+        };
+    }
+
+    private String getValueIfPositiveOrDefault(int value) {
+        return value > 0 ? Integer.toString(value) : pluginConfig.getPlaceholderMessages().noValue();
+    }
+
+    private String getValueIfPositiveOrDefault(double value) {
+        return value > 0 ? Double.toString(value) : pluginConfig.getPlaceholderMessages().noValue();
     }
 
     public String getBooleanPlaceholder(boolean b) {
-        return b ? PlaceholderAPIPlugin.booleanTrue() : PlaceholderAPIPlugin.booleanFalse(); // why...
+        return b ? PlaceholderAPIPlugin.booleanTrue() : PlaceholderAPIPlugin.booleanFalse();
     }
 }
