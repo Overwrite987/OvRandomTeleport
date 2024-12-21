@@ -112,21 +112,24 @@ public final class Main extends JavaPlugin {
     }
 
     private void setupEconomy(ServicesManager servicesManager) {
-        RegisteredServiceProvider<Economy> economyProvider = servicesManager.getRegistration(Economy.class);
-        if (economyProvider == null) {
+        economy = getProvider(servicesManager, Economy.class);
+        if (economy == null) {
             return;
         }
-        economy = economyProvider.getProvider();
         pluginLogger.info("§6Экономика подключена!");
     }
 
     private void setupPerms(ServicesManager servicesManager) {
-        RegisteredServiceProvider<Permission> permissionProvider = servicesManager.getRegistration(Permission.class);
-        if (permissionProvider == null) {
+        perms = getProvider(servicesManager, Permission.class);
+        if (perms == null) {
             return;
         }
-        perms = permissionProvider.getProvider();
         pluginLogger.info("§aМенеджер прав подключён!");
+    }
+
+    private <T> T getProvider(ServicesManager servicesManager, Class<T> clazz) {
+        final RegisteredServiceProvider<T> provider = servicesManager.getRegistration(clazz);
+        return provider != null ? provider.getProvider() : null;
     }
 
     private void setupPlaceholders(ConfigurationSection mainSettings, PluginManager pluginManager) {
