@@ -93,7 +93,7 @@ public class RtpManager {
             boolean teleportToFirstAllowedWorld = channelSection.getBoolean("teleport_to_first_world", false);
             String serverToMove = channelSection.getString("server_to_move", "");
             int minPlayersToUse = channelSection.getInt("min_players_to_use", -1);
-            int invulnerableTicks = channelSection.getInt("invulnerable_after_teleport", 1);
+            int invulnerableTicks = channelSection.getInt("invulnerable_after_teleport", 12);
             Costs costs = setupChannelCosts(channelSection.getConfigurationSection("costs"));
             LocationGenOptions locationGenOptions = setupChannelGenOptions(channelSection.getConfigurationSection("location_generation_options"));
             if (locationGenOptions == null) {
