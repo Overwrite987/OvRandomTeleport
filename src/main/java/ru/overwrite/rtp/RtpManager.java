@@ -83,9 +83,7 @@ public class RtpManager {
                 channelSection = pluginConfig.getFile(plugin.getDataFolder().getAbsolutePath() + "/channels", channelSection.getString("file"));
             }
             String name = channelSection.getString("name", "");
-            ChannelType type = channelSection.getString("type") == null ?
-                    ChannelType.DEFAULT :
-                    ChannelType.valueOf(channelSection.getString("type").toUpperCase(Locale.ENGLISH));
+            ChannelType type = ChannelType.valueOf(channelSection.getString("type", "DEFAULT").toUpperCase(Locale.ENGLISH));
             if (type == ChannelType.NEAR_REGION && !pluginManager.isPluginEnabled("WorldGuard")) {
                 type = ChannelType.DEFAULT;
             }
