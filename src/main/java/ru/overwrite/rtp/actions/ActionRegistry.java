@@ -30,7 +30,7 @@ public final class ActionRegistry {
     }
 
     public @Nullable ActionType getType(@NotNull String typeStr) {
-        return types.get(typeStr.toLowerCase(Locale.ROOT));
+        return types.get(typeStr.toLowerCase(Locale.ENGLISH));
     }
 
     public @Nullable Action resolveAction(@NotNull String actionStr) {

@@ -103,7 +103,7 @@ public final class MessageActionType implements ActionType {
         }
 
         public Component createClickEvent(Component message, String[] clickEvent) {
-            ClickEvent.Action action = ClickEvent.Action.valueOf(clickEvent[0].toUpperCase(Locale.ROOT));
+            ClickEvent.Action action = ClickEvent.Action.valueOf(clickEvent[0].toUpperCase(Locale.ENGLISH));
             String context = clickEvent[1];
             ClickEvent click = ClickEvent.clickEvent(action, context);
             return message.clickEvent(click);

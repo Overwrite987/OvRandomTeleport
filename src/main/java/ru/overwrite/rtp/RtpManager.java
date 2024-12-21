@@ -85,7 +85,7 @@ public class RtpManager {
             String name = channelSection.getString("name", "");
             ChannelType type = channelSection.getString("type") == null ?
                     ChannelType.DEFAULT :
-                    ChannelType.valueOf(channelSection.getString("type").toUpperCase(Locale.ROOT));
+                    ChannelType.valueOf(channelSection.getString("type").toUpperCase(Locale.ENGLISH));
             if (type == ChannelType.NEAR_REGION && !pluginManager.isPluginEnabled("WorldGuard")) {
                 type = ChannelType.DEFAULT;
             }
@@ -181,7 +181,7 @@ public class RtpManager {
         if (channelCosts == null) {
             return new Costs(null, null, -1, -1, -1);
         }
-        Costs.MoneyType moneyType = Costs.MoneyType.valueOf(channelCosts.getString("money_type", "VAULT").toUpperCase(Locale.ROOT));
+        Costs.MoneyType moneyType = Costs.MoneyType.valueOf(channelCosts.getString("money_type", "VAULT").toUpperCase(Locale.ENGLISH));
         double moneyCost = channelCosts.getDouble("money_cost", -1);
         int hungerCost = channelCosts.getInt("hunger_cost", -1);
         int expCost = channelCosts.getInt("experience_cost", -1);
@@ -193,8 +193,8 @@ public class RtpManager {
         if (locationGenOptions == null) {
             return null;
         }
-        LocationGenOptions.Shape shape = LocationGenOptions.Shape.valueOf(locationGenOptions.getString("shape", "SQUARE").toUpperCase(Locale.ROOT));
-        LocationGenOptions.GenFormat genFormat = LocationGenOptions.GenFormat.valueOf(locationGenOptions.getString("gen_format", "RECTANGULAR").toUpperCase(Locale.ROOT));
+        LocationGenOptions.Shape shape = LocationGenOptions.Shape.valueOf(locationGenOptions.getString("shape", "SQUARE").toUpperCase(Locale.ENGLISH));
+        LocationGenOptions.GenFormat genFormat = LocationGenOptions.GenFormat.valueOf(locationGenOptions.getString("gen_format", "RECTANGULAR").toUpperCase(Locale.ENGLISH));
         int minX = locationGenOptions.getInt("min_x");
         int maxX = locationGenOptions.getInt("max_x");
         int minZ = locationGenOptions.getInt("min_z");
@@ -240,8 +240,8 @@ public class RtpManager {
         }
         boolean enabled = bossbar.getBoolean("enabled");
         String title = Utils.COLORIZER.colorize(bossbar.getString("title"));
-        BarColor color = BarColor.valueOf(bossbar.getString("color").toUpperCase(Locale.ROOT));
-        BarStyle style = BarStyle.valueOf(bossbar.getString("style").toUpperCase(Locale.ROOT));
+        BarColor color = BarColor.valueOf(bossbar.getString("color").toUpperCase(Locale.ENGLISH));
+        BarStyle style = BarStyle.valueOf(bossbar.getString("style").toUpperCase(Locale.ENGLISH));
 
         return new Bossbar(enabled, title, color, style);
     }
@@ -271,7 +271,7 @@ public class RtpManager {
         if (!isSectionNull(preTeleport)) {
             preTeleportEnabled = preTeleport.getBoolean("enabled", false);
             preTeleportSendOnlyToPlayer = preTeleport.getBoolean("send_only_to_player", false);
-            preTeleportId = Particle.valueOf(preTeleport.getString("id").toUpperCase(Locale.ROOT));
+            preTeleportId = Particle.valueOf(preTeleport.getString("id").toUpperCase(Locale.ENGLISH));
             preTeleportDots = preTeleport.getInt("dots");
             preTeleportRadius = preTeleport.getDouble("radius");
             preTeleportSpeed = preTeleport.getDouble("speed");
@@ -283,7 +283,7 @@ public class RtpManager {
         if (!isSectionNull(afterTeleport)) {
             afterTeleportParticleEnabled = afterTeleport.getBoolean("enabled", false);
             afterTeleportSendOnlyToPlayer = afterTeleport.getBoolean("send_only_to_player", false);
-            afterTeleportParticle = Particle.valueOf(afterTeleport.getString("id").toUpperCase(Locale.ROOT));
+            afterTeleportParticle = Particle.valueOf(afterTeleport.getString("id").toUpperCase(Locale.ENGLISH));
             afterTeleportCount = afterTeleport.getInt("count");
             afterTeleportRadius = afterTeleport.getDouble("radius");
             afterTeleportSpeed = afterTeleport.getDouble("speed");
@@ -312,7 +312,7 @@ public class RtpManager {
         if (!isNullSection) {
             avoidBlocksBlacklist = avoid.getBoolean("blocks.blacklist", true);
             for (String material : avoid.getStringList("blocks.list")) {
-                avoidBlocks.add(Material.valueOf(material.toUpperCase(Locale.ROOT)));
+                avoidBlocks.add(Material.valueOf(material.toUpperCase(Locale.ENGLISH)));
             }
         }
         Set<Biome> avoidBiomes = new HashSet<>();
@@ -320,7 +320,7 @@ public class RtpManager {
         if (!isNullSection) {
             avoidBiomesBlacklist = avoid.getBoolean("biomes.blacklist", true);
             for (String biome : avoid.getStringList("biomes.list")) {
-                avoidBiomes.add(Biome.valueOf(biome.toUpperCase(Locale.ROOT)));
+                avoidBiomes.add(Biome.valueOf(biome.toUpperCase(Locale.ENGLISH)));
             }
         }
         boolean avoidRegions = !isNullSection && avoid.getBoolean("regions", false) && pluginManager.isPluginEnabled("WorldGuard");
