@@ -68,15 +68,15 @@ public class RtpExpansion extends PlaceholderExpansion {
         return switch (settingName) {
             case "name" -> channel.name();
             case "type" -> channel.type().toString();
-            case "players_required" -> Integer.toString(channel.minPlayersToUse());
+            case "playersrequired" -> Integer.toString(channel.minPlayersToUse());
             case "cost" -> getCostValue(channel, args);
             case "cooldown" -> getCooldownValue(player, channel, args);
             default -> null;
         };
     }
 
-    private boolean isPlayerInvalid(Player player) {
-        return player == null || !player.isOnline();
+    private boolean isPlayerValid(Player player) {
+        return player != null && player.isOnline();
     }
 
     private String getCooldownValue(Player player, String[] args, Cooldown channelCooldown) {
@@ -126,7 +126,7 @@ public class RtpExpansion extends PlaceholderExpansion {
         String cooldownIdentifier = args[3];
         return switch (cooldownIdentifier) {
             case "default" -> getValueIfPositiveOrDefault(cooldown.defaultCooldown());
-            case "byplayergroup" -> isPlayerInvalid(player) ?
+            case "byplayergroup" -> isPlayerValid(player) ?
                     (args.length == 5 && args[4].equalsIgnoreCase("formatted") ?
                             Utils.getTime(rtpManager.getChannelCooldown(player, cooldown)) :
                             getValueIfPositiveOrDefault(rtpManager.getChannelCooldown(player, cooldown))) :
