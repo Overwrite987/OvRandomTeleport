@@ -47,7 +47,7 @@ channels:
   base:
     file: 'base.yml'
 
-# Сообщения плагина (сообщения от prefix до already_teleporting могут применяться к каналам)
+# Сообщения плагина (сообщения от prefix до fail_to_find_location могут применяться к каналам)
 # Формат хекса - &#IIIDDD
 # Если вы хотите отключить сообщение - укажите ''
 messages:
