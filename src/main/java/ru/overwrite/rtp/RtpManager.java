@@ -478,7 +478,7 @@ public class RtpManager {
 
     public void teleportPlayer(Player player, Channel channel, Location loc) {
         if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("Teleporting player '" + player.getName() + "' with channel '" + channel.id() + "' to location " + loc.toString());
+            plugin.getPluginLogger().info("Teleporting player '" + player.getName() + "' with channel '" + channel.id() + "' to location " + Utils.locationToString(loc));
         }
         if (channel.invulnerableTicks() > 0) {
             player.setInvulnerable(true);
