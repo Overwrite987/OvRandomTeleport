@@ -24,8 +24,9 @@ public final class PluginMessage implements PluginMessageListener {
     }
 
     public void onPluginMessageReceived(String channel, @NotNull Player player, byte[] message) {
-        if (!channel.equals("BungeeCord"))
+        if (!channel.equals("BungeeCord")) {
             return;
+        }
         ByteArrayDataInput input = ByteStreams.newDataInput(message);
         String subchannel = input.readUTF();
         if (subchannel.equalsIgnoreCase("ovrtp")) {

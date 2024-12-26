@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 @Getter
-public class RtpManager {
+public final class RtpManager {
 
     @Getter(AccessLevel.NONE)
     private final Main plugin;
@@ -553,6 +553,7 @@ public class RtpManager {
         return groupCooldowns.getOrDefault(playerGroup, cooldown.defaultCooldown());
     }
 
+    @Getter(AccessLevel.NONE)
     private final String[] searchList = {"%player%", "%name%", "%time%", "%x%", "%y%", "%z%"};
 
     public void executeActions(Player player, Channel channel, List<Action> actionList, Location loc) {
