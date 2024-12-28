@@ -126,7 +126,9 @@ public final class Utils {
             result.append(minutes).append(Config.timeMinutes);
         }
 
-        result.append(seconds).append(Config.timeSeconds);
+        if (seconds > 0 || (hours == 0 && minutes == 0)) {
+            result.append(seconds).append(Config.timeSeconds);
+        }
 
         return result.toString();
     }
