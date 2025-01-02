@@ -438,7 +438,7 @@ public final class RtpManager {
         }
         teleportingNow.add(player.getName());
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            locationGenerator.getIterationsPerPlayer().put(player.getName(), 1);
+            locationGenerator.getIterationsPerPlayer().put(player.getUniqueId(), 1);
             Location loc = switch (channel.type()) {
                 case DEFAULT -> locationGenerator.generateRandomLocation(player, channel, world);
                 case NEAR_PLAYER -> locationGenerator.generateRandomLocationNearPlayer(player, channel, world);

@@ -238,18 +238,17 @@ public class RtpListener implements Listener {
 
     private void handlePlayerLeave(Player player) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            String playerName = player.getName();
-            if (rtpManager.hasActiveTasks(playerName)) {
-                cancelTeleportation(playerName);
+            if (rtpManager.hasActiveTasks(player.getName())) {
+                cancelTeleportation(player);
             }
         });
     }
 
-    private void cancelTeleportation(String playerName) {
+    private void cancelTeleportation((Player player) {
         if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("Teleportation for player " + playerName + " was cancelled because of restrictions");
+            plugin.getPluginLogger().info("Teleportation for player " + player.getName() + " was cancelled because of restrictions");
         }
-        rtpManager.getPerPlayerActiveRtpTask().get(playerName).cancel();
-        rtpManager.getLocationGenerator().getIterationsPerPlayer().removeInt(playerName);
+        rtpManager.getPerPlayerActiveRtpTask().get(player.getName()).cancel();
+        rtpManager.getLocationGenerator().getIterationsPerPlayer().removeInt(player.getUniqueId());
     }
 }
