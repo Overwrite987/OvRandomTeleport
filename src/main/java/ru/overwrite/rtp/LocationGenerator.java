@@ -411,12 +411,12 @@ public class LocationGenerator {
     }
 
     private boolean isInsideBlocks(Location location) {
-        Location above2blocks = location.clone().add(0, 2, 0);
-        if (!above2blocks.getBlock().getType().isAir()) {
+        Location aboveLocation = location.clone().add(0, 2, 0);
+        if (!aboveLocation.getBlock().getType().isAir()) {
             return true;
         }
-        Location above1block = location.clone().add(0, 1, 0);
-        return !above1block.getBlock().getType().isAir();
+        aboveLocation.subtract(0, 1, 0);
+        return !aboveLocation.getBlock().getType().isAir();
     }
 
     private boolean isDisallowedBlock(Location loc, Avoidance avoidance) {
