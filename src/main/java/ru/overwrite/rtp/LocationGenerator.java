@@ -166,7 +166,8 @@ public class LocationGenerator {
             return null;
         }
 
-        Location location = new Location(world, x + 0.5, y, z + 0.5, player.getLocation().getYaw(), player.getLocation().getPitch());
+        Location playerLocation = player.getLocation();
+        Location location = new Location(world, x + 0.5, y, z + 0.5, playerLocation.getYaw(), playerLocation.getPitch());
         if (isLocationRestricted(location, channel.avoidance())) {
             return null;
         }
@@ -216,7 +217,8 @@ public class LocationGenerator {
             return null;
         }
 
-        Location location = new Location(world, x + 0.5, y, z + 0.5, player.getLocation().getYaw(), player.getLocation().getPitch());
+        Location playerLocation = player.getLocation();
+        Location location = new Location(world, x + 0.5, y, z + 0.5, playerLocation.getYaw(), playerLocation.getPitch());
         if (isLocationRestricted(location, channel.avoidance())) {
             return null;
         }
@@ -269,7 +271,8 @@ public class LocationGenerator {
             return null;
         }
 
-        Location location = new Location(world, x + 0.5, y, z + 0.5, player.getLocation().getYaw(), player.getLocation().getPitch());
+        Location playerLocation = player.getLocation();
+        Location location = new Location(world, x + 0.5, y, z + 0.5, playerLocation.getYaw(), playerLocation.getPitch());
         if (isLocationRestricted(location, channel.avoidance())) {
             return null;
         }
@@ -315,7 +318,8 @@ public class LocationGenerator {
             return null;
         }
 
-        Location location = new Location(world, x + 0.5, y, z + 0.5, player.getLocation().getYaw(), player.getLocation().getPitch());
+        Location playerLocation = player.getLocation();
+        Location location = new Location(world, x + 0.5, y, z + 0.5, playerLocation.getYaw(), playerLocation.getPitch());
         if (isLocationRestricted(location, channel.avoidance())) {
             return null;
         }
