@@ -59,7 +59,7 @@ public class RtpListener implements Listener {
             Channel activeChannel = getActiveChannel(playerName);
             if (activeChannel.restrictions().restrictMove()) {
                 Utils.sendMessage(activeChannel.messages().movedOnTeleport(), player);
-                cancelTeleportation(playerName);
+                cancelTeleportation(player);
             }
         }
     }
@@ -75,7 +75,7 @@ public class RtpListener implements Listener {
             Channel activeChannel = getActiveChannel(playerName);
             if (activeChannel.restrictions().restrictTeleport()) {
                 Utils.sendMessage(activeChannel.messages().teleportedOnTeleport(), player);
-                cancelTeleportation(playerName);
+                cancelTeleportation(player);
             }
         }
     }
@@ -152,7 +152,7 @@ public class RtpListener implements Listener {
             Channel activeChannel = rtpManager.getPerPlayerActiveRtpTask().get(playerName).getActiveChannel();
             if (activeChannel.restrictions().restrictDamage() && !activeChannel.restrictions().damageCheckOnlyPlayers()) {
                 Utils.sendMessage(activeChannel.messages().damagedOnTeleport(), player);
-                cancelTeleportation(playerName);
+                cancelTeleportation(player);
             }
         }
     }
@@ -179,7 +179,7 @@ public class RtpListener implements Listener {
                     return;
                 }
                 damager.sendMessage(activeChannel.messages().damagedOtherOnTeleport());
-                cancelTeleportation(damagerName);
+                cancelTeleportation(damager);
             }
         }
     }
@@ -194,7 +194,7 @@ public class RtpListener implements Listener {
                     return;
                 }
                 damaged.sendMessage(activeChannel.messages().damagedOnTeleport());
-                cancelTeleportation(damagedName);
+                cancelTeleportation(damaged);
             }
         }
     }
@@ -244,7 +244,7 @@ public class RtpListener implements Listener {
         });
     }
 
-    private void cancelTeleportation((Player player) {
+    private void cancelTeleportation(Player player) {
         if (Utils.DEBUG) {
             plugin.getPluginLogger().info("Teleportation for player " + player.getName() + " was cancelled because of restrictions");
         }
