@@ -8,23 +8,23 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionType;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.channels.settings.LocationGenOptions;
+import ru.overwrite.rtp.utils.Utils;
 import ru.overwrite.rtp.utils.regions.WGUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@RequiredArgsConstructor
 public class WGLocationGenerator {
 
+    private final Main plugin;
     private final LocationGenerator locationGenerator;
-
-    public WGLocationGenerator(LocationGenerator locationGenerator) {
-        this.locationGenerator = locationGenerator;
-    }
 
     public Location generateRandomLocationNearRandomRegion(Player player, Channel channel, World world) {
         LocationGenOptions locationGenOptions = channel.locationGenOptions();
@@ -67,7 +67,7 @@ public class WGLocationGenerator {
             return null;
         }
 
-        ProtectedRegion randomRegion = regionsInRange.get(locationGenerator.random.nextInt(regionsInRange.size()));
+        ProtectedRegion randomRegion = regionsInRange.get(locationGenerator.getRandom().nextInt(regionsInRange.size()));
 
         int centerX = (randomRegion.getMinimumPoint().getX() + randomRegion.getMaximumPoint().getX()) / 2;
         int centerZ = (randomRegion.getMinimumPoint().getZ() + randomRegion.getMaximumPoint().getZ()) / 2;
@@ -76,10 +76,10 @@ public class WGLocationGenerator {
         Location location = locationGenerator.generateRandomLocationNearPoint(shape, player, centerX, centerZ, channel, world);
 
         if (location == null) {
-            locationGenerator.getIterationsPerPlayer().addTo(player.getName(), 1);
+            locationGenerator.getIterationsPerPlayer().addTo(player.getUniqueId(), 1);
             return generateRandomLocationNearRandomRegion(player, channel, world);
         }
-        locationGenerator.getIterationsPerPlayer().removeInt(player.getName());
+        locationGenerator.getIterationsPerPlayer().removeInt(player.getUniqueId());
         return location;
     }
 }
