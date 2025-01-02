@@ -79,6 +79,9 @@ public class WGLocationGenerator {
             locationGenerator.getIterationsPerPlayer().addTo(player.getUniqueId(), 1);
             return generateRandomLocationNearRandomRegion(player, channel, world);
         }
+        if (Utils.DEBUG) {
+            plugin.getPluginLogger().info("Location for player '" + player.getName() + "' found in " + locationGenerator.getIterationsPerPlayer().getInt(player.getUniqueId()) + " iterations");
+        }
         locationGenerator.getIterationsPerPlayer().removeInt(player.getUniqueId());
         return location;
     }
