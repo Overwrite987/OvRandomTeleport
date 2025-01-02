@@ -130,7 +130,7 @@ public class RtpExpansion extends PlaceholderExpansion {
         Cooldown cooldown = channel.cooldown();
         String cooldownIdentifier = args[3];
         return switch (cooldownIdentifier) {
-            case "default" -> args[4].equalsIgnoreCase("formatted") ?
+            case "default" -> args.length == 5 && args[4].equalsIgnoreCase("formatted") ?
                     Utils.getTime(cooldown.defaultCooldown()) :
                     getValueIfPositiveOrDefault(cooldown.defaultCooldown());
             case "byplayergroup" -> isPlayerValid(player) ?
