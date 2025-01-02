@@ -15,7 +15,6 @@ import ru.overwrite.rtp.utils.regions.WGUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class LocationGenerator {
 
@@ -25,7 +24,7 @@ public class LocationGenerator {
     private final XoRoShiRo128PlusRandom random = new XoRoShiRo128PlusRandom();
 
     @Getter
-    private final Object2IntOpenHashMap<UUID> iterationsPerPlayer = new Object2IntOpenHashMap<>();
+    private final Object2IntOpenHashMap<String> iterationsPerPlayer = new Object2IntOpenHashMap<>();
 
     @Getter
     private final WGLocationGenerator wgLocationGenerator;
@@ -52,13 +51,13 @@ public class LocationGenerator {
         };
 
         if (location == null) {
-            iterationsPerPlayer.addTo(player.getUniqueId(), 1);
+            iterationsPerPlayer.addTo(player.getName(), 1);
             return generateRandomLocation(player, channel, world);
         }
         if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("Location for player '" + player.getName() + "' found in " + iterationsPerPlayer.getInt(player.getUniqueId()) + " iterations");
+            plugin.getPluginLogger().info("Location for player '" + player.getName() + "' found in " + iterationsPerPlayer.getInt(player.getName()) + " iterations");
         }
-        iterationsPerPlayer.removeInt(player.getUniqueId());
+        iterationsPerPlayer.removeInt(player.getName());
         return location;
     }
 
@@ -86,13 +85,13 @@ public class LocationGenerator {
         Location location = generateRandomLocationNearPoint(shape, player, centerX, centerZ, channel, world);
 
         if (location == null) {
-            iterationsPerPlayer.addTo(player.getUniqueId(), 1);
+            iterationsPerPlayer.addTo(player.getName(), 1);
             return generateRandomLocationNearPlayer(player, channel, world);
         }
         if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("Location for player '" + player.getName() + "' found in " + iterationsPerPlayer.getInt(player.getUniqueId()) + " iterations");
+            plugin.getPluginLogger().info("Location for player '" + player.getName() + "' found in " + iterationsPerPlayer.getInt(player.getName()) + " iterations");
         }
-        iterationsPerPlayer.removeInt(player.getUniqueId());
+        iterationsPerPlayer.removeInt(player.getName());
         return location;
     }
 
@@ -123,10 +122,10 @@ public class LocationGenerator {
 
     public boolean hasReachedMaxIterations(Player player, LocationGenOptions locationGenOptions) {
         if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("Iterations for player '" + player.getName() + "': " + iterationsPerPlayer.getInt(player.getUniqueId()));
+            plugin.getPluginLogger().info("Iterations for player '" + player.getName() + "': " + iterationsPerPlayer.getInt(player.getName()));
         }
-        if (iterationsPerPlayer.getInt(player.getUniqueId()) >= locationGenOptions.maxLocationAttempts()) {
-            iterationsPerPlayer.removeInt(player.getUniqueId());
+        if (iterationsPerPlayer.getInt(player.getName()) >= locationGenOptions.maxLocationAttempts()) {
+            iterationsPerPlayer.removeInt(player.getName());
             if (Utils.DEBUG) {
                 plugin.getPluginLogger().info("Max iterations reached for player " + player.getName());
             }

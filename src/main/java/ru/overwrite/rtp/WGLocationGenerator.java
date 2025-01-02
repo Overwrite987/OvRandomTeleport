@@ -76,13 +76,13 @@ public class WGLocationGenerator {
         Location location = locationGenerator.generateRandomLocationNearPoint(shape, player, centerX, centerZ, channel, world);
 
         if (location == null) {
-            locationGenerator.getIterationsPerPlayer().addTo(player.getUniqueId(), 1);
+            locationGenerator.getIterationsPerPlayer().addTo(player.getName(), 1);
             return generateRandomLocationNearRandomRegion(player, channel, world);
         }
         if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("Location for player '" + player.getName() + "' found in " + locationGenerator.getIterationsPerPlayer().getInt(player.getUniqueId()) + " iterations");
+            plugin.getPluginLogger().info("Location for player '" + player.getName() + "' found in " + locationGenerator.getIterationsPerPlayer().getInt(player.getName()) + " iterations");
         }
-        locationGenerator.getIterationsPerPlayer().removeInt(player.getUniqueId());
+        locationGenerator.getIterationsPerPlayer().removeInt(player.getName());
         return location;
     }
 }
