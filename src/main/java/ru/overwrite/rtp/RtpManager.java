@@ -24,6 +24,7 @@ import ru.overwrite.rtp.channels.settings.*;
 import ru.overwrite.rtp.configuration.Config;
 import ru.overwrite.rtp.utils.TimedExpiringMap;
 import ru.overwrite.rtp.utils.Utils;
+import ru.overwrite.rtp.utils.VersionUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -313,7 +314,7 @@ public final class RtpManager {
                 avoidBlocks.add(Material.valueOf(material.toUpperCase(Locale.ENGLISH)));
             }
         }
-        Set<Biome> avoidBiomes = new HashSet<>();
+        Set<Biome> avoidBiomes = VersionUtils.SUB_VERSION > 20 ? new HashSet<>() : EnumSet.noneOf(Biome.class);
         boolean avoidBiomesBlacklist = true;
         if (!isNullSection) {
             avoidBiomesBlacklist = avoid.getBoolean("biomes.blacklist", true);
