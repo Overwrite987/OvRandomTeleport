@@ -31,11 +31,7 @@ public class LocationGenerator {
 
     public LocationGenerator(Main plugin) {
         this.plugin = plugin;
-        if (plugin.hasWorldGuard()) {
-            wgLocationGenerator = new WGLocationGenerator(plugin, this);
-        } else {
-            wgLocationGenerator = null;
-        }
+        wgLocationGenerator = plugin.hasWorldGuard() ? new WGLocationGenerator(plugin, this) : null;
     }
 
     public Location generateRandomLocation(Player player, Channel channel, World world) {
