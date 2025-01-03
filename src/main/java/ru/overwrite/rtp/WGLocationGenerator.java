@@ -28,7 +28,7 @@ public class WGLocationGenerator {
 
     public Location generateRandomLocationNearRandomRegion(Player player, Channel channel, World world) {
         LocationGenOptions locationGenOptions = channel.locationGenOptions();
-        if (locationGenerator.hasReachedMaxIterations(player, locationGenOptions)) {
+        if (locationGenerator.hasReachedMaxIterations(player.getName(), locationGenOptions)) {
             return null;
         }
 

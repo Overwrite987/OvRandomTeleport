@@ -31,12 +31,12 @@ public class LocationGenerator {
 
     public LocationGenerator(Main plugin) {
         this.plugin = plugin;
-        wgLocationGenerator = plugin.hasWorldGuard() ? new WGLocationGenerator(plugin, this) : null;
+        this.wgLocationGenerator = plugin.hasWorldGuard() ? new WGLocationGenerator(plugin, this) : null;
     }
 
     public Location generateRandomLocation(Player player, Channel channel, World world) {
         LocationGenOptions locationGenOptions = channel.locationGenOptions();
-        if (hasReachedMaxIterations(player, locationGenOptions)) {
+        if (hasReachedMaxIterations(player.getName(), locationGenOptions)) {
             return null;
         }
 
@@ -59,7 +59,7 @@ public class LocationGenerator {
 
     public Location generateRandomLocationNearPlayer(Player player, Channel channel, World world) {
         LocationGenOptions locationGenOptions = channel.locationGenOptions();
-        if (hasReachedMaxIterations(player, locationGenOptions)) {
+        if (hasReachedMaxIterations(player.getName(), locationGenOptions)) {
             return null;
         }
         List<Player> nearbyPlayers = getNearbyPlayers(player, locationGenOptions, world);
@@ -116,14 +116,14 @@ public class LocationGenerator {
         return player.hasMetadata("vanished") && player.getMetadata("vanished").get(0).asBoolean();
     }
 
-    public boolean hasReachedMaxIterations(Player player, LocationGenOptions locationGenOptions) {
+    public boolean hasReachedMaxIterations(String playerName, LocationGenOptions locationGenOptions) {
         if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("Iterations for player '" + player.getName() + "': " + iterationsPerPlayer.getInt(player.getName()));
+            plugin.getPluginLogger().info("Iterations for player '" + playerName + "': " + iterationsPerPlayer.getInt(playerName));
         }
-        if (iterationsPerPlayer.getInt(player.getName()) >= locationGenOptions.maxLocationAttempts()) {
-            iterationsPerPlayer.removeInt(player.getName());
+        if (iterationsPerPlayer.getInt(playerName) >= locationGenOptions.maxLocationAttempts()) {
+            iterationsPerPlayer.removeInt(playerName);
             if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Max iterations reached for player " + player.getName());
+                plugin.getPluginLogger().info("Max iterations reached for player " + playerName);
             }
             return true;
         }
