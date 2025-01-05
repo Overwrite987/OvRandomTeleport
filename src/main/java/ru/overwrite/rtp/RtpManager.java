@@ -131,7 +131,11 @@ public final class RtpManager {
         }
         this.defaultChannel = getChannelById(config.getString("main_settings.default_channel", ""));
         if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("Default channel is: " + defaultChannel.id());
+            if (defaultChannel != null) {
+                plugin.getPluginLogger().info("Default channel is: " + defaultChannel.id());
+            } else {
+                plugin.getPluginLogger().info("Default channel not specified.");
+            }
         }
         long endTime = System.currentTimeMillis();
         if (Utils.DEBUG) {
