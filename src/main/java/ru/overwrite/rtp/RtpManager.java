@@ -428,7 +428,7 @@ public final class RtpManager {
             if (Utils.DEBUG) {
                 plugin.getPluginLogger().info("Moving player '" + player.getName() + "' with channel '" + channel.id() + "' to server " + channel.serverToMove());
             }
-            plugin.getPluginMessage().sendCrossProxy(player, channel.serverToMove() + " " + player.getName() + "$" + channel.id() + ";" + world.getName());
+            plugin.getPluginMessage().sendCrossProxy(player, channel.serverToMove(), player.getName() + " " + channel.id() + ";" + world.getName());
             teleportingNow.remove(player.getName());
             plugin.getPluginMessage().connectToServer(player, channel.serverToMove());
             return;

@@ -30,9 +30,7 @@ public final class PluginMessage implements PluginMessageListener {
         ByteArrayDataInput input = ByteStreams.newDataInput(message);
         String subchannel = input.readUTF();
         if (subchannel.equalsIgnoreCase("ovrtp")) {
-            String data = input.readUTF();
-            int spaceIndex = data.indexOf(' ');
-            String serverId = data.substring(0, spaceIndex);
+            String serverId = input.readUTF();
             if (Utils.DEBUG) {
                 plugin.getPluginLogger().info("Received plugin message from another server.");
                 plugin.getPluginLogger().info("ServerID specified: " + this.serverId);
@@ -41,22 +39,23 @@ public final class PluginMessage implements PluginMessageListener {
             if (!this.serverId.equals(serverId)) {
                 return;
             }
-            String teleportData = data.substring(spaceIndex + 1);
+            String teleportData = input.readUTF();
             if (Utils.DEBUG) {
                 plugin.getPluginLogger().info("Teleport data: " + teleportData);
             }
-            int separatorIndex = teleportData.indexOf('$');
+            int separatorIndex = teleportData.indexOf(' ');
             String playerName = teleportData.substring(0, separatorIndex);
             String teleportInfo = teleportData.substring(separatorIndex + 1);
             rtpManager.getProxyCalls().put(playerName, teleportInfo);
         }
     }
 
-    public void sendCrossProxy(Player player, String data) {
+    public void sendCrossProxy(Player player, String serverId, String data) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("Forward");
         out.writeUTF("ALL");
         out.writeUTF("ovrtp");
+        out.writeUTF(serverId);
         out.writeUTF(data);
         player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
     }
