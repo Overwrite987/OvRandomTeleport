@@ -415,19 +415,19 @@ public class LocationGenerator {
     }
 
     private boolean isDisallowedBlock(Location loc, Avoidance avoidance) {
-        if (avoidance.avoidBlocksBlacklist()) {
-            return !avoidance.avoidBlocks().isEmpty() && avoidance.avoidBlocks().contains(loc.getBlock().getType());
-        } else {
-            return !avoidance.avoidBlocks().isEmpty() && !avoidance.avoidBlocks().contains(loc.getBlock().getType());
+        if (avoidance.avoidBlocks().isEmpty()) {
+            return false;
         }
+        boolean contains = avoidance.avoidBlocks().contains(loc.getBlock().getType());
+        return avoidance.avoidBlocksBlacklist() == contains;
     }
 
     private boolean isDisallowedBiome(Location loc, Avoidance avoidance) {
-        if (avoidance.avoidBiomesBlacklist()) {
-            return !avoidance.avoidBiomes().isEmpty() && avoidance.avoidBiomes().contains(loc.getBlock().getBiome());
-        } else {
-            return !avoidance.avoidBiomes().isEmpty() && !avoidance.avoidBiomes().contains(loc.getBlock().getBiome());
+        if (avoidance.avoidBiomes().isEmpty()) {
+            return false;
         }
+        boolean contains = avoidance.avoidBiomes().contains(loc.getBlock().getBiome());
+        return avoidance.avoidBiomesBlacklist() == contains;
     }
 
     private boolean isInsideRegion(Location loc, Avoidance avoidance) {
