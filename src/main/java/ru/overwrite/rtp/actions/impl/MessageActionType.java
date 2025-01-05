@@ -32,8 +32,7 @@ public final class MessageActionType implements ActionType {
     public @NotNull Action instance(@NotNull String context, @NotNull Main plugin) {
         String text = Utils.COLORIZER.colorize(context);
         String message = extractMessage(text, HOVER_MARKERS);
-        String hoverTextString = extractValue(text, HOVER_TEXT_PREFIX, SUFFIX);
-        Component hoverText = hoverTextString != null ? LegacyComponentSerializer.legacySection().deserialize(hoverTextString) : null;
+        String hoverText = extractValue(text, HOVER_TEXT_PREFIX, SUFFIX);
         String clickEventText = extractValue(text, CLICK_EVENT_PREFIX, SUFFIX);
         String[] clickEvent = clickEventText != null ? clickEventText.split(";", 2) : null;
         return new MessageAction(
@@ -74,7 +73,7 @@ public final class MessageActionType implements ActionType {
 
     private record MessageAction(
             @NotNull String message,
-            @Nullable Component hoverText,
+            @Nullable String hoverText,
             @Nullable String[] clickEvent
     ) implements Action {
         @Override
@@ -89,22 +88,23 @@ public final class MessageActionType implements ActionType {
             }
             Component component = LegacyComponentSerializer.legacySection().deserialize(messageToPlayer);
             if (hoverText != null) {
-                component = createHoverText(component, hoverText);
+                component = createHoverText(component, Utils.replaceEach(hoverText, searchList, replacementList));
             }
             if (clickEvent != null) {
-                component = createClickEvent(component, clickEvent);
+                component = createClickEvent(component, clickEvent, searchList, replacementList);
             }
             player.sendMessage(component);
         }
 
-        private Component createHoverText(Component message, Component hoverText) {
-            HoverEvent<Component> hover = HoverEvent.showText(hoverText);
+        private Component createHoverText(Component message, String hoverText) {
+            Component hoverTextComponent = LegacyComponentSerializer.legacySection().deserialize(hoverText);
+            HoverEvent<Component> hover = HoverEvent.showText(hoverTextComponent);
             return message.hoverEvent(hover);
         }
 
-        public Component createClickEvent(Component message, String[] clickEvent) {
+        public Component createClickEvent(Component message, String[] clickEvent, String[] searchList, String[] replacementList) {
             ClickEvent.Action action = ClickEvent.Action.valueOf(clickEvent[0].toUpperCase(Locale.ENGLISH));
-            String context = clickEvent[1];
+            String context = Utils.replaceEach(clickEvent[1], searchList, replacementList);
             ClickEvent click = ClickEvent.clickEvent(action, context);
             return message.clickEvent(click);
         }
