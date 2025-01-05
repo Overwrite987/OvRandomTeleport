@@ -421,25 +421,26 @@ public final class RtpManager {
     private final List<String> teleportingNow = new ArrayList<>();
 
     public void preTeleport(Player player, Channel channel, World world, boolean force) {
-        if (teleportingNow.contains(player.getName())) {
+        String playerName = player.getName();
+        if (teleportingNow.contains(playerName)) {
             return;
         }
         if (proxyCalls != null && !channel.serverToMove().isEmpty()) {
             if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Moving player '" + player.getName() + "' with channel '" + channel.id() + "' to server " + channel.serverToMove());
+                plugin.getPluginLogger().info("Moving player '" + playerName + "' with channel '" + channel.id() + "' to server " + channel.serverToMove());
             }
-            plugin.getPluginMessage().sendCrossProxy(player, channel.serverToMove(), player.getName() + " " + channel.id() + ";" + world.getName());
-            teleportingNow.remove(player.getName());
+            plugin.getPluginMessage().sendCrossProxy(player, channel.serverToMove(), playerName + " " + channel.id() + ";" + world.getName());
+            teleportingNow.remove(playerName);
             plugin.getPluginMessage().connectToServer(player, channel.serverToMove());
             return;
         }
         boolean finalForce = force || channel.cooldown().teleportCooldown() <= 0;
         if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("Pre teleporting player '" + player.getName() + "' with channel '" + channel.id() + "' in world '" + world.getName() + "' (force: " + finalForce + ")");
+            plugin.getPluginLogger().info("Pre teleporting player '" + playerName + "' with channel '" + channel.id() + "' in world '" + world.getName() + "' (force: " + finalForce + ")");
         }
-        teleportingNow.add(player.getName());
+        teleportingNow.add(playerName);
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            locationGenerator.getIterationsPerPlayer().put(player.getName(), 1);
+            locationGenerator.getIterationsPerPlayer().put(playerName, 1);
             Location loc = switch (channel.type()) {
                 case DEFAULT -> locationGenerator.generateRandomLocation(player, channel, world);
                 case NEAR_PLAYER -> locationGenerator.generateRandomLocationNearPlayer(player, channel, world);
@@ -448,14 +449,14 @@ public final class RtpManager {
                         locationGenerator.generateRandomLocation(player, channel, world);
             };
             if (loc == null) {
-                teleportingNow.remove(player.getName());
+                teleportingNow.remove(playerName);
                 Utils.sendMessage(channel.messages().failToFindLocation(), player);
                 this.returnCost(player, channel);
                 return;
             }
             if (!finalForce) {
                 this.executeActions(player, channel, channel.actions().preTeleportActions(), player.getLocation());
-                RtpTask rtpTask = new RtpTask(plugin, this, player.getName(), channel);
+                RtpTask rtpTask = new RtpTask(plugin, this, playerName, channel);
                 rtpTask.startPreTeleportTimer(player, channel, loc);
                 return;
             }
