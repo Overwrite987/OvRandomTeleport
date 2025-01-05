@@ -81,7 +81,13 @@ public final class RtpManager {
             }
             ConfigurationSection channelSection = config.getConfigurationSection("channels." + channelId);
             if (!channelSection.getString("file", "").isEmpty()) {
-                channelSection = pluginConfig.getFile(plugin.getDataFolder().getAbsolutePath() + "/channels", channelSection.getString("file"));
+                channelSection = pluginConfig.getChannelFile(plugin.getDataFolder().getAbsolutePath() + "/channels", channelSection.getString("file"));
+                if (channelSection == null) {
+                    if (Utils.DEBUG) {
+                        plugin.getPluginLogger().info("Unable to get channel settings. Skipping...");
+                    }
+                    continue;
+                }
             }
             String name = channelSection.getString("name", "");
             ChannelType type = ChannelType.valueOf(channelSection.getString("type", "DEFAULT").toUpperCase(Locale.ENGLISH));

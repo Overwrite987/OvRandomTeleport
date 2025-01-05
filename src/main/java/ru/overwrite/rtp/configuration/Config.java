@@ -83,10 +83,11 @@ public class Config {
         return Utils.COLORIZER.colorize(message.replace("%prefix%", prefix));
     }
 
-    public FileConfiguration getFile(String path, String fileName) {
+    public FileConfiguration getChannelFile(String path, String fileName) {
         File file = new File(path, fileName);
         if (!file.exists()) {
-            plugin.saveResource("channels/" + fileName, false);
+            plugin.getPluginLogger().warn("Channel file with name " + fileName + " does not exist.");
+            return null;
         }
         return YamlConfiguration.loadConfiguration(file);
     }
