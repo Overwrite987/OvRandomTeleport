@@ -63,6 +63,8 @@ particles:
     id: FLAME
     dots: 2
     radius: 1.25
+    particle_speed: 0.0
+    speed: 4.0
     invert: true
     jumping: false
     move_near: true
@@ -72,7 +74,7 @@ particles:
     id: FLAME
     count: 45
     radius: 1.25
-    speed: 0.0
+    particle_speed: 0.0
 # Необязательные параметры
 restrictions:
   move: true

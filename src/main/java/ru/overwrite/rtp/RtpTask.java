@@ -122,7 +122,7 @@ public class RtpTask {
                             0,
                             0,
                             0,
-                            particles.preTeleportSpeed(),
+                            particles.preTeleportParticleSpeed(),
                             null);
 
                     location.subtract(x, y, z);

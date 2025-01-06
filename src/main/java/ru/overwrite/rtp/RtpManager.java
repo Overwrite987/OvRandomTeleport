@@ -258,7 +258,7 @@ public final class RtpManager {
     private Particles setupChannelParticles(ConfigurationSection particles) {
         if (isSectionNull(particles)) {
             return new Particles(
-                    false, false, null, -1, -1, -1, false, false, false,
+                    false, false, null, -1, -1, -1, -1, false, false, false,
                     false, false, null, -1, -1, -1);
         }
         boolean preTeleportEnabled = false;
@@ -266,6 +266,7 @@ public final class RtpManager {
         Particle preTeleportId = null;
         int preTeleportDots = 0;
         double preTeleportRadius = 0;
+        double preTeleportParticleSpeed = 0;
         double preTeleportSpeed = 0;
         boolean preTeleportInvert = false;
         boolean preTeleportJumping = false;
@@ -275,7 +276,7 @@ public final class RtpManager {
         Particle afterTeleportParticle = null;
         int afterTeleportCount = 0;
         double afterTeleportRadius = 0;
-        double afterTeleportSpeed = 0;
+        double afterTeleportParticleSpeed = 0;
         final ConfigurationSection preTeleport = particles.getConfigurationSection("pre_teleport");
         if (!isSectionNull(preTeleport)) {
             preTeleportEnabled = preTeleport.getBoolean("enabled", false);
@@ -283,6 +284,7 @@ public final class RtpManager {
             preTeleportId = Particle.valueOf(preTeleport.getString("id").toUpperCase(Locale.ENGLISH));
             preTeleportDots = preTeleport.getInt("dots");
             preTeleportRadius = preTeleport.getDouble("radius");
+            preTeleportParticleSpeed = preTeleport.getDouble("particle_speed");
             preTeleportSpeed = preTeleport.getDouble("speed");
             preTeleportInvert = preTeleport.getBoolean("invert");
             preTeleportJumping = preTeleport.getBoolean("jumping");
@@ -295,12 +297,12 @@ public final class RtpManager {
             afterTeleportParticle = Particle.valueOf(afterTeleport.getString("id").toUpperCase(Locale.ENGLISH));
             afterTeleportCount = afterTeleport.getInt("count");
             afterTeleportRadius = afterTeleport.getDouble("radius");
-            afterTeleportSpeed = afterTeleport.getDouble("speed");
+            afterTeleportParticleSpeed = afterTeleport.getDouble("particle_speed");
         }
 
         return new Particles(
-                preTeleportEnabled, preTeleportSendOnlyToPlayer, preTeleportId, preTeleportDots, preTeleportRadius, preTeleportSpeed, preTeleportInvert, preTeleportJumping, preTeleportMoveNear,
-                afterTeleportParticleEnabled, afterTeleportSendOnlyToPlayer, afterTeleportParticle, afterTeleportCount, afterTeleportRadius, afterTeleportSpeed);
+                preTeleportEnabled, preTeleportSendOnlyToPlayer, preTeleportId, preTeleportDots, preTeleportRadius, preTeleportParticleSpeed, preTeleportSpeed, preTeleportInvert, preTeleportJumping, preTeleportMoveNear,
+                afterTeleportParticleEnabled, afterTeleportSendOnlyToPlayer, afterTeleportParticle, afterTeleportCount, afterTeleportRadius, afterTeleportParticleSpeed);
     }
 
     private Restrictions setupChannelRestrictions(ConfigurationSection restrictions) {
@@ -540,7 +542,7 @@ public final class RtpManager {
                         0,
                         0,
                         0,
-                        particles.afterTeleportSpeed(),
+                        particles.afterTeleportParticleSpeed(),
                         null);
             }
         }, 1L);
