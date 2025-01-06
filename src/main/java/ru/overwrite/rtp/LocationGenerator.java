@@ -333,7 +333,7 @@ public class LocationGenerator {
         for (int y = 32; y < 90; y++) {
             Location location = new Location(world, x, y, z);
 
-            if (location.getBlock().getType().isSolid() && !isInsideBlocks(location)) {
+            if (location.getBlock().getType().isSolid() && !isInsideBlocks(location, false)) {
                 return location.getBlockY();
             }
         }
@@ -371,7 +371,7 @@ public class LocationGenerator {
             }
             return true;
         }
-        if (location.getWorld().getEnvironment() != World.Environment.NETHER && isInsideBlocks(location)) {
+        if (location.getWorld().getEnvironment() != World.Environment.NETHER && isInsideBlocks(location, true)) {
             if (Utils.DEBUG) {
                 plugin.getPluginLogger().info("Location " + Utils.locationToString(location) + " is inside blocks.");
             }
@@ -408,15 +408,12 @@ public class LocationGenerator {
         return !loc.getWorld().getWorldBorder().isInside(loc);
     }
 
-    private static final Set<Material> allowedMaterials = EnumSet.of(Material.SHORT_GRASS, Material.DEAD_BUSH, Material.SNOW);
-
-    private boolean isInsideBlocks(Location location) {
+    private boolean isInsideBlocks(Location location, boolean onlyCheckOneBlockUp) {
         Location aboveLocation = location.clone().add(0, 2, 0);
         if (!aboveLocation.getBlock().getType().isAir()) {
             return true;
         }
-        aboveLocation.subtract(0, 1, 0);
-        return !(aboveLocation.getBlock().getType().isAir() || allowedMaterials.contains(aboveLocation.getBlock().getType()));
+        return !onlyCheckOneBlockUp && !aboveLocation.subtract(0, 1, 0).getBlock().getType().isAir();
     }
 
     private boolean isDisallowedBlock(Location loc, Avoidance avoidance) {
