@@ -86,6 +86,7 @@ public class Config {
     public FileConfiguration getChannelFile(String path, String fileName) {
         File file = new File(path, fileName);
         if (!file.exists()) {
+            plugin.saveResource("channels/" + fileName, false);
             plugin.getPluginLogger().warn("Channel file with name " + fileName + " does not exist.");
             return null;
         }
