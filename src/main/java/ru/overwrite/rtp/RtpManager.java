@@ -76,16 +76,12 @@ public final class RtpManager {
     public void setupChannels(FileConfiguration config, PluginManager pluginManager) {
         long startTime = System.currentTimeMillis();
         for (String channelId : config.getConfigurationSection("channels").getKeys(false)) {
-            if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Id: " + channelId);
-            }
+            printDebug("Id: " + channelId);
             ConfigurationSection channelSection = config.getConfigurationSection("channels." + channelId);
             if (!channelSection.getString("file", "").isEmpty()) {
                 channelSection = pluginConfig.getChannelFile(plugin.getDataFolder().getAbsolutePath() + "/channels", channelSection.getString("file"));
                 if (channelSection == null) {
-                    if (Utils.DEBUG) {
-                        plugin.getPluginLogger().info("Unable to get channel settings. Skipping...");
-                    }
+                    printDebug("Unable to get channel settings. Skipping...");
                     continue;
                 }
             }
@@ -144,9 +140,7 @@ public final class RtpManager {
             }
         }
         long endTime = System.currentTimeMillis();
-        if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("Channels setup done in " + (endTime - startTime) + " ms");
-        }
+        printDebug("Channels setup done in " + (endTime - startTime) + " ms");
     }
 
     public record Specifications(Set<String> joinChannels,
@@ -438,18 +432,14 @@ public final class RtpManager {
             return;
         }
         if (proxyCalls != null && !channel.serverToMove().isEmpty()) {
-            if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Moving player '" + playerName + "' with channel '" + channel.id() + "' to server " + channel.serverToMove());
-            }
+            printDebug("Moving player '" + playerName + "' with channel '" + channel.id() + "' to server " + channel.serverToMove());
             plugin.getPluginMessage().sendCrossProxy(player, channel.serverToMove(), playerName + " " + channel.id() + ";" + world.getName());
             teleportingNow.remove(playerName);
             plugin.getPluginMessage().connectToServer(player, channel.serverToMove());
             return;
         }
         boolean finalForce = force || channel.cooldown().teleportCooldown() <= 0;
-        if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("Pre teleporting player '" + playerName + "' with channel '" + channel.id() + "' in world '" + world.getName() + "' (force: " + finalForce + ")");
-        }
+        printDebug("Pre teleporting player '" + playerName + "' with channel '" + channel.id() + "' in world '" + world.getName() + "' (force: " + finalForce + ")");
         teleportingNow.add(playerName);
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             locationGenerator.getIterationsPerPlayer().put(playerName, 1);
@@ -491,9 +481,7 @@ public final class RtpManager {
     }
 
     public void teleportPlayer(Player player, Channel channel, Location loc) {
-        if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("Teleporting player '" + player.getName() + "' with channel '" + channel.id() + "' to location " + Utils.locationToString(loc));
-        }
+        printDebug("Teleporting player '" + player.getName() + "' with channel '" + channel.id() + "' to location " + Utils.locationToString(loc));
         if (channel.invulnerableTicks() > 0) {
             player.setInvulnerable(true);
             Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> player.setInvulnerable(false), channel.invulnerableTicks());
@@ -585,5 +573,11 @@ public final class RtpManager {
                 action.perform(channel, player, searchList, replacementList);
             }
         });
+    }
+
+    public void printDebug(String message) {
+        if (Utils.DEBUG) {
+            plugin.getPluginLogger().info(message);
+        }
     }
 }

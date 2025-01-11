@@ -21,7 +21,7 @@ import java.util.Set;
 
 public class LocationGenerator {
 
-    private final Main plugin;
+    private final RtpManager rtpManager;
 
     @Getter
     private final XoRoShiRo128PlusRandom random = new XoRoShiRo128PlusRandom();
@@ -33,8 +33,8 @@ public class LocationGenerator {
     private final WGLocationGenerator wgLocationGenerator;
 
     public LocationGenerator(Main plugin) {
-        this.plugin = plugin;
-        this.wgLocationGenerator = plugin.hasWorldGuard() ? new WGLocationGenerator(plugin, this) : null;
+        this.rtpManager = plugin.getRtpManager();
+        this.wgLocationGenerator = plugin.hasWorldGuard() ? new WGLocationGenerator(rtpManager, this) : null;
     }
 
     public Location generateRandomLocation(Player player, Channel channel, World world) {
@@ -53,9 +53,7 @@ public class LocationGenerator {
             iterationsPerPlayer.addTo(player.getName(), 1);
             return generateRandomLocation(player, channel, world);
         }
-        if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("Location for player '" + player.getName() + "' found in " + iterationsPerPlayer.getInt(player.getName()) + " iterations");
-        }
+        rtpManager.printDebug("Location for player '" + player.getName() + "' found in " + iterationsPerPlayer.getInt(player.getName()) + " iterations");
         iterationsPerPlayer.removeInt(player.getName());
         return location;
     }
@@ -68,9 +66,7 @@ public class LocationGenerator {
         List<Player> nearbyPlayers = getNearbyPlayers(player, locationGenOptions, world);
 
         if (nearbyPlayers.isEmpty()) {
-            if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("No players found to generate location near player");
-            }
+            rtpManager.printDebug("No players found to generate location near player");
             return null;
         }
 
@@ -87,9 +83,7 @@ public class LocationGenerator {
             iterationsPerPlayer.addTo(player.getName(), 1);
             return generateRandomLocationNearPlayer(player, channel, world);
         }
-        if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("Location for player '" + player.getName() + "' found in " + iterationsPerPlayer.getInt(player.getName()) + " iterations");
-        }
+        rtpManager.printDebug("Location for player '" + player.getName() + "' found in " + iterationsPerPlayer.getInt(player.getName()) + " iterations");
         iterationsPerPlayer.removeInt(player.getName());
         return location;
     }
@@ -120,14 +114,10 @@ public class LocationGenerator {
     }
 
     public boolean hasReachedMaxIterations(String playerName, LocationGenOptions locationGenOptions) {
-        if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("Iterations for player '" + playerName + "': " + iterationsPerPlayer.getInt(playerName));
-        }
+        rtpManager.printDebug("Iterations for player '" + playerName + "': " + iterationsPerPlayer.getInt(playerName));
         if (iterationsPerPlayer.getInt(playerName) >= locationGenOptions.maxLocationAttempts()) {
             iterationsPerPlayer.removeInt(playerName);
-            if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Max iterations reached for player " + playerName);
-            }
+            rtpManager.printDebug("Max iterations reached for player " + playerName);
             return true;
         }
         return false;
@@ -366,39 +356,27 @@ public class LocationGenerator {
 
     private boolean isLocationRestricted(Location location, Avoidance avoidance) {
         if (isOutsideWorldBorder(location)) {
-            if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Location " + Utils.locationToString(location) + " is outside the world border.");
-            }
+            rtpManager.printDebug("Location " + Utils.locationToString(location) + " is outside the world border.");
             return true;
         }
         if (location.getWorld().getEnvironment() != World.Environment.NETHER && isInsideBlocks(location, true)) {
-            if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Location " + Utils.locationToString(location) + " is inside blocks.");
-            }
+            rtpManager.printDebug("Location " + Utils.locationToString(location) + " is inside blocks.");
             return true;
         }
         if (isDisallowedBlock(location, avoidance)) {
-            if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Location " + Utils.locationToString(location) + " contains a disallowed block.");
-            }
+            rtpManager.printDebug("Location " + Utils.locationToString(location) + " contains a disallowed block.");
             return true;
         }
         if (isDisallowedBiome(location, avoidance)) {
-            if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Location " + Utils.locationToString(location) + " is in a disallowed biome.");
-            }
+            rtpManager.printDebug("Location " + Utils.locationToString(location) + " is in a disallowed biome.");
             return true;
         }
         if (isInsideRegion(location, avoidance)) {
-            if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Location " + Utils.locationToString(location) + " is inside a disallowed region.");
-            }
+            rtpManager.printDebug("Location " + Utils.locationToString(location) + " is inside a disallowed region.");
             return true;
         }
         if (isInsideTown(location, avoidance)) {
-            if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Location " + Utils.locationToString(location) + " is inside a disallowed town.");
-            }
+            rtpManager.printDebug("Location " + Utils.locationToString(location) + " is inside a disallowed town.");
             return true;
         }
         return false;

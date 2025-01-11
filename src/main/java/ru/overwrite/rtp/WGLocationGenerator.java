@@ -23,7 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WGLocationGenerator {
 
-    private final Main plugin;
+    private final RtpManager rtpManager;
     private final LocationGenerator locationGenerator;
 
     public Location generateRandomLocationNearRandomRegion(Player player, Channel channel, World world) {
@@ -64,9 +64,7 @@ public class WGLocationGenerator {
         }
 
         if (regionsInRange.isEmpty()) {
-            if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("No regions found to generate location near region");
-            }
+            rtpManager.printDebug("No regions found to generate location near region");
             return null;
         }
 
@@ -82,9 +80,7 @@ public class WGLocationGenerator {
             locationGenerator.getIterationsPerPlayer().addTo(player.getName(), 1);
             return generateRandomLocationNearRandomRegion(player, channel, world);
         }
-        if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("Location for player '" + player.getName() + "' found in " + locationGenerator.getIterationsPerPlayer().getInt(player.getName()) + " iterations");
-        }
+        rtpManager.printDebug("Location for player '" + player.getName() + "' found in " + locationGenerator.getIterationsPerPlayer().getInt(player.getName()) + " iterations");
         locationGenerator.getIterationsPerPlayer().removeInt(player.getName());
         return location;
     }

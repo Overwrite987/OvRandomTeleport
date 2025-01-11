@@ -31,18 +31,14 @@ public final class PluginMessage implements PluginMessageListener {
         String subchannel = input.readUTF();
         if (subchannel.equalsIgnoreCase("ovrtp")) {
             String serverId = input.readUTF();
-            if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Received plugin message from another server.");
-                plugin.getPluginLogger().info("ServerID specified: " + this.serverId);
-                plugin.getPluginLogger().info("ServerID received: " + serverId);
-            }
+            rtpManager.printDebug("Received plugin message from another server.");
+            rtpManager.printDebug("ServerID specified: " + this.serverId);
+            rtpManager.printDebug("ServerID received: " + serverId);
             if (!this.serverId.equals(serverId)) {
                 return;
             }
             String teleportData = input.readUTF();
-            if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Teleport data: " + teleportData);
-            }
+            rtpManager.printDebug("Teleport data: " + teleportData);
             int separatorIndex = teleportData.indexOf(' ');
             String playerName = teleportData.substring(0, separatorIndex);
             String teleportInfo = teleportData.substring(separatorIndex + 1);

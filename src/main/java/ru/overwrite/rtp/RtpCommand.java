@@ -101,19 +101,13 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
             return;
         }
         if (!rtpManager.takeCost(player, channel)) {
-            if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Take cost for channel " + channel.id() + " didn't pass");
-            }
+            rtpManager.printDebug("Take cost for channel " + channel.id() + " didn't pass");
             return;
         }
         if (!channel.activeWorlds().contains(player.getWorld())) {
-            if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("Active worlds for channel " + channel.id() + " does not includes player's world: " + player.getWorld().getName());
-            }
+            rtpManager.printDebug("Active worlds for channel " + channel.id() + " does not includes player's world: " + player.getWorld().getName());
             if (channel.teleportToFirstAllowedWorld()) {
-                if (Utils.DEBUG) {
-                    plugin.getPluginLogger().info("Teleporting to first allowed world: " + channel.activeWorlds().get(0).getName());
-                }
+                rtpManager.printDebug("Teleporting to first allowed world: " + channel.activeWorlds().get(0).getName());
                 rtpManager.preTeleport(player, channel, channel.activeWorlds().get(0), false);
                 return;
             }

@@ -190,8 +190,6 @@ public class RtpTask {
         runnable.cancel();
         rtpManager.getPerPlayerActiveRtpTask().remove(playerName);
         rtpManager.getTeleportingNow().remove(playerName);
-        if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("RtpTask cancel called");
-        }
+        rtpManager.printDebug("RtpTask cancel called");
     }
 }
