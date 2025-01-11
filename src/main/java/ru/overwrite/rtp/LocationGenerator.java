@@ -69,7 +69,7 @@ public class LocationGenerator {
 
         if (nearbyPlayers.isEmpty()) {
             if (Utils.DEBUG) {
-                plugin.getPluginLogger().info("No players to generate location near player");
+                plugin.getPluginLogger().info("No players found to generate location near player");
             }
             return null;
         }

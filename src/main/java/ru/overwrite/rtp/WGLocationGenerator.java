@@ -64,6 +64,9 @@ public class WGLocationGenerator {
         }
 
         if (regionsInRange.isEmpty()) {
+            if (Utils.DEBUG) {
+                plugin.getPluginLogger().info("No regions found to generate location near region");
+            }
             return null;
         }
 
