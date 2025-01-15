@@ -4,7 +4,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
 import lombok.Getter;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import ru.overwrite.rtp.channels.Channel;
@@ -15,9 +14,7 @@ import ru.overwrite.rtp.utils.regions.TownyUtils;
 import ru.overwrite.rtp.utils.regions.WGUtils;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 
 public class LocationGenerator {
 
@@ -32,8 +29,8 @@ public class LocationGenerator {
     @Getter
     private final WGLocationGenerator wgLocationGenerator;
 
-    public LocationGenerator(Main plugin) {
-        this.rtpManager = plugin.getRtpManager();
+    public LocationGenerator(Main plugin, RtpManager rtpManager) {
+        this.rtpManager = rtpManager;
         this.wgLocationGenerator = plugin.hasWorldGuard() ? new WGLocationGenerator(rtpManager, this) : null;
     }
 

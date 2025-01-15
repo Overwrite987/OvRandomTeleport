@@ -56,7 +56,7 @@ public final class RtpManager {
         this.plugin = plugin;
         this.pluginConfig = plugin.getPluginConfig();
         this.actionRegistry = new ActionRegistry(plugin);
-        this.locationGenerator = new LocationGenerator(plugin);
+        this.locationGenerator = new LocationGenerator(plugin, this);
         registerDefaultActions();
     }
 
