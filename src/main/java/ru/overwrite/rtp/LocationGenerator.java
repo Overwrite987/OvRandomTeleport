@@ -92,7 +92,7 @@ public class LocationGenerator {
         int maxZ = locationGenOptions.maxZ();
         List<Player> nearbyPlayers = new ArrayList<>();
         for (Player worldPlayer : world.getPlayers()) {
-            if (player.hasPermission("rtp.near.bypass") || isVanished(player)) {
+            if (worldPlayer.hasPermission("rtp.near.bypass") || isVanished(worldPlayer)) {
                 continue;
             }
             Location loc = worldPlayer.getLocation();
