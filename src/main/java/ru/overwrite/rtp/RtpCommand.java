@@ -23,6 +23,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class RtpCommand implements CommandExecutor, TabCompleter {
 
@@ -129,6 +130,9 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
         }
         switch (args[1].toLowerCase()) {
             case "reload": {
+                for (Map.Entry<String, RtpTask> entry : rtpManager.getPerPlayerActiveRtpTask().entrySet()) {
+                    entry.getValue().cancel();
+                }
                 plugin.reloadConfig();
                 final FileConfiguration config = plugin.getConfig();
                 Utils.setupColorizer(config.getConfigurationSection("main_settings"));
