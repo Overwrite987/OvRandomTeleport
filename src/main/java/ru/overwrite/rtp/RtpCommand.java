@@ -130,9 +130,7 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
         }
         switch (args[1].toLowerCase()) {
             case "reload": {
-                for (Map.Entry<String, RtpTask> entry : rtpManager.getPerPlayerActiveRtpTask().entrySet()) {
-                    entry.getValue().cancel();
-                }
+                rtpManager.cancelAllTasks();
                 plugin.reloadConfig();
                 final FileConfiguration config = plugin.getConfig();
                 Utils.setupColorizer(config.getConfigurationSection("main_settings"));

@@ -173,6 +173,7 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        rtpManager.cancelAllTasks();
         server.getScheduler().cancelTasks(this);
     }
 }

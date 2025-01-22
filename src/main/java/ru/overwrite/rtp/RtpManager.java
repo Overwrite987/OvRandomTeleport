@@ -575,6 +575,12 @@ public final class RtpManager {
         });
     }
 
+    public void cancelAllTasks() {
+        for (Map.Entry<String, RtpTask> entry : perPlayerActiveRtpTask.entrySet()) {
+            entry.getValue().cancel();
+        }
+    }
+
     public void printDebug(String message) {
         if (Utils.DEBUG) {
             plugin.getPluginLogger().info(message);
