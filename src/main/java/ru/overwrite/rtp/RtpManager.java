@@ -182,10 +182,9 @@ public final class RtpManager {
 
     private Costs setupChannelCosts(ConfigurationSection channelCosts, ChannelTemplate template) {
         if (channelCosts == null) {
-            if (template != null && template.costs() != null) {
-                return template.costs();
-            }
-            return new Costs(null, null, -1, -1, -1);
+            return (template != null && template.costs() != null)
+                    ? template.costs()
+                    : new Costs(null, null, -1, -1, -1);
         }
         Costs.MoneyType moneyType = Costs.MoneyType.valueOf(channelCosts.getString("money_type", "VAULT").toUpperCase(Locale.ENGLISH));
         double moneyCost = channelCosts.getDouble("money_cost", -1);
@@ -196,11 +195,10 @@ public final class RtpManager {
     }
 
     private LocationGenOptions setupChannelGenOptions(ConfigurationSection locationGenOptions, ChannelTemplate template) {
-        if (locationGenOptions == null) {
-            if (template != null && template.locationGenOptions() != null) {
-                return template.locationGenOptions();
-            }
-            return null;
+        if (pluginConfig.isNullSection(locationGenOptions)) {
+            return (template != null && template.locationGenOptions() != null)
+                    ? template.locationGenOptions()
+                    : null;
         }
         LocationGenOptions.Shape shape = LocationGenOptions.Shape.valueOf(locationGenOptions.getString("shape", "SQUARE").toUpperCase(Locale.ENGLISH));
         LocationGenOptions.GenFormat genFormat = LocationGenOptions.GenFormat.valueOf(locationGenOptions.getString("gen_format", "RECTANGULAR").toUpperCase(Locale.ENGLISH));
@@ -220,10 +218,9 @@ public final class RtpManager {
     private Cooldown setupChannelCooldown(ConfigurationSection cooldown, ChannelTemplate template) {
         Object2IntSortedMap<String> groupCooldownsMap = new Object2IntLinkedOpenHashMap<>();
         if (pluginConfig.isNullSection(cooldown)) {
-            if (template != null && template.cooldown() != null) {
-                return template.cooldown();
-            }
-            return new Cooldown(-1, null, groupCooldownsMap, false, -1);
+            return (template != null && template.cooldown() != null)
+                    ? template.cooldown()
+                    : new Cooldown(-1, null, groupCooldownsMap, false, -1);
         }
         int defaultCooldown = cooldown.getInt("default_cooldown", -1);
         TimedExpiringMap<String, Long> playerCooldowns = defaultCooldown > 0 ? new TimedExpiringMap<>(TimeUnit.SECONDS) : null;
@@ -248,10 +245,9 @@ public final class RtpManager {
 
     private Bossbar setupChannelBossBar(ConfigurationSection bossbar, ChannelTemplate template) {
         if (pluginConfig.isNullSection(bossbar)) {
-            if (template != null && template.bossbar() != null) {
-                return template.bossbar();
-            }
-            return new Bossbar(false, null, null, null);
+            return (template != null && template.bossbar() != null)
+                    ? template.bossbar()
+                    : new Bossbar(false, null, null, null);
         }
         boolean enabled = bossbar.getBoolean("enabled");
         String title = Utils.COLORIZER.colorize(bossbar.getString("title"));
@@ -263,11 +259,9 @@ public final class RtpManager {
 
     private Particles setupChannelParticles(ConfigurationSection particles, ChannelTemplate template) {
         if (pluginConfig.isNullSection(particles)) {
-            if (template != null && template.particles() != null) {
-                return template.particles();
-            }
-            return new Particles(
-                    false, false, null, -1, -1, -1, -1, false, false, false,
+            return (template != null && template.particles() != null)
+                    ? template.particles()
+                    : new Particles(false, false, null, -1, -1, -1, -1, false, false, false,
                     false, false, null, -1, -1, -1);
         }
         boolean preTeleportEnabled = false;
@@ -315,54 +309,52 @@ public final class RtpManager {
     }
 
     private Restrictions setupChannelRestrictions(ConfigurationSection restrictions, ChannelTemplate template) {
-        boolean isNullSection = pluginConfig.isNullSection(restrictions);
-        if (isNullSection && template != null && template.restrictions() != null) {
-            return template.restrictions();
+        if (pluginConfig.isNullSection(restrictions)) {
+            return (template != null && template.restrictions() != null)
+                    ? template.restrictions()
+                    : new Restrictions(false, false, false, false, false);
         }
-        boolean restrictMove = !isNullSection && restrictions.getBoolean("move", false);
-        boolean restrictTeleport = !isNullSection && restrictions.getBoolean("teleport", false);
-        boolean restrictDamage = !isNullSection && restrictions.getBoolean("damage", false);
-        boolean restrictDamageOthers = !isNullSection && restrictions.getBoolean("damage_others", false);
-        boolean damageCheckOnlyPlayers = !isNullSection && restrictions.getBoolean("damage_check_only_players", false);
-
-        return new Restrictions(restrictMove, restrictTeleport, restrictDamage, restrictDamageOthers, damageCheckOnlyPlayers);
+        return new Restrictions(
+                restrictions.getBoolean("move", false),
+                restrictions.getBoolean("teleport", false),
+                restrictions.getBoolean("damage", false),
+                restrictions.getBoolean("damage_others", false),
+                restrictions.getBoolean("damage_check_only_players", false)
+        );
     }
 
     private Avoidance setupChannelAvoidance(ConfigurationSection avoid, PluginManager pluginManager, ChannelTemplate template) {
-        boolean isNullSection = pluginConfig.isNullSection(avoid);
-        if (isNullSection && template != null && template.avoidance() != null) {
-            return template.avoidance();
+        if (pluginConfig.isNullSection(avoid)) {
+            return (template != null && template.avoidance() != null)
+                    ? template.avoidance()
+                    : new Avoidance(true, EnumSet.noneOf(Material.class), true, Set.of(), false, false);
         }
+        boolean avoidBlocksBlacklist = avoid.getBoolean("blocks.blacklist", true);
         Set<Material> avoidBlocks = EnumSet.noneOf(Material.class);
-        boolean avoidBlocksBlacklist = true;
-        if (!isNullSection) {
-            avoidBlocksBlacklist = avoid.getBoolean("blocks.blacklist", true);
-            for (String material : avoid.getStringList("blocks.list")) {
-                avoidBlocks.add(Material.valueOf(material.toUpperCase(Locale.ENGLISH)));
-            }
+        for (String material : avoid.getStringList("blocks.list")) {
+            avoidBlocks.add(Material.valueOf(material.toUpperCase(Locale.ENGLISH)));
         }
+        boolean avoidBiomesBlacklist = avoid.getBoolean("biomes.blacklist", true);
         Set<Biome> avoidBiomes = VersionUtils.SUB_VERSION > 20 ? new HashSet<>() : EnumSet.noneOf(Biome.class);
-        boolean avoidBiomesBlacklist = true;
-        if (!isNullSection) {
-            avoidBiomesBlacklist = avoid.getBoolean("biomes.blacklist", true);
-            for (String biome : avoid.getStringList("biomes.list")) {
-                avoidBiomes.add(Biome.valueOf(biome.toUpperCase(Locale.ENGLISH)));
-            }
+        for (String biome : avoid.getStringList("biomes.list")) {
+            avoidBiomes.add(Biome.valueOf(biome.toUpperCase(Locale.ENGLISH)));
         }
-        boolean avoidRegions = !isNullSection && avoid.getBoolean("regions", false) && pluginManager.isPluginEnabled("WorldGuard");
-        boolean avoidTowns = !isNullSection && avoid.getBoolean("towns", false) && pluginManager.isPluginEnabled("Towny");
+        boolean avoidRegions = avoid.getBoolean("regions", false) && pluginManager.isPluginEnabled("WorldGuard");
+        boolean avoidTowns = avoid.getBoolean("towns", false) && pluginManager.isPluginEnabled("Towny");
 
         return new Avoidance(avoidBlocksBlacklist, avoidBlocks, avoidBiomesBlacklist, avoidBiomes, avoidRegions, avoidTowns);
     }
 
     private Actions setupChannelActions(ConfigurationSection actions, ChannelTemplate template) {
-        boolean isNullSection = pluginConfig.isNullSection(actions);
-        if (isNullSection && template != null && template.actions() != null) {
-            return template.actions();
+        if (pluginConfig.isNullSection(actions)) {
+            return (template != null && template.actions() != null)
+                    ? template.actions()
+                    : new Actions(List.of(), new Int2ObjectOpenHashMap<>(), List.of());
         }
-        List<Action> preTeleportActions = isNullSection ? List.of() : getActionList(actions.getStringList("pre_teleport"));
+
+        List<Action> preTeleportActions = getActionList(actions.getStringList("pre_teleport"));
         Int2ObjectMap<List<Action>> onCooldownActions = new Int2ObjectOpenHashMap<>();
-        final ConfigurationSection cooldownActions = isNullSection ? null : actions.getConfigurationSection("on_cooldown");
+        ConfigurationSection cooldownActions = actions.getConfigurationSection("on_cooldown");
         if (!pluginConfig.isNullSection(cooldownActions)) {
             for (String actionId : cooldownActions.getKeys(false)) {
                 if (!Utils.isNumeric(actionId)) {
@@ -373,7 +365,7 @@ public final class RtpManager {
                 onCooldownActions.put(time, actionList);
             }
         }
-        List<Action> afterTeleportActions = isNullSection ? List.of() : getActionList(actions.getStringList("after_teleport"));
+        List<Action> afterTeleportActions = getActionList(actions.getStringList("after_teleport"));
 
         return new Actions(preTeleportActions, onCooldownActions, afterTeleportActions);
     }

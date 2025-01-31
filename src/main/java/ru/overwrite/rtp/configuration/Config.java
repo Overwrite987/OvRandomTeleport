@@ -115,13 +115,12 @@ public class Config {
             Avoidance avoidance = setupTemplateAvoidance(templateSection.getConfigurationSection("avoid"), Bukkit.getPluginManager());
             Actions actions = setupTemplateActions(templateSection.getConfigurationSection("actions"));
             ChannelTemplate newTemplate = new ChannelTemplate(templateID, costs, locationGenOptions, cooldown, bossBar, particles, restrictions, avoidance, actions);
-            System.out.println(templateID);
             channelTemplates.put(templateID, newTemplate);
         }
     }
 
     private Costs setupTemplateCosts(ConfigurationSection channelCosts) {
-        if (channelCosts == null) {
+        if (isNullSection(channelCosts)) {
             return null;
         }
         Costs.MoneyType moneyType = Costs.MoneyType.valueOf(channelCosts.getString("money_type", "VAULT").toUpperCase(Locale.ENGLISH));
@@ -241,13 +240,13 @@ public class Config {
         if (isNullSection(restrictions)) {
             return null;
         }
-        boolean restrictMove = restrictions.getBoolean("move", false);
-        boolean restrictTeleport = restrictions.getBoolean("teleport", false);
-        boolean restrictDamage = restrictions.getBoolean("damage", false);
-        boolean restrictDamageOthers = restrictions.getBoolean("damage_others", false);
-        boolean damageCheckOnlyPlayers = restrictions.getBoolean("damage_check_only_players", false);
 
-        return new Restrictions(restrictMove, restrictTeleport, restrictDamage, restrictDamageOthers, damageCheckOnlyPlayers);
+        return new Restrictions(
+                restrictions.getBoolean("move", false),
+                restrictions.getBoolean("teleport", false),
+                restrictions.getBoolean("damage", false),
+                restrictions.getBoolean("damage_others", false),
+                restrictions.getBoolean("damage_check_only_players", false));
     }
 
     private Avoidance setupTemplateAvoidance(ConfigurationSection avoid, PluginManager pluginManager) {
@@ -255,7 +254,7 @@ public class Config {
             return null;
         }
         Set<Material> avoidBlocks = EnumSet.noneOf(Material.class);
-        boolean avoidBlocksBlacklist = true;
+        boolean avoidBlocksBlacklist;
         avoidBlocksBlacklist = avoid.getBoolean("blocks.blacklist", true);
         for (String material : avoid.getStringList("blocks.list")) {
             avoidBlocks.add(Material.valueOf(material.toUpperCase(Locale.ENGLISH)));
