@@ -76,6 +76,7 @@ public final class Main extends JavaPlugin {
         final ConfigurationSection mainSettings = config.getConfigurationSection("main_settings");
         Utils.setupColorizer(mainSettings);
         pluginConfig.setupMessages(config);
+        pluginConfig.setupTemplates();
         registerCommand(pluginManager, mainSettings);
         if (mainSettings.getBoolean("enable_metrics")) {
             new Metrics(this, 22021);

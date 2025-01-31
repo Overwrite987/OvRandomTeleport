@@ -18,6 +18,8 @@ specifications:
   teleport_on_first_join: false
   void_worlds: []
   respawn_worlds: []
+# Необязательный параметр
+template: 'default_actions'
 # Необязательные параметры
 costs:
   # По умолчанию - VAULT
@@ -25,7 +27,7 @@ costs:
   money_cost: 1000
   hunger_cost: 5
   experience_cost: 10
-# Обязательные параметры
+# Обязательные параметры, если не указаны в темплейте
 location_generation_options:
   shape: SQUARE
   # Необязательный параметр. По умолчанию - RECTANGULAR
@@ -91,28 +93,9 @@ avoid:
     list: []
   regions: true
   towns: false
-# Не обязательные параметры
-actions:
-  # Укажите [] для отключения
-  pre_teleport:
-    - '[MESSAGE] &7&l(&5&lOvRandomTeleport&7&l) &6» &fВы будете телепортированы через %time% Не двигайтесь и не получайте урона.'
-    - '[SOUND] BLOCK_NOTE_BLOCK_PLING;1;1'
-  # Необязательный параметр
-  on_cooldown:
-    3:
-      - '[TITLE] &aТелепорт через &e3...'
-    2:
-      - '[TITLE] &aТелепорт через &62...'
-    1:
-      - '[TITLE] &aТелепорт через &c1...'
-  # Укажите [] для отключения
-  after_teleport:
-    - '[MESSAGE] &7&l(&5&lOvRandomTeleport&7&l) &6» &aУспешная телепортация! &fВы телепортировались на координаты: &2%x% %y% %z%.'
-    - '[TITLE] &a&lУспех!;&fВы телепортировались на координаты: &2%x% %y% %z%.'
-    - '[SOUND] ENTITY_PLAYER_LEVELUP;1;1'
 # Необязательный параметр
 # Отдельные сообщения при использовании канала.
-# Если они не указаны - будут использованы дефолтные
+# Если они не указаны - будут использованы дефолтные, из config.yml
 messages:
   prefix: '&7&l(&5&lOvRandomTeleport+&7&l) &6»&r'
   no_perms: '%prefix% &cУ вас не достаточно прав на использование канала телепортации к игрокам.'

@@ -19,6 +19,7 @@ import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.actions.ActionRegistry;
 import ru.overwrite.rtp.actions.impl.*;
 import ru.overwrite.rtp.channels.Channel;
+import ru.overwrite.rtp.channels.ChannelTemplate;
 import ru.overwrite.rtp.channels.ChannelType;
 import ru.overwrite.rtp.channels.settings.*;
 import ru.overwrite.rtp.configuration.Config;
@@ -95,20 +96,19 @@ public final class RtpManager {
             String serverToMove = channelSection.getString("server_to_move", "");
             int minPlayersToUse = channelSection.getInt("min_players_to_use", -1);
             int invulnerableTicks = channelSection.getInt("invulnerable_after_teleport", 12);
-            Costs costs = setupChannelCosts(channelSection.getConfigurationSection("costs"));
-            LocationGenOptions locationGenOptions = setupChannelGenOptions(channelSection.getConfigurationSection("location_generation_options"));
+            ChannelTemplate template = pluginConfig.getChannelTemplates().get(channelSection.getString("template"));
+            Costs costs = setupChannelCosts(channelSection.getConfigurationSection("costs"), template);
+            LocationGenOptions locationGenOptions = setupChannelGenOptions(channelSection.getConfigurationSection("location_generation_options"), template);
             if (locationGenOptions == null) {
-                if (Utils.DEBUG) {
-                    plugin.getPluginLogger().warn("Could not setup location generator options for channel '" + channelId + "'. Skipping...");
-                }
+                printDebug("Could not setup location generator options for channel '" + channelId + "'. Skipping...");
                 continue;
             }
-            Cooldown cooldown = setupChannelCooldown(channelSection.getConfigurationSection("cooldown"));
-            Bossbar bossBar = setupChannelBossBar(channelSection.getConfigurationSection("bossbar"));
-            Particles particles = setupChannelParticles(channelSection.getConfigurationSection("particles"));
-            Restrictions restrictions = setupChannelRestrictions(channelSection.getConfigurationSection("restrictions"));
-            Avoidance avoidance = setupChannelAvoidance(channelSection.getConfigurationSection("avoid"), pluginManager);
-            Actions channelActions = setupChannelActions(channelSection.getConfigurationSection("actions"));
+            Cooldown cooldown = setupChannelCooldown(channelSection.getConfigurationSection("cooldown"), template);
+            Bossbar bossBar = setupChannelBossBar(channelSection.getConfigurationSection("bossbar"), template);
+            Particles particles = setupChannelParticles(channelSection.getConfigurationSection("particles"), template);
+            Restrictions restrictions = setupChannelRestrictions(channelSection.getConfigurationSection("restrictions"), template);
+            Avoidance avoidance = setupChannelAvoidance(channelSection.getConfigurationSection("avoid"), pluginManager, template);
+            Actions channelActions = setupChannelActions(channelSection.getConfigurationSection("actions"), template);
             Messages messages = setupChannelMessages(channelSection.getConfigurationSection("messages"));
 
             Channel newChannel = new Channel(channelId,
@@ -180,8 +180,11 @@ public final class RtpManager {
         specifications.assign(newChannel, specificationsSection);
     }
 
-    private Costs setupChannelCosts(ConfigurationSection channelCosts) {
+    private Costs setupChannelCosts(ConfigurationSection channelCosts, ChannelTemplate template) {
         if (channelCosts == null) {
+            if (template != null && template.costs() != null) {
+                return template.costs();
+            }
             return new Costs(null, null, -1, -1, -1);
         }
         Costs.MoneyType moneyType = Costs.MoneyType.valueOf(channelCosts.getString("money_type", "VAULT").toUpperCase(Locale.ENGLISH));
@@ -192,8 +195,11 @@ public final class RtpManager {
         return new Costs(plugin.getEconomy(), moneyType, moneyCost, hungerCost, expCost);
     }
 
-    private LocationGenOptions setupChannelGenOptions(ConfigurationSection locationGenOptions) {
+    private LocationGenOptions setupChannelGenOptions(ConfigurationSection locationGenOptions, ChannelTemplate template) {
         if (locationGenOptions == null) {
+            if (template != null && template.locationGenOptions() != null) {
+                return template.locationGenOptions();
+            }
             return null;
         }
         LocationGenOptions.Shape shape = LocationGenOptions.Shape.valueOf(locationGenOptions.getString("shape", "SQUARE").toUpperCase(Locale.ENGLISH));
@@ -211,16 +217,19 @@ public final class RtpManager {
         return new LocationGenOptions(shape, genFormat, minX, maxX, minZ, maxZ, nearRadiusMin, nearRadiusMax, centerX, centerZ, maxLocationAttempts);
     }
 
-    private Cooldown setupChannelCooldown(ConfigurationSection cooldown) {
+    private Cooldown setupChannelCooldown(ConfigurationSection cooldown, ChannelTemplate template) {
         Object2IntSortedMap<String> groupCooldownsMap = new Object2IntLinkedOpenHashMap<>();
-        if (isSectionNull(cooldown)) {
+        if (pluginConfig.isNullSection(cooldown)) {
+            if (template != null && template.cooldown() != null) {
+                return template.cooldown();
+            }
             return new Cooldown(-1, null, groupCooldownsMap, false, -1);
         }
         int defaultCooldown = cooldown.getInt("default_cooldown", -1);
         TimedExpiringMap<String, Long> playerCooldowns = defaultCooldown > 0 ? new TimedExpiringMap<>(TimeUnit.SECONDS) : null;
         final ConfigurationSection groupCooldowns = cooldown.getConfigurationSection("group_cooldowns");
         boolean useLastGroupCooldown = false;
-        if (!isSectionNull(groupCooldowns) && plugin.getPerms() != null) {
+        if (!pluginConfig.isNullSection(groupCooldowns) && plugin.getPerms() != null) {
             for (String groupName : groupCooldowns.getKeys(false)) {
                 int cd = groupCooldowns.getInt(groupName);
                 groupCooldownsMap.put(groupName, cd);
@@ -237,8 +246,11 @@ public final class RtpManager {
         return new Cooldown(defaultCooldown, playerCooldowns, groupCooldownsMap, useLastGroupCooldown, teleportCooldown);
     }
 
-    private Bossbar setupChannelBossBar(ConfigurationSection bossbar) {
-        if (isSectionNull(bossbar)) {
+    private Bossbar setupChannelBossBar(ConfigurationSection bossbar, ChannelTemplate template) {
+        if (pluginConfig.isNullSection(bossbar)) {
+            if (template != null && template.bossbar() != null) {
+                return template.bossbar();
+            }
             return new Bossbar(false, null, null, null);
         }
         boolean enabled = bossbar.getBoolean("enabled");
@@ -249,8 +261,11 @@ public final class RtpManager {
         return new Bossbar(enabled, title, color, style);
     }
 
-    private Particles setupChannelParticles(ConfigurationSection particles) {
-        if (isSectionNull(particles)) {
+    private Particles setupChannelParticles(ConfigurationSection particles, ChannelTemplate template) {
+        if (pluginConfig.isNullSection(particles)) {
+            if (template != null && template.particles() != null) {
+                return template.particles();
+            }
             return new Particles(
                     false, false, null, -1, -1, -1, -1, false, false, false,
                     false, false, null, -1, -1, -1);
@@ -272,7 +287,7 @@ public final class RtpManager {
         double afterTeleportRadius = 0;
         double afterTeleportParticleSpeed = 0;
         final ConfigurationSection preTeleport = particles.getConfigurationSection("pre_teleport");
-        if (!isSectionNull(preTeleport)) {
+        if (!pluginConfig.isNullSection(preTeleport)) {
             preTeleportEnabled = preTeleport.getBoolean("enabled", false);
             preTeleportSendOnlyToPlayer = preTeleport.getBoolean("send_only_to_player", false);
             preTeleportId = Particle.valueOf(preTeleport.getString("id").toUpperCase(Locale.ENGLISH));
@@ -285,7 +300,7 @@ public final class RtpManager {
             preTeleportMoveNear = preTeleport.getBoolean("move_near");
         }
         final ConfigurationSection afterTeleport = particles.getConfigurationSection("after_teleport");
-        if (!isSectionNull(afterTeleport)) {
+        if (!pluginConfig.isNullSection(afterTeleport)) {
             afterTeleportParticleEnabled = afterTeleport.getBoolean("enabled", false);
             afterTeleportSendOnlyToPlayer = afterTeleport.getBoolean("send_only_to_player", false);
             afterTeleportParticle = Particle.valueOf(afterTeleport.getString("id").toUpperCase(Locale.ENGLISH));
@@ -299,8 +314,11 @@ public final class RtpManager {
                 afterTeleportParticleEnabled, afterTeleportSendOnlyToPlayer, afterTeleportParticle, afterTeleportCount, afterTeleportRadius, afterTeleportParticleSpeed);
     }
 
-    private Restrictions setupChannelRestrictions(ConfigurationSection restrictions) {
-        boolean isNullSection = isSectionNull(restrictions);
+    private Restrictions setupChannelRestrictions(ConfigurationSection restrictions, ChannelTemplate template) {
+        boolean isNullSection = pluginConfig.isNullSection(restrictions);
+        if (isNullSection && template != null && template.restrictions() != null) {
+            return template.restrictions();
+        }
         boolean restrictMove = !isNullSection && restrictions.getBoolean("move", false);
         boolean restrictTeleport = !isNullSection && restrictions.getBoolean("teleport", false);
         boolean restrictDamage = !isNullSection && restrictions.getBoolean("damage", false);
@@ -310,8 +328,11 @@ public final class RtpManager {
         return new Restrictions(restrictMove, restrictTeleport, restrictDamage, restrictDamageOthers, damageCheckOnlyPlayers);
     }
 
-    private Avoidance setupChannelAvoidance(ConfigurationSection avoid, PluginManager pluginManager) {
-        boolean isNullSection = isSectionNull(avoid);
+    private Avoidance setupChannelAvoidance(ConfigurationSection avoid, PluginManager pluginManager, ChannelTemplate template) {
+        boolean isNullSection = pluginConfig.isNullSection(avoid);
+        if (isNullSection && template != null && template.avoidance() != null) {
+            return template.avoidance();
+        }
         Set<Material> avoidBlocks = EnumSet.noneOf(Material.class);
         boolean avoidBlocksBlacklist = true;
         if (!isNullSection) {
@@ -334,12 +355,15 @@ public final class RtpManager {
         return new Avoidance(avoidBlocksBlacklist, avoidBlocks, avoidBiomesBlacklist, avoidBiomes, avoidRegions, avoidTowns);
     }
 
-    private Actions setupChannelActions(ConfigurationSection actions) {
-        boolean isNullSection = isSectionNull(actions);
+    private Actions setupChannelActions(ConfigurationSection actions, ChannelTemplate template) {
+        boolean isNullSection = pluginConfig.isNullSection(actions);
+        if (isNullSection && template != null && template.actions() != null) {
+            return template.actions();
+        }
         List<Action> preTeleportActions = isNullSection ? List.of() : getActionList(actions.getStringList("pre_teleport"));
         Int2ObjectMap<List<Action>> onCooldownActions = new Int2ObjectOpenHashMap<>();
-        final ConfigurationSection cooldownActions = actions.getConfigurationSection("on_cooldown");
-        if (!isSectionNull(cooldownActions)) {
+        final ConfigurationSection cooldownActions = isNullSection ? null : actions.getConfigurationSection("on_cooldown");
+        if (!pluginConfig.isNullSection(cooldownActions)) {
             for (String actionId : cooldownActions.getKeys(false)) {
                 if (!Utils.isNumeric(actionId)) {
                     continue;
@@ -354,7 +378,7 @@ public final class RtpManager {
         return new Actions(preTeleportActions, onCooldownActions, afterTeleportActions);
     }
 
-    private ImmutableList<Action> getActionList(List<String> actionStrings) {
+    public ImmutableList<Action> getActionList(List<String> actionStrings) {
         List<Action> actions = new ArrayList<>(actionStrings.size());
         for (String actionStr : actionStrings) {
             try {
@@ -368,7 +392,7 @@ public final class RtpManager {
 
     private Messages setupChannelMessages(ConfigurationSection messages) {
         Messages defaultMessages = pluginConfig.getDefaultChannelMessages();
-        if (isSectionNull(messages)) {
+        if (pluginConfig.isNullSection(messages)) {
             return defaultMessages;
         }
         String prefix = isConfigValueExist(messages, "prefix") ? messages.getString("prefix") : pluginConfig.getMessagesPrefix();
@@ -407,10 +431,6 @@ public final class RtpManager {
 
     private boolean isConfigValueExist(ConfigurationSection section, String key) {
         return section.getString(key) != null;
-    }
-
-    private boolean isSectionNull(ConfigurationSection section) {
-        return section == null;
     }
 
     public Channel getChannelById(String channelId) {
