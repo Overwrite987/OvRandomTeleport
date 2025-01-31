@@ -216,7 +216,7 @@ public class RtpListener implements Listener {
         return null;
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onDeath(EntityDeathEvent e) {
         if (!(e.getEntity() instanceof Player player)) {
             return;
