@@ -588,8 +588,8 @@ public final class RtpManager {
     }
 
     public void cancelAllTasks() {
-        for (Map.Entry<String, RtpTask> entry : perPlayerActiveRtpTask.entrySet()) {
-            entry.getValue().cancel();
+        for (RtpTask task : perPlayerActiveRtpTask.values()) {
+            task.cancel();
         }
     }
 
