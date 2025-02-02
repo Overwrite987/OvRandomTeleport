@@ -45,7 +45,7 @@ public final class RtpManager {
 
     private final Map<String, Channel> namedChannels = new HashMap<>();
 
-    private final Specifications specifications = Specifications.createEmpty();
+    private final Specifications specifications = new Specifications(new HashSet<>(), new HashMap<>(), new HashMap<>());
 
     private final Map<String, RtpTask> perPlayerActiveRtpTask = new ConcurrentHashMap<>();
 
@@ -146,10 +146,6 @@ public final class RtpManager {
     public record Specifications(Set<String> joinChannels,
                                  Map<String, List<World>> voidChannels,
                                  Map<String, List<World>> respawnChannels) {
-
-        public static Specifications createEmpty() {
-            return new Specifications(new HashSet<>(), new HashMap<>(), new HashMap<>());
-        }
 
         public void clearAll() {
             this.joinChannels.clear();
