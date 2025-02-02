@@ -113,7 +113,9 @@ public record Costs(
 
     public void processExpReturn(Player player) {
         if (expCost > 0) {
-            player.setTotalExperience(player.getTotalExperience() + expCost);
+            int expToGive = player.getTotalExperience() + expCost;
+            player.setTotalExperience(0);
+            player.giveExp(expToGive);
         }
     }
 }
