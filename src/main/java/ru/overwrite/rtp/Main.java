@@ -42,6 +42,8 @@ public final class Main extends JavaPlugin {
 
     private PluginMessage pluginMessage;
 
+    private RtpExpansion rtpExpansion;
+
     @Override
     public void onLoad() {
         if (server.getPluginManager().isPluginEnabled("PlugManX") || server.getPluginManager().isPluginEnabled("PlugMan")) {
@@ -138,7 +140,8 @@ public final class Main extends JavaPlugin {
             return;
         }
         Utils.USE_PAPI = true;
-        new RtpExpansion(this).register();
+        rtpExpansion = new RtpExpansion(this);
+        rtpExpansion.register();
         pluginLogger.info("§eПлейсхолдеры подключены!");
     }
 
@@ -175,6 +178,7 @@ public final class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         rtpManager.cancelAllTasks();
+        rtpExpansion.unregister();
         server.getScheduler().cancelTasks(this);
     }
 }
