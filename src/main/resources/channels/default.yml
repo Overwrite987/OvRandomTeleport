@@ -89,7 +89,7 @@ cooldown:
   pre_teleport_group_cooldowns:
     vip: 1
   # Если группа игрока не указана в списке, то будет браться кулдаун для самой последней группы из списка, вместо дефолтного
-  use_last_group_cooldown: true
+  use_last_group_cooldown: false
 # Настройка боссбара обратного отсчета
 # Не активен, если кулдаун до телепортации < 0
 bossbar:
