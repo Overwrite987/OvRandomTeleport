@@ -91,6 +91,7 @@ public class LocationGenerator {
         int minZ = locationGenOptions.minZ();
         int maxZ = locationGenOptions.maxZ();
         List<Player> nearbyPlayers = new ArrayList<>();
+        rtpManager.printDebug("Players in world " + world.getName() + ": " + world.getPlayers().stream().map(Player::getName).toList());
         for (Player worldPlayer : world.getPlayers()) {
             if (worldPlayer.hasPermission("rtp.near.bypass") || isVanished(worldPlayer)) {
                 continue;
