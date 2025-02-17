@@ -35,7 +35,7 @@ public class RtpTask {
 
     public void startPreTeleportTimer(Player player, Channel channel, Location location) {
         Cooldown cooldown = channel.cooldown();
-        this.preTeleportCooldown = cooldown.teleportCooldown();
+        this.preTeleportCooldown = rtpManager.getChannelPreTeleportCooldown(player, channel.cooldown());
         if (channel.bossbar().bossbarEnabled()) {
             this.setupBossBar(player, channel.bossbar(), cooldown);
         }
@@ -48,7 +48,7 @@ public class RtpTask {
                     cleanupAndTeleport(player, channel, location);
                     return;
                 }
-                updateBossBar(channel, cooldown);
+                updateBossBar(player, channel, cooldown);
                 handleCooldownActions(player, channel);
             }
         }.runTaskTimerAsynchronously(plugin, 20L, 20L);
@@ -142,7 +142,7 @@ public class RtpTask {
     }
 
     private void setupBossBar(Player player, Bossbar bossbar, Cooldown cooldown) {
-        String title = Utils.COLORIZER.colorize(bossbar.bossbarTitle().replace("%time%", Utils.getTime(cooldown.teleportCooldown())));
+        String title = Utils.COLORIZER.colorize(bossbar.bossbarTitle().replace("%time%", Utils.getTime(rtpManager.getChannelPreTeleportCooldown(player, cooldown))));
         this.bossBar = Bukkit.createBossBar(title, bossbar.bossbarColor(), bossbar.bossbarType());
         this.bossBar.addPlayer(player);
     }
@@ -156,11 +156,11 @@ public class RtpTask {
         this.cancel();
     }
 
-    private void updateBossBar(Channel channel, Cooldown cooldown) {
+    private void updateBossBar(Player player, Channel channel, Cooldown cooldown) {
         if (bossBar == null) {
             return;
         }
-        double progress = preTeleportCooldown / (double) cooldown.teleportCooldown();
+        double progress = preTeleportCooldown / (double) rtpManager.getChannelPreTeleportCooldown(player, cooldown);
         if (progress < 1 && progress > 0) {
             bossBar.setProgress(progress);
         }
