@@ -13,7 +13,7 @@ location_generation_options:
   min_z: -1000
   max_z: 1000
 cooldown:
-  default_cooldown: 300
+  default_teleport_cooldown: 300
 restrictions:
   move: true
   damage: true

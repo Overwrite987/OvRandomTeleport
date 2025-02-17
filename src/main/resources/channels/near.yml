@@ -48,7 +48,7 @@ cooldown:
     vip: 30
     premium: 10
   use_last_group_cooldown: true
-  teleport_cooldown: 5
+  default_teleport_cooldown: 5
 # Необязательный параметр
 teleport_cooldown: 5
 # Необязательные параметры

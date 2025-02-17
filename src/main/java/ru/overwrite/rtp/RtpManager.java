@@ -213,30 +213,41 @@ public final class RtpManager {
 
     private Cooldown setupChannelCooldown(ConfigurationSection cooldown, ChannelTemplate template) {
         Object2IntSortedMap<String> groupCooldownsMap = new Object2IntLinkedOpenHashMap<>();
+        Object2IntSortedMap<String> preTeleportCooldownsMap = new Object2IntLinkedOpenHashMap<>();
         if (pluginConfig.isNullSection(cooldown)) {
             return (template != null && template.cooldown() != null)
                     ? template.cooldown()
-                    : new Cooldown(-1, null, groupCooldownsMap, false, -1);
+                    : new Cooldown(-1, null, groupCooldownsMap, -1, preTeleportCooldownsMap);
         }
         int defaultCooldown = cooldown.getInt("default_cooldown", -1);
         TimedExpiringMap<String, Long> playerCooldowns = defaultCooldown > 0 ? new TimedExpiringMap<>(TimeUnit.SECONDS) : null;
         final ConfigurationSection groupCooldowns = cooldown.getConfigurationSection("group_cooldowns");
-        boolean useLastGroupCooldown = false;
+        boolean useLastGroupCooldown = cooldown.getBoolean("use_last_group_cooldown", false);
         if (!pluginConfig.isNullSection(groupCooldowns) && plugin.getPerms() != null) {
             for (String groupName : groupCooldowns.getKeys(false)) {
                 int cd = groupCooldowns.getInt(groupName);
                 groupCooldownsMap.put(groupName, cd);
             }
-            useLastGroupCooldown = cooldown.getBoolean("use_last_group_cooldown", false);
         }
         if (!groupCooldownsMap.isEmpty()) {
             defaultCooldown = useLastGroupCooldown
                     ? groupCooldowns.getInt(new ArrayList<>(groupCooldownsMap.keySet()).get(groupCooldownsMap.size() - 1))
                     : defaultCooldown;
         }
-        int teleportCooldown = cooldown.getInt("teleport_cooldown", -1);
-
-        return new Cooldown(defaultCooldown, playerCooldowns, groupCooldownsMap, useLastGroupCooldown, teleportCooldown);
+        int defaultPreTeleportCooldown = cooldown.getInt("default_teleport_cooldown", -1);
+        final ConfigurationSection preTeleportGroupCooldowns = cooldown.getConfigurationSection("pre_teleport_group_cooldowns");
+        if (!pluginConfig.isNullSection(preTeleportGroupCooldowns) && plugin.getPerms() != null) {
+            for (String groupName : preTeleportGroupCooldowns.getKeys(false)) {
+                int cd = preTeleportGroupCooldowns.getInt(groupName);
+                preTeleportCooldownsMap.put(groupName, cd);
+            }
+        }
+        if (!groupCooldownsMap.isEmpty()) {
+            defaultPreTeleportCooldown = useLastGroupCooldown
+                    ? groupCooldowns.getInt(new ArrayList<>(preTeleportCooldownsMap.keySet()).get(preTeleportCooldownsMap.size() - 1))
+                    : defaultPreTeleportCooldown;
+        }
+        return new Cooldown(defaultCooldown, playerCooldowns, groupCooldownsMap, defaultPreTeleportCooldown, preTeleportCooldownsMap);
     }
 
     private Bossbar setupChannelBossBar(ConfigurationSection bossbar, ChannelTemplate template) {
@@ -446,7 +457,7 @@ public final class RtpManager {
             plugin.getPluginMessage().connectToServer(player, channel.serverToMove());
             return;
         }
-        boolean finalForce = force || channel.cooldown().teleportCooldown() <= 0;
+        boolean finalForce = force || getChannelPreTeleportCooldown(player, channel.cooldown()) <= 0;
         printDebug("Pre teleporting player '" + playerName + "' with channel '" + channel.id() + "' in world '" + world.getName() + "' (force: " + finalForce + ")");
         teleportingNow.add(playerName);
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
@@ -563,6 +574,18 @@ public final class RtpManager {
         return groupCooldowns.getOrDefault(playerGroup, cooldown.defaultCooldown());
     }
 
+    public int getChannelPreTeleportCooldown(Player player, Cooldown cooldown) {
+        if (cooldown.defaultPreTeleportCooldown() < 0) {
+            return -1;
+        }
+        Object2IntSortedMap<String> preTeleportCooldowns = cooldown.preTeleportCooldowns();
+        if (preTeleportCooldowns.isEmpty()) {
+            return cooldown.defaultPreTeleportCooldown();
+        }
+        final String playerGroup = plugin.getPerms().getPrimaryGroup(player);
+        return preTeleportCooldowns.getOrDefault(playerGroup, cooldown.defaultPreTeleportCooldown());
+    }
+
     @Getter(AccessLevel.NONE)
     private final String[] searchList = {"%player%", "%name%", "%time%", "%x%", "%y%", "%z%"};
 
@@ -571,7 +594,7 @@ public final class RtpManager {
             return;
         }
         String name = channel.name();
-        String cd = Utils.getTime(channel.cooldown().teleportCooldown());
+        String cd = Utils.getTime(getChannelPreTeleportCooldown(player, channel.cooldown()));
         String x = Integer.toString(loc.getBlockX());
         String y = Integer.toString(loc.getBlockY());
         String z = Integer.toString(loc.getBlockZ());

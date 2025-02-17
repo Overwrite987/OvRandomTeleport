@@ -8,8 +8,8 @@ public record Cooldown(
         int defaultCooldown,
         TimedExpiringMap<String, Long> playerCooldowns,
         Object2IntSortedMap<String> groupCooldowns,
-        boolean useLastGroupCooldown,
-        int teleportCooldown) {
+        int defaultPreTeleportCooldown,
+        Object2IntSortedMap<String> preTeleportCooldowns) {
 
     public boolean hasCooldown(Player player) {
         return playerCooldowns != null && !playerCooldowns.isEmpty() && playerCooldowns.containsKey(player.getName());
