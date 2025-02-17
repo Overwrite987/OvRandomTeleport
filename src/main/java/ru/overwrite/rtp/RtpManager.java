@@ -242,9 +242,9 @@ public final class RtpManager {
                 preTeleportCooldownsMap.put(groupName, cd);
             }
         }
-        if (!groupCooldownsMap.isEmpty()) {
+        if (!preTeleportCooldownsMap.isEmpty()) {
             defaultPreTeleportCooldown = useLastGroupCooldown
-                    ? groupCooldowns.getInt(new ArrayList<>(preTeleportCooldownsMap.keySet()).get(preTeleportCooldownsMap.size() - 1))
+                    ? preTeleportGroupCooldowns.getInt(new ArrayList<>(preTeleportCooldownsMap.keySet()).get(preTeleportCooldownsMap.size() - 1))
                     : defaultPreTeleportCooldown;
         }
         return new Cooldown(defaultCooldown, playerCooldowns, groupCooldownsMap, defaultPreTeleportCooldown, preTeleportCooldownsMap);
