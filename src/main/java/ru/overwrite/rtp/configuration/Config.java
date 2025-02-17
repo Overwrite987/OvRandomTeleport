@@ -151,29 +151,40 @@ public class Config {
     }
 
     private Cooldown setupTemplateCooldown(ConfigurationSection cooldown) {
+        Object2IntSortedMap<String> groupCooldownsMap = new Object2IntLinkedOpenHashMap<>();
+        Object2IntSortedMap<String> preTeleportCooldownsMap = new Object2IntLinkedOpenHashMap<>();
         if (isNullSection(cooldown)) {
             return null;
         }
-        Object2IntSortedMap<String> groupCooldownsMap = new Object2IntLinkedOpenHashMap<>();
         int defaultCooldown = cooldown.getInt("default_cooldown", -1);
         TimedExpiringMap<String, Long> playerCooldowns = defaultCooldown > 0 ? new TimedExpiringMap<>(TimeUnit.SECONDS) : null;
         final ConfigurationSection groupCooldowns = cooldown.getConfigurationSection("group_cooldowns");
-        boolean useLastGroupCooldown = false;
+        boolean useLastGroupCooldown = cooldown.getBoolean("use_last_group_cooldown", false);
         if (!isNullSection(groupCooldowns) && plugin.getPerms() != null) {
             for (String groupName : groupCooldowns.getKeys(false)) {
                 int cd = groupCooldowns.getInt(groupName);
                 groupCooldownsMap.put(groupName, cd);
             }
-            useLastGroupCooldown = cooldown.getBoolean("use_last_group_cooldown", false);
         }
         if (!groupCooldownsMap.isEmpty()) {
             defaultCooldown = useLastGroupCooldown
                     ? groupCooldowns.getInt(new ArrayList<>(groupCooldownsMap.keySet()).get(groupCooldownsMap.size() - 1))
                     : defaultCooldown;
         }
-        int teleportCooldown = cooldown.getInt("teleport_cooldown", -1);
-
-        return new Cooldown(defaultCooldown, playerCooldowns, groupCooldownsMap, useLastGroupCooldown, teleportCooldown);
+        int defaultPreTeleportCooldown = cooldown.getInt("default_teleport_cooldown", -1);
+        final ConfigurationSection preTeleportGroupCooldowns = cooldown.getConfigurationSection("pre_teleport_group_cooldowns");
+        if (!isNullSection(preTeleportGroupCooldowns) && plugin.getPerms() != null) {
+            for (String groupName : preTeleportGroupCooldowns.getKeys(false)) {
+                int cd = preTeleportGroupCooldowns.getInt(groupName);
+                preTeleportCooldownsMap.put(groupName, cd);
+            }
+        }
+        if (!groupCooldownsMap.isEmpty()) {
+            defaultPreTeleportCooldown = useLastGroupCooldown
+                    ? groupCooldowns.getInt(new ArrayList<>(preTeleportCooldownsMap.keySet()).get(preTeleportCooldownsMap.size() - 1))
+                    : defaultPreTeleportCooldown;
+        }
+        return new Cooldown(defaultCooldown, playerCooldowns, groupCooldownsMap, defaultPreTeleportCooldown, preTeleportCooldownsMap);
     }
 
     private Bossbar setupTemplateBossBar(ConfigurationSection bossbar) {
