@@ -178,7 +178,9 @@ public final class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         rtpManager.cancelAllTasks();
-        rtpExpansion.unregister();
+        if (rtpExpansion != null) {
+            rtpExpansion.unregister();
+        }
         server.getScheduler().cancelTasks(this);
     }
 }
