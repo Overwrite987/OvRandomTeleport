@@ -1,5 +1,6 @@
 package ru.overwrite.rtp.configuration;
 
+import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
@@ -7,6 +8,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntSortedMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.block.Biome;
@@ -171,7 +173,7 @@ public class Config {
                     ? groupCooldowns.getInt(new ArrayList<>(groupCooldownsMap.keySet()).get(groupCooldownsMap.size() - 1))
                     : defaultCooldown;
         }
-        int defaultPreTeleportCooldown = cooldown.getInt("default_teleport_cooldown", -1);
+        int defaultPreTeleportCooldown = cooldown.getInt("default_pre_teleport_cooldown", -1);
         final ConfigurationSection preTeleportGroupCooldowns = cooldown.getConfigurationSection("pre_teleport_group_cooldowns");
         if (!isNullSection(preTeleportGroupCooldowns) && plugin.getPerms() != null) {
             for (String groupName : preTeleportGroupCooldowns.getKeys(false)) {
@@ -205,7 +207,7 @@ public class Config {
         }
         boolean preTeleportEnabled = false;
         boolean preTeleportSendOnlyToPlayer = false;
-        Particle preTeleportId = null;
+        List<Particles.ParticleData> preTeleportParticles = null;
         int preTeleportDots = 0;
         double preTeleportRadius = 0;
         double preTeleportParticleSpeed = 0;
@@ -215,7 +217,7 @@ public class Config {
         boolean preTeleportMoveNear = false;
         boolean afterTeleportParticleEnabled = false;
         boolean afterTeleportSendOnlyToPlayer = false;
-        Particle afterTeleportParticle = null;
+        Particles.ParticleData afterTeleportParticle = null;
         int afterTeleportCount = 0;
         double afterTeleportRadius = 0;
         double afterTeleportParticleSpeed = 0;
@@ -223,7 +225,7 @@ public class Config {
         if (!isNullSection(preTeleport)) {
             preTeleportEnabled = preTeleport.getBoolean("enabled", false);
             preTeleportSendOnlyToPlayer = preTeleport.getBoolean("send_only_to_player", false);
-            preTeleportId = Particle.valueOf(preTeleport.getString("id").toUpperCase(Locale.ENGLISH));
+            preTeleportParticles = ImmutableList.copyOf(getStringListInAnyCase(preTeleport.get("id")).stream().map(Utils::createParticleData).toList());
             preTeleportDots = preTeleport.getInt("dots");
             preTeleportRadius = preTeleport.getDouble("radius");
             preTeleportParticleSpeed = preTeleport.getDouble("particle_speed");
@@ -236,14 +238,14 @@ public class Config {
         if (!isNullSection(afterTeleport)) {
             afterTeleportParticleEnabled = afterTeleport.getBoolean("enabled", false);
             afterTeleportSendOnlyToPlayer = afterTeleport.getBoolean("send_only_to_player", false);
-            afterTeleportParticle = Particle.valueOf(afterTeleport.getString("id").toUpperCase(Locale.ENGLISH));
+            afterTeleportParticle = Utils.createParticleData(afterTeleport.getString("id"));
             afterTeleportCount = afterTeleport.getInt("count");
             afterTeleportRadius = afterTeleport.getDouble("radius");
             afterTeleportParticleSpeed = afterTeleport.getDouble("particle_speed");
         }
 
         return new Particles(
-                preTeleportEnabled, preTeleportSendOnlyToPlayer, preTeleportId, preTeleportDots, preTeleportRadius, preTeleportParticleSpeed, preTeleportSpeed, preTeleportInvert, preTeleportJumping, preTeleportMoveNear,
+                preTeleportEnabled, preTeleportSendOnlyToPlayer, preTeleportParticles, preTeleportDots, preTeleportRadius, preTeleportParticleSpeed, preTeleportSpeed, preTeleportInvert, preTeleportJumping, preTeleportMoveNear,
                 afterTeleportParticleEnabled, afterTeleportSendOnlyToPlayer, afterTeleportParticle, afterTeleportCount, afterTeleportRadius, afterTeleportParticleSpeed);
     }
 
@@ -306,6 +308,20 @@ public class Config {
 
     public boolean isNullSection(ConfigurationSection section) {
         return section == null;
+    }
+
+    public List<String> getStringListInAnyCase(Object raw) {
+        List<String> stringList = new ArrayList<>();
+        if (raw instanceof String singleId) {
+            stringList.add(singleId);
+        } else if (raw instanceof List<?> listIds) {
+            for (Object obj : listIds) {
+                if (obj instanceof String id) {
+                    stringList.add(id);
+                }
+            }
+        }
+        return stringList;
     }
 
     public FileConfiguration getChannelFile(String path, String fileName) {

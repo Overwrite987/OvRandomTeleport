@@ -234,7 +234,7 @@ public final class RtpManager {
                     ? groupCooldowns.getInt(new ArrayList<>(groupCooldownsMap.keySet()).get(groupCooldownsMap.size() - 1))
                     : defaultCooldown;
         }
-        int defaultPreTeleportCooldown = cooldown.getInt("default_teleport_cooldown", -1);
+        int defaultPreTeleportCooldown = cooldown.getInt("default_pre_teleport_cooldown", -1);
         final ConfigurationSection preTeleportGroupCooldowns = cooldown.getConfigurationSection("pre_teleport_group_cooldowns");
         if (!pluginConfig.isNullSection(preTeleportGroupCooldowns) && plugin.getPerms() != null) {
             for (String groupName : preTeleportGroupCooldowns.getKeys(false)) {
@@ -273,7 +273,7 @@ public final class RtpManager {
         }
         boolean preTeleportEnabled = false;
         boolean preTeleportSendOnlyToPlayer = false;
-        Particle preTeleportId = null;
+        List<Particles.ParticleData> preTeleportParticles = null;
         int preTeleportDots = 0;
         double preTeleportRadius = 0;
         double preTeleportParticleSpeed = 0;
@@ -283,7 +283,7 @@ public final class RtpManager {
         boolean preTeleportMoveNear = false;
         boolean afterTeleportParticleEnabled = false;
         boolean afterTeleportSendOnlyToPlayer = false;
-        Particle afterTeleportParticle = null;
+        Particles.ParticleData afterTeleportParticle = null;
         int afterTeleportCount = 0;
         double afterTeleportRadius = 0;
         double afterTeleportParticleSpeed = 0;
@@ -291,7 +291,7 @@ public final class RtpManager {
         if (!pluginConfig.isNullSection(preTeleport)) {
             preTeleportEnabled = preTeleport.getBoolean("enabled", false);
             preTeleportSendOnlyToPlayer = preTeleport.getBoolean("send_only_to_player", false);
-            preTeleportId = Particle.valueOf(preTeleport.getString("id").toUpperCase(Locale.ENGLISH));
+            preTeleportParticles = ImmutableList.copyOf(pluginConfig.getStringListInAnyCase(preTeleport.get("id")).stream().map(Utils::createParticleData).toList());
             preTeleportDots = preTeleport.getInt("dots");
             preTeleportRadius = preTeleport.getDouble("radius");
             preTeleportParticleSpeed = preTeleport.getDouble("particle_speed");
@@ -304,14 +304,14 @@ public final class RtpManager {
         if (!pluginConfig.isNullSection(afterTeleport)) {
             afterTeleportParticleEnabled = afterTeleport.getBoolean("enabled", false);
             afterTeleportSendOnlyToPlayer = afterTeleport.getBoolean("send_only_to_player", false);
-            afterTeleportParticle = Particle.valueOf(afterTeleport.getString("id").toUpperCase(Locale.ENGLISH));
+            afterTeleportParticle = Utils.createParticleData(afterTeleport.getString("id"));
             afterTeleportCount = afterTeleport.getInt("count");
             afterTeleportRadius = afterTeleport.getDouble("radius");
             afterTeleportParticleSpeed = afterTeleport.getDouble("particle_speed");
         }
 
         return new Particles(
-                preTeleportEnabled, preTeleportSendOnlyToPlayer, preTeleportId, preTeleportDots, preTeleportRadius, preTeleportParticleSpeed, preTeleportSpeed, preTeleportInvert, preTeleportJumping, preTeleportMoveNear,
+                preTeleportEnabled, preTeleportSendOnlyToPlayer, preTeleportParticles, preTeleportDots, preTeleportRadius, preTeleportParticleSpeed, preTeleportSpeed, preTeleportInvert, preTeleportJumping, preTeleportMoveNear,
                 afterTeleportParticleEnabled, afterTeleportSendOnlyToPlayer, afterTeleportParticle, afterTeleportCount, afterTeleportRadius, afterTeleportParticleSpeed);
     }
 
@@ -539,7 +539,7 @@ public final class RtpManager {
                 Location particleLocation = loc.clone().add(xOffset, yOffset * particles.afterTeleportRadius(), zOffset);
 
                 world.spawnParticle(
-                        particles.afterTeleportId(),
+                        particles.afterTeleportParticle().particle(),
                         receivers,
                         player,
                         particleLocation.getX(),
@@ -550,7 +550,7 @@ public final class RtpManager {
                         0,
                         0,
                         particles.afterTeleportParticleSpeed(),
-                        null);
+                        particles.afterTeleportParticle().dustOptions());
             }
         }, 1L);
     }

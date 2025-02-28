@@ -1,13 +1,13 @@
 package ru.overwrite.rtp.utils;
 
+import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.Main;
+import ru.overwrite.rtp.channels.settings.Particles;
 import ru.overwrite.rtp.configuration.Config;
 import ru.overwrite.rtp.utils.color.*;
 
@@ -20,15 +20,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
 
+@UtilityClass
 public final class Utils {
 
-    private Utils() {}
+    public boolean DEBUG;
 
-    public static boolean DEBUG;
+    public Colorizer COLORIZER;
 
-    public static Colorizer COLORIZER;
-
-    public static void setupColorizer(ConfigurationSection mainSettings) {
+    public void setupColorizer(ConfigurationSection mainSettings) {
         COLORIZER = switch (mainSettings.getString("serializer", "LEGACY").toUpperCase(Locale.ENGLISH)) {
             case "MINIMESSAGE" -> new MiniMessageColorizer();
             case "LEGACY" -> new LegacyColorizer();
@@ -37,9 +36,9 @@ public final class Utils {
         };
     }
 
-    public static List<World> getWorldList(List<String> worldNames) {
+    public List<World> getWorldList(List<String> worldNames) {
         final List<World> worldList = new ArrayList<>(worldNames.size());
-        if (worldNames.get(0).equals("*")) {
+        if (!worldNames.isEmpty() && worldNames.get(0).equals("*")) {
             worldList.addAll(Bukkit.getWorlds());
             return worldList;
         }
@@ -49,7 +48,37 @@ public final class Utils {
         return worldList;
     }
 
-    public static void checkUpdates(Main plugin, Consumer<String> consumer) {
+    public Particles.ParticleData createParticleData(String id) {
+        int separatorIndex = id.indexOf(';');
+
+        Particle particle = (separatorIndex == -1)
+                ? Particle.valueOf(id.toUpperCase(Locale.ENGLISH))
+                : Particle.valueOf(id.substring(0, separatorIndex).toUpperCase(Locale.ENGLISH));
+
+        Particle.DustOptions data = (separatorIndex != -1)
+                ? parseParticleData(particle, id.substring(separatorIndex + 1))
+                : null;
+
+        return new Particles.ParticleData(particle, data);
+    }
+
+    private Particle.DustOptions parseParticleData(Particle particle, String value) {
+        if (!particle.getDataType().isAssignableFrom(Particle.DustOptions.class)) {
+            return null;
+        }
+        String[] parts = value.split(",");
+        if (parts.length < 3) {
+            return null;
+        }
+        int red = Integer.parseInt(parts[0].trim());
+        int green = Integer.parseInt(parts[1].trim());
+        int blue = Integer.parseInt(parts[2].trim());
+        float size = (parts.length > 3) ? Float.parseFloat(parts[3].trim()) : 1.0f;
+
+        return new Particle.DustOptions(Color.fromRGB(red, green, blue), size);
+    }
+
+    public void checkUpdates(Main plugin, Consumer<String> consumer) {
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(
                     new URL("https://raw.githubusercontent.com/Overwrite987/OvRandomTeleport/master/VERSION")
@@ -61,9 +90,9 @@ public final class Utils {
         }, 30L);
     }
 
-    public static final char COLOR_CHAR = '§';
+    public final char COLOR_CHAR = '§';
 
-    public static String translateAlternateColorCodes(char altColorChar, String textToTranslate) {
+    public String translateAlternateColorCodes(char altColorChar, String textToTranslate) {
         final char[] b = textToTranslate.toCharArray();
 
         for (int i = 0, length = b.length - 1; i < length; ++i) {
@@ -76,7 +105,7 @@ public final class Utils {
         return new String(b);
     }
 
-    private static boolean isValidColorCharacter(char c) {
+    private boolean isValidColorCharacter(char c) {
         return (c >= '0' && c <= '9') ||
                 (c >= 'a' && c <= 'f') ||
                 c == 'r' ||
@@ -88,9 +117,9 @@ public final class Utils {
                 c == 'X';
     }
 
-    public static boolean USE_PAPI;
+    public boolean USE_PAPI;
 
-    public static void sendMessage(String message, Player player) {
+    public void sendMessage(String message, Player player) {
         if (message.isBlank()) {
             return;
         }
@@ -101,21 +130,21 @@ public final class Utils {
         player.sendMessage(message);
     }
 
-    public static String parsePlaceholders(String message, Player player) {
+    public String parsePlaceholders(String message, Player player) {
         if (PlaceholderAPI.containsPlaceholders(message)) {
             message = PlaceholderAPI.setPlaceholders(player, message);
         }
         return message;
     }
 
-    public static String locationToString(Location location) {
+    public String locationToString(Location location) {
         return "(" + location.getWorld().getName() + "/"
                 + location.getBlockX() + "/"
                 + location.getBlockY() + "/"
                 + location.getBlockZ() + ")";
     }
 
-    public static String getTime(int time) {
+    public String getTime(int time) {
         final int hours = getHours(time);
         final int minutes = getMinutes(time);
         final int seconds = getSeconds(time);
@@ -137,19 +166,19 @@ public final class Utils {
         return result.toString();
     }
 
-    public static int getHours(int time) {
+    public int getHours(int time) {
         return time / 3600;
     }
 
-    public static int getMinutes(int time) {
+    public int getMinutes(int time) {
         return (time % 3600) / 60;
     }
 
-    public static int getSeconds(int time) {
+    public int getSeconds(int time) {
         return time % 60;
     }
 
-    public static boolean isNumeric(CharSequence cs) {
+    public boolean isNumeric(CharSequence cs) {
         if (cs == null || cs.isEmpty()) {
             return false;
         }
@@ -161,7 +190,7 @@ public final class Utils {
         return true;
     }
 
-    public static String replaceEach(@NotNull String text, @NotNull String[] searchList, @NotNull String[] replacementList) {
+    public String replaceEach(@NotNull String text, @NotNull String[] searchList, @NotNull String[] replacementList) {
         if (text.isEmpty() || searchList.length == 0 || replacementList.length == 0) {
             return text;
         }

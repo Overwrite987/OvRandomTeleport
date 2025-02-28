@@ -16,6 +16,7 @@ import ru.overwrite.rtp.channels.settings.Cooldown;
 import ru.overwrite.rtp.channels.settings.Particles;
 import ru.overwrite.rtp.utils.Utils;
 
+import java.util.Iterator;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -70,6 +71,8 @@ public class RtpTask {
 
             final List<Player> receivers = particles.preTeleportSendOnlyToPlayer() ? List.of(player) : null;
 
+            Iterator<Particles.ParticleData> preTeleportParticle = particles.preTeleportParticles().iterator();
+
             @Override
             public void run() {
                 tickCounter++;
@@ -77,6 +80,10 @@ public class RtpTask {
                     this.cancel();
                     return;
                 }
+                if (!preTeleportParticle.hasNext()) {
+                    preTeleportParticle = particles.preTeleportParticles().iterator();
+                }
+                Particles.ParticleData preTeleportParticleData = preTeleportParticle.next();
 
                 final Location location = player.getLocation();
                 final World world = location.getWorld();
@@ -112,7 +119,7 @@ public class RtpTask {
                     location.add(x, y, z);
 
                     world.spawnParticle(
-                            particles.preTeleportId(),
+                            preTeleportParticleData.particle(),
                             receivers,
                             player,
                             location.getX(),
@@ -123,7 +130,7 @@ public class RtpTask {
                             0,
                             0,
                             particles.preTeleportParticleSpeed(),
-                            null);
+                            preTeleportParticleData.dustOptions());
 
                     location.subtract(x, y, z);
                 }
