@@ -8,15 +8,15 @@ import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import com.sk89q.worldguard.protection.managers.RegionManager;
+import lombok.experimental.UtilityClass;
 import org.bukkit.Location;
 
+@UtilityClass
 public final class WGUtils {
 
-    private WGUtils() {}
+    public BooleanFlag RTP_IGNORE_FLAG = new BooleanFlag("rtp-base-no-teleport");
 
-    public static BooleanFlag RTP_IGNORE_FLAG = new BooleanFlag("rtp-base-no-teleport");
-
-    public static void setupRtpFlag() {
+    public void setupRtpFlag() {
         FlagRegistry registry = WorldGuard.getInstance().getFlagRegistry();
         try {
             registry.register(RTP_IGNORE_FLAG);
@@ -28,7 +28,7 @@ public final class WGUtils {
         }
     }
 
-    public static ApplicableRegionSet getApplicableRegions(Location location) {
+    public ApplicableRegionSet getApplicableRegions(Location location) {
         RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer()
                 .get(BukkitAdapter.adapt(location.getWorld()));
         if (regionManager == null || regionManager.getRegions().isEmpty())
