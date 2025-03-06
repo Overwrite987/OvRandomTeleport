@@ -73,12 +73,12 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        PluginManager pluginManager = server.getPluginManager();
         final FileConfiguration config = getConfig();
         final ConfigurationSection mainSettings = config.getConfigurationSection("main_settings");
         Utils.setupColorizer(mainSettings);
         pluginConfig.setupMessages(config);
         pluginConfig.setupTemplates();
+        PluginManager pluginManager = server.getPluginManager();
         registerCommand(pluginManager, mainSettings);
         if (mainSettings.getBoolean("enable_metrics")) {
             new Metrics(this, 22021);
