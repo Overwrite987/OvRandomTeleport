@@ -112,8 +112,9 @@ public class LocationGenerator {
     }
 
     public boolean hasReachedMaxIterations(String playerName, LocationGenOptions locationGenOptions) {
-        rtpManager.printDebug("Iterations for player '" + playerName + "': " + iterationsPerPlayer.getInt(playerName));
-        if (iterationsPerPlayer.getInt(playerName) >= locationGenOptions.maxLocationAttempts()) {
+        int iterations = iterationsPerPlayer.getInt(playerName);
+        rtpManager.printDebug("Iterations for player '" + playerName + "': " + iterations);
+        if (iterations >= locationGenOptions.maxLocationAttempts()) {
             iterationsPerPlayer.removeInt(playerName);
             rtpManager.printDebug("Max iterations reached for player " + playerName);
             return true;
