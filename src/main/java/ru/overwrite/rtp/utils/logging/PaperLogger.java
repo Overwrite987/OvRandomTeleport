@@ -5,22 +5,23 @@ import ru.overwrite.rtp.Main;
 
 public class PaperLogger implements Logger {
 
-    private final Main plugin;
+    private final net.kyori.adventure.text.logger.slf4j.ComponentLogger logger;
 
-    private final LegacyComponentSerializer legacySection = LegacyComponentSerializer.legacySection();
+    private final LegacyComponentSerializer legacySection;
 
     public PaperLogger(Main plugin) {
-        this.plugin = plugin;
+        this.logger = plugin.getComponentLogger();
+        this.legacySection = LegacyComponentSerializer.legacySection();
     }
 
     @Override
     public void info(String msg) {
-        plugin.getComponentLogger().info(legacySection.deserialize(msg));
+        logger.info(legacySection.deserialize(msg));
     }
 
     @Override
     public void warn(String msg) {
-        plugin.getComponentLogger().warn(legacySection.deserialize(msg));
+        logger.warn(legacySection.deserialize(msg));
     }
 
 }

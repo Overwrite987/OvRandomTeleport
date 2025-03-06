@@ -4,20 +4,20 @@ import ru.overwrite.rtp.Main;
 
 public class BukkitLogger implements Logger {
 
-    private final Main plugin;
+    private final java.util.logging.Logger logger;
 
     public BukkitLogger(Main plugin) {
-        this.plugin = plugin;
+        this.logger = plugin.getLogger();
     }
 
     @Override
     public void info(String msg) {
-        plugin.getLogger().info(msg);
+        logger.info(msg);
     }
 
     @Override
     public void warn(String msg) {
-        plugin.getLogger().warning(msg);
+        logger.warning(msg);
     }
 
 }
