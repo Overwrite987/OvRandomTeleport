@@ -91,8 +91,10 @@ public class LocationGenerator {
         int minZ = locationGenOptions.minZ();
         int maxZ = locationGenOptions.maxZ();
         List<Player> nearbyPlayers = new ArrayList<>();
-        rtpManager.printDebug("Players in world " + world.getName() + ": " + world.getPlayers().stream().map(Player::getName).toList());
-        for (Player worldPlayer : world.getPlayers()) {
+        List<Player> worldPlayers = world.getPlayers();
+        rtpManager.printDebug("Players in world " + world.getName() + ": " + worldPlayers.stream().map(Player::getName).toList());
+        worldPlayers.remove(player);
+        for (Player worldPlayer : worldPlayers) {
             if (worldPlayer.hasPermission("rtp.near.bypass") || isVanished(worldPlayer)) {
                 continue;
             }
@@ -103,7 +105,6 @@ public class LocationGenerator {
                 nearbyPlayers.add(worldPlayer);
             }
         }
-        nearbyPlayers.remove(player);
         return nearbyPlayers;
     }
 
