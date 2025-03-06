@@ -82,10 +82,8 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
     }
 
     private void processTeleport(Player player, Channel channel) {
-        if (Utils.DEBUG) {
-            plugin.getPluginLogger().info("Channel name: " + channel.name() + " Channel permission: " + "rtp.channel." + channel.id());
-            plugin.getPluginLogger().info("Player permission status: " + player.hasPermission("rtp.channel." + channel.id()));
-        }
+        rtpManager.printDebug("Channel name: " + channel.name() + " Channel permission: " + "rtp.channel." + channel.id());
+        rtpManager.printDebug("Player permission status: " + player.hasPermission("rtp.channel." + channel.id()));
         if (!player.hasPermission("rtp.channel." + channel.id())) {
             Utils.sendMessage(channel.messages().noPerms(), player);
             return;
