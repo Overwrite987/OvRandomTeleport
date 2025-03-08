@@ -57,6 +57,9 @@ public class RtpTask {
     }
 
     public void startParticleAnimation(Player player, int duration, Particles particles) {
+        if (!particles.preTeleportEnabled()) {
+            return;
+        }
         this.particleTask = new BukkitRunnable() {
             double angle;
             double yOffset = particles.preTeleportInvert() ? 0.0 : 2.0;
