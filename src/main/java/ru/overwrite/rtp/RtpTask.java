@@ -160,7 +160,6 @@ public class RtpTask {
         if (bossBar != null) {
             bossBar.removeAll();
         }
-        rtpManager.getPerPlayerActiveRtpTask().remove(playerName);
         rtpManager.teleportPlayer(player, channel, location);
         this.cancel();
     }
