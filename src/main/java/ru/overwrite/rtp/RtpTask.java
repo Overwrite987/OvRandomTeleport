@@ -40,7 +40,9 @@ public class RtpTask {
         if (channel.bossbar().bossbarEnabled()) {
             this.setupBossBar(player, channel.bossbar(), cooldown);
         }
-        startParticleAnimation(player, preTeleportCooldown * 20, channel.particles());
+        if (channel.particles().preTeleportEnabled()) {
+            startParticleAnimation(player, preTeleportCooldown * 20, channel.particles());
+        }
         this.runnable = new BukkitRunnable() {
             @Override
             public void run() {
@@ -57,9 +59,6 @@ public class RtpTask {
     }
 
     public void startParticleAnimation(Player player, int duration, Particles particles) {
-        if (!particles.preTeleportEnabled()) {
-            return;
-        }
         this.particleTask = new BukkitRunnable() {
             double angle;
             double yOffset = particles.preTeleportInvert() ? 0.0 : 2.0;
