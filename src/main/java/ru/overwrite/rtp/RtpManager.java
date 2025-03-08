@@ -477,6 +477,7 @@ public final class RtpManager {
             }
             if (!finalForce) {
                 this.executeActions(player, channel, channel.actions().preTeleportActions(), player.getLocation());
+                printDebug("Generating task and starting pre teleport timer for player '" + playerName + "' with channel '" + channel.id() + "'");
                 RtpTask rtpTask = new RtpTask(plugin, this, playerName, channel);
                 rtpTask.startPreTeleportTimer(player, channel, loc);
                 return;
