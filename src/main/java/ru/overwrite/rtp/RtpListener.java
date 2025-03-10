@@ -2,9 +2,7 @@ package ru.overwrite.rtp;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -208,8 +206,20 @@ public class RtpListener implements Listener {
             return player;
         }
         if (damagerEntity instanceof Projectile projectile) {
-            ProjectileSource projectileSource = projectile.getShooter();
-            if (projectileSource instanceof Player player) {
+            ProjectileSource source = projectile.getShooter();
+            if (source instanceof Player player) {
+                return player;
+            }
+        }
+        if (damagerEntity instanceof AreaEffectCloud areaEffectCloud) {
+            ProjectileSource source = areaEffectCloud.getSource();
+            if (source instanceof Player player) {
+                return player;
+            }
+        }
+        if (damagerEntity instanceof TNTPrimed tntPrimed) {
+            Entity source = tntPrimed.getSource();
+            if (source instanceof Player player) {
                 return player;
             }
         }
