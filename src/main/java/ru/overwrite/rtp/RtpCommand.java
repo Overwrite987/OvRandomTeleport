@@ -69,11 +69,11 @@ public class RtpCommand implements CommandExecutor, TabCompleter {
                 }
                 return true;
             }
-            if (!rtpManager.getNamedChannels().containsKey(args[0])) {
+            Channel channel = rtpManager.getChannelById(args[0]);
+            if (channel == null) {
                 Utils.sendMessage(pluginConfig.getCommandMessages().incorrectChannel(), player);
                 return true;
             }
-            Channel channel = rtpManager.getChannelById(args[0]);
             processTeleport(player, channel);
             return true;
         }
