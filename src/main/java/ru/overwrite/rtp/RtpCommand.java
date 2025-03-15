@@ -2,10 +2,7 @@ package ru.overwrite.rtp;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
@@ -24,7 +21,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RtpCommand implements CommandExecutor, TabCompleter {
+public class RtpCommand implements TabExecutor {
 
     private final Main plugin;
     private final Config pluginConfig;
