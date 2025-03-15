@@ -457,7 +457,8 @@ public final class RtpManager {
             plugin.getPluginMessage().connectToServer(player, channel.serverToMove());
             return;
         }
-        boolean finalForce = force || getChannelPreTeleportCooldown(player, channel.cooldown()) <= 0;
+        int channelPreTeleportCooldown = getChannelPreTeleportCooldown(player, channel.cooldown());
+        boolean finalForce = force || channelPreTeleportCooldown <= 0;
         printDebug("Pre teleporting player '" + playerName + "' with channel '" + channel.id() + "' in world '" + world.getName() + "' (force: " + finalForce + ")");
         teleportingNow.add(playerName);
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
@@ -478,7 +479,7 @@ public final class RtpManager {
             if (!finalForce) {
                 this.executeActions(player, channel, channel.actions().preTeleportActions(), player.getLocation());
                 printDebug("Generating task and starting pre teleport timer for player '" + playerName + "' with channel '" + channel.id() + "'");
-                RtpTask rtpTask = new RtpTask(plugin, this, playerName, channel);
+                RtpTask rtpTask = new RtpTask(plugin, this, playerName, channelPreTeleportCooldown, channel);
                 rtpTask.startPreTeleportTimer(player, channel, loc);
                 return;
             }
