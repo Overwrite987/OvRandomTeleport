@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import ru.overwrite.rtp.channels.Channel;
+import ru.overwrite.rtp.channels.Settings;
 import ru.overwrite.rtp.channels.settings.Actions;
 import ru.overwrite.rtp.channels.settings.Bossbar;
 import ru.overwrite.rtp.channels.settings.Particles;
@@ -36,11 +37,12 @@ public class RtpTask {
 
     public void startPreTeleportTimer(Player player, Channel channel, Location location) {
         this.preTeleportCooldown = this.finalPreTeleportCooldown;
-        if (channel.bossbar().bossbarEnabled()) {
-            this.setupBossBar(player, channel.bossbar());
+        Settings settings = channel.settings();
+        if (settings.bossbar().bossbarEnabled()) {
+            this.setupBossBar(player, settings.bossbar());
         }
-        if (channel.particles().preTeleportEnabled()) {
-            startParticleAnimation(player, preTeleportCooldown * 20, channel.particles());
+        if (settings.particles().preTeleportEnabled()) {
+            startParticleAnimation(player, preTeleportCooldown * 20, settings.particles());
         }
         this.runnable = new BukkitRunnable() {
             @Override
@@ -167,12 +169,12 @@ public class RtpTask {
         if (progress < 1 && progress > 0) {
             bossBar.setProgress(progress);
         }
-        String title = Utils.COLORIZER.colorize(channel.bossbar().bossbarTitle().replace("%time%", Utils.getTime(preTeleportCooldown)));
+        String title = Utils.COLORIZER.colorize(channel.settings().bossbar().bossbarTitle().replace("%time%", Utils.getTime(preTeleportCooldown)));
         bossBar.setTitle(title);
     }
 
     private void handleCooldownActions(Player player, Channel channel) {
-        Actions actions = channel.actions();
+        Actions actions = channel.settings().actions();
         if (actions.onCooldownActions().isEmpty()) {
             return;
         }

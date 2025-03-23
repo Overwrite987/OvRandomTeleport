@@ -5,6 +5,7 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.channels.Channel;
+import ru.overwrite.rtp.channels.Settings;
 import ru.overwrite.rtp.channels.settings.Cooldown;
 import ru.overwrite.rtp.channels.settings.Costs;
 import ru.overwrite.rtp.configuration.Config;
@@ -55,7 +56,7 @@ public class RtpExpansion extends PlaceholderExpansion {
             return null;
         }
 
-        final Cooldown channelCooldown = channel.cooldown();
+        final Cooldown channelCooldown = channel.settings().cooldown();
 
         return switch (placeholderType) {
             case "hascooldown" -> getBooleanPlaceholder(channelCooldown.hasCooldown(player));
@@ -74,8 +75,8 @@ public class RtpExpansion extends PlaceholderExpansion {
             case "name" -> channel.name();
             case "type" -> channel.type().toString();
             case "playersrequired" -> Integer.toString(channel.minPlayersToUse());
-            case "cost" -> getCostValue(channel, args);
-            case "cooldown" -> getCooldownValue(player, channel, args);
+            case "cost" -> getCostValue(channel.settings(), args);
+            case "cooldown" -> getCooldownValue(player, channel.settings(), args);
             default -> null;
         };
     }
@@ -109,11 +110,11 @@ public class RtpExpansion extends PlaceholderExpansion {
         };
     }
 
-    private String getCostValue(Channel channel, String[] args) {
+    private String getCostValue(Settings settings, String[] args) {
         if (args.length < 4) {
             return null;
         }
-        Costs costs = channel.costs();
+        Costs costs = settings.costs();
         String costIdentifier = args[3];
         return switch (costIdentifier) {
             case "money" -> getValueIfPositiveOrDefault(costs.moneyCost());
@@ -123,11 +124,11 @@ public class RtpExpansion extends PlaceholderExpansion {
         };
     }
 
-    private String getCooldownValue(Player player, Channel channel, String[] args) {
+    private String getCooldownValue(Player player, Settings settings, String[] args) {
         if (args.length < 4) {
             return null;
         }
-        Cooldown cooldown = channel.cooldown();
+        Cooldown cooldown = settings.cooldown();
         String cooldownIdentifier = args[3];
         return switch (cooldownIdentifier) {
             case "default" -> args.length == 5 && args[4].equalsIgnoreCase("formatted") ?

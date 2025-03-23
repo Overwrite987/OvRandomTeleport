@@ -11,6 +11,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.projectiles.ProjectileSource;
 import ru.overwrite.rtp.channels.Channel;
+import ru.overwrite.rtp.channels.settings.Restrictions;
 import ru.overwrite.rtp.utils.Utils;
 import ru.overwrite.rtp.utils.VersionUtils;
 
@@ -55,7 +56,7 @@ public class RtpListener implements Listener {
         String playerName = player.getName();
         if (rtpManager.hasActiveTasks(playerName)) {
             Channel activeChannel = getActiveChannel(playerName);
-            if (activeChannel.restrictions().restrictMove()) {
+            if (activeChannel.settings().restrictions().restrictMove()) {
                 Utils.sendMessage(activeChannel.messages().movedOnTeleport(), player);
                 cancelTeleportation(playerName);
             }
@@ -71,7 +72,7 @@ public class RtpListener implements Listener {
         String playerName = player.getName();
         if (rtpManager.hasActiveTasks(playerName)) {
             Channel activeChannel = getActiveChannel(playerName);
-            if (activeChannel.restrictions().restrictTeleport()) {
+            if (activeChannel.settings().restrictions().restrictTeleport()) {
                 Utils.sendMessage(activeChannel.messages().teleportedOnTeleport(), player);
                 cancelTeleportation(playerName);
             }
@@ -148,7 +149,7 @@ public class RtpListener implements Listener {
         String playerName = player.getName();
         if (rtpManager.hasActiveTasks(playerName)) {
             Channel activeChannel = rtpManager.getPerPlayerActiveRtpTask().get(playerName).getActiveChannel();
-            if (activeChannel.restrictions().restrictDamage() && !activeChannel.restrictions().damageCheckOnlyPlayers()) {
+            if (activeChannel.settings().restrictions().restrictDamage() && !activeChannel.settings().restrictions().damageCheckOnlyPlayers()) {
                 Utils.sendMessage(activeChannel.messages().damagedOnTeleport(), player);
                 cancelTeleportation(playerName);
             }
@@ -172,8 +173,9 @@ public class RtpListener implements Listener {
         String damagerName = damager.getName();
         if (rtpManager.hasActiveTasks(damagerName)) {
             Channel activeChannel = getActiveChannel(damagerName);
-            if (activeChannel.restrictions().restrictDamageOthers()) {
-                if (activeChannel.restrictions().damageCheckOnlyPlayers() && !(damagedEntity instanceof Player)) {
+            Restrictions restrictions = activeChannel.settings().restrictions();
+            if (restrictions.restrictDamageOthers()) {
+                if (restrictions.damageCheckOnlyPlayers() && !(damagedEntity instanceof Player)) {
                     return;
                 }
                 damager.sendMessage(activeChannel.messages().damagedOtherOnTeleport());
@@ -186,9 +188,10 @@ public class RtpListener implements Listener {
         String damagedName = damaged.getName();
         if (rtpManager.hasActiveTasks(damagedName)) {
             Channel activeChannel = getActiveChannel(damagedName);
-            if (activeChannel.restrictions().restrictDamage()) {
+            Restrictions restrictions = activeChannel.settings().restrictions();
+            if (restrictions.restrictDamage()) {
                 Player damager = getDamager(damagerEntity);
-                if (damager == null && activeChannel.restrictions().damageCheckOnlyPlayers()) {
+                if (damager == null && restrictions.damageCheckOnlyPlayers()) {
                     return;
                 }
                 damaged.sendMessage(activeChannel.messages().damagedOnTeleport());

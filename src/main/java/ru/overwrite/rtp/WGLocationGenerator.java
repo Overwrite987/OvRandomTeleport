@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import ru.overwrite.rtp.channels.Channel;
+import ru.overwrite.rtp.channels.Settings;
 import ru.overwrite.rtp.channels.settings.LocationGenOptions;
 import ru.overwrite.rtp.utils.regions.WGUtils;
 
@@ -25,8 +25,8 @@ public class WGLocationGenerator {
     private final RtpManager rtpManager;
     private final LocationGenerator locationGenerator;
 
-    public Location generateRandomLocationNearRandomRegion(Player player, Channel channel, World world) {
-        LocationGenOptions locationGenOptions = channel.locationGenOptions();
+    public Location generateRandomLocationNearRandomRegion(Player player, Settings settings, World world) {
+        LocationGenOptions locationGenOptions = settings.locationGenOptions();
         if (locationGenerator.hasReachedMaxIterations(player.getName(), locationGenOptions)) {
             return null;
         }
@@ -73,11 +73,11 @@ public class WGLocationGenerator {
         int centerZ = (randomRegion.getMinimumPoint().getZ() + randomRegion.getMaximumPoint().getZ()) / 2;
 
         LocationGenOptions.Shape shape = locationGenOptions.shape();
-        Location location = locationGenerator.generateRandomLocationNearPoint(shape, player, centerX, centerZ, channel, world);
+        Location location = locationGenerator.generateRandomLocationNearPoint(shape, player, centerX, centerZ, settings, world);
 
         if (location == null) {
             locationGenerator.getIterationsPerPlayer().addTo(player.getName(), 1);
-            return generateRandomLocationNearRandomRegion(player, channel, world);
+            return generateRandomLocationNearRandomRegion(player, settings, world);
         }
         rtpManager.printDebug("Location for player '" + player.getName() + "' found in " + locationGenerator.getIterationsPerPlayer().getInt(player.getName()) + " iterations");
         locationGenerator.getIterationsPerPlayer().removeInt(player.getName());

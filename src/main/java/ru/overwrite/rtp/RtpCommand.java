@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.channels.Channel;
+import ru.overwrite.rtp.channels.settings.Cooldown;
 import ru.overwrite.rtp.configuration.Config;
 import ru.overwrite.rtp.configuration.data.CommandMessages;
 import ru.overwrite.rtp.utils.Utils;
@@ -85,10 +86,11 @@ public class RtpCommand implements TabExecutor {
             Utils.sendMessage(channel.messages().noPerms(), player);
             return;
         }
-        if (channel.cooldown().hasCooldown(player)) {
+        Cooldown cooldown = channel.settings().cooldown();
+        if (cooldown.hasCooldown(player)) {
             Utils.sendMessage(channel.messages().cooldown()
                     .replace("%time%",
-                            Utils.getTime((int) (rtpManager.getChannelCooldown(player, channel.cooldown()) - (System.currentTimeMillis() - channel.cooldown().playerCooldowns().get(player.getName())) / 1000))), player);
+                            Utils.getTime((int) (rtpManager.getChannelCooldown(player, cooldown) - (System.currentTimeMillis() - cooldown.playerCooldowns().get(player.getName())) / 1000))), player);
             return;
         }
         if (channel.minPlayersToUse() > 0 && (Bukkit.getOnlinePlayers().size() - 1) < channel.minPlayersToUse()) {

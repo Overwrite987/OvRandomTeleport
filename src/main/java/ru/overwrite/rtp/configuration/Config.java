@@ -2,14 +2,13 @@ package ru.overwrite.rtp.configuration;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import ru.overwrite.rtp.Main;
 import ru.overwrite.rtp.RtpManager;
-import ru.overwrite.rtp.channels.ChannelTemplate;
-import ru.overwrite.rtp.channels.settings.*;
+import ru.overwrite.rtp.channels.Settings;
+import ru.overwrite.rtp.channels.settings.Messages;
 import ru.overwrite.rtp.configuration.data.CommandMessages;
 import ru.overwrite.rtp.configuration.data.PlaceholderMessages;
 import ru.overwrite.rtp.utils.Utils;
@@ -43,7 +42,7 @@ public class Config {
 
     public static String timeHours, timeMinutes, timeSeconds;
 
-    private final Map<String, ChannelTemplate> channelTemplates = new HashMap<>();
+    private final Map<String, Settings> channelTemplates = new HashMap<>();
 
     public void setupMessages(FileConfiguration config) {
         final ConfigurationSection messages = config.getConfigurationSection("messages");
@@ -99,17 +98,13 @@ public class Config {
         final FileConfiguration templatesConfig = getFile(plugin.getDataFolder().getAbsolutePath(), "templates.yml");
         for (String templateID : templatesConfig.getKeys(false)) {
             final ConfigurationSection templateSection = templatesConfig.getConfigurationSection(templateID);
-            Costs costs = rtpManager.setupChannelCosts(templateSection.getConfigurationSection("costs"), null, false);
-            LocationGenOptions locationGenOptions = rtpManager.setupChannelGenOptions(templateSection.getConfigurationSection("location_generation_options"), null, false);
-            Cooldown cooldown = rtpManager.setupChannelCooldown(templateSection.getConfigurationSection("cooldown"), null, false);
-            Bossbar bossBar = rtpManager.setupChannelBossBar(templateSection.getConfigurationSection("bossbar"), null, false);
-            Particles particles = rtpManager.setupChannelParticles(templateSection.getConfigurationSection("particles"), null, false);
-            Restrictions restrictions = rtpManager.setupChannelRestrictions(templateSection.getConfigurationSection("restrictions"), null, false);
-            Avoidance avoidance = rtpManager.setupChannelAvoidance(templateSection.getConfigurationSection("avoid"), Bukkit.getPluginManager(), null, false);
-            Actions actions = rtpManager.setupChannelActions(templateSection.getConfigurationSection("actions"), null, false);
-            ChannelTemplate newTemplate = new ChannelTemplate(templateID, costs, locationGenOptions, cooldown, bossBar, particles, restrictions, avoidance, actions);
+            Settings newTemplate = Settings.create(plugin, templateSection, this, null, false);
             channelTemplates.put(templateID, newTemplate);
         }
+    }
+
+    public boolean isConfigValueExist(ConfigurationSection section, String key) {
+        return section.getString(key) != null;
     }
 
     public boolean isNullSection(ConfigurationSection section) {
