@@ -136,11 +136,7 @@ public class RtpTask {
                     location.subtract(x, y, z);
                 }
 
-                if (particles.preTeleportInvert()) {
-                    angle -= rotationSpeed;
-                } else {
-                    angle += rotationSpeed;
-                }
+                angle += particles.preTeleportInvert() ? -rotationSpeed : rotationSpeed;
 
                 if (!particles.preTeleportJumping()) {
                     yOffset += yStep;
