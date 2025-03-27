@@ -156,14 +156,20 @@ public final class MessageActionType implements ActionType {
             String hoverText = null;
             String clickEvent = null;
 
-            String[] parts = buttonContent.split(";");
-            for (String part : parts) {
+            List<String> parts = getParts(buttonContent);
+
+            for (int i = 0; i < parts.size(); i++) {
+                String part = parts.get(i);
                 if (part.startsWith(HOVER_TEXT_PREFIX)) {
                     hoverText = extractValue(part, HOVER_TEXT_PREFIX);
                 } else if (part.startsWith(CLICK_EVENT_PREFIX)) {
                     clickEvent = extractValue(part, CLICK_EVENT_PREFIX);
                 } else {
-                    buttonText = part;
+                    if (buttonText == null) {
+                        buttonText = part;
+                    } else {
+                        throw new IllegalArgumentException("Некорректный формат кнопки: несколько текстовых частей.");
+                    }
                 }
             }
 
@@ -184,11 +190,30 @@ public final class MessageActionType implements ActionType {
             return buttonComponent;
         }
 
+        private List<String> getParts(String buttonContent) {
+            List<String> parts = new ArrayList<>();
+            int start = 0;
+            int depth = 0;
+            for (int i = 0; i < buttonContent.length(); i++) {
+                char c = buttonContent.charAt(i);
+                if (c == '{') {
+                    depth++;
+                } else if (c == '}') {
+                    depth--;
+                } else if (c == ';' && depth == 0) {
+                    parts.add(buttonContent.substring(start, i).trim());
+                    start = i + 1;
+                }
+            }
+            parts.add(buttonContent.substring(start).trim());
+            return parts;
+        }
+
         private String extractValue(String message, String prefix) {
             int startIndex = message.indexOf(prefix);
             if (startIndex != -1) {
                 startIndex += prefix.length();
-                int endIndex = message.indexOf("}", startIndex);
+                int endIndex = findClosingBracket(message, startIndex);
                 if (endIndex != -1) {
                     return message.substring(startIndex, endIndex);
                 }
@@ -197,18 +222,10 @@ public final class MessageActionType implements ActionType {
         }
 
         private String extractMessage(String message) {
-            IntList indices = new IntArrayList();
-            for (String marker : HOVER_MARKERS) {
-                int index = message.indexOf(marker);
-                if (index != -1) {
-                    indices.add(index);
-                }
-            }
-            int endIndex = indices.isEmpty() ? message.length() : Collections.min(indices);
+            String baseMessage = getBaseMessage(message);
 
-            String baseMessage = message.substring(0, endIndex).trim();
-
-            for (String marker : HOVER_MARKERS) {
+            for (int i = 0; i < HOVER_MARKERS.length; i++) {
+                String marker = HOVER_MARKERS[i];
                 int startIndex = message.indexOf(marker);
                 if (startIndex != -1) {
                     int endIndexMarker = findClosingBracket(message, startIndex + marker.length() - 1);
@@ -221,16 +238,37 @@ public final class MessageActionType implements ActionType {
             return baseMessage.trim();
         }
 
+        private String getBaseMessage(String message) {
+            IntList indices = new IntArrayList();
+            for (int i = 0; i < HOVER_MARKERS.length; i++) {
+                String marker = HOVER_MARKERS[i];
+                int index = message.indexOf(marker);
+                if (index != -1) {
+                    indices.add(index);
+                }
+            }
+            int endIndex = indices.isEmpty() ? message.length() : Collections.min(indices);
+
+            return message.substring(0, endIndex).trim();
+        }
+
         private Component createHoverEvent(Component message, String hoverText) {
             HoverEvent<Component> hover = HoverEvent.showText(LegacyComponentSerializer.legacySection().deserialize(hoverText));
             return message.hoverEvent(hover);
         }
 
         private Component createClickEvent(Component message, String clickEvent) {
-            String[] clickEventArgs = clickEvent.split(";", 2);
-            ClickEvent.Action action = ClickEvent.Action.valueOf(clickEventArgs[0].toUpperCase(Locale.ENGLISH));
-            String context = clickEventArgs[1];
+            int separatorIndex = clickEvent.indexOf(';');
+            if (separatorIndex == -1) {
+                throw new IllegalArgumentException("Некорректный формат clickEvent: отсутствует разделитель ';'");
+            }
+
+            String actionStr = clickEvent.substring(0, separatorIndex).trim();
+            String context = clickEvent.substring(separatorIndex + 1).trim();
+
+            ClickEvent.Action action = ClickEvent.Action.valueOf(actionStr.toUpperCase(Locale.ENGLISH));
             ClickEvent click = ClickEvent.clickEvent(action, context);
+
             return message.clickEvent(click);
         }
     }
