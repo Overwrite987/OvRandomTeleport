@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -14,11 +13,7 @@ import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.channels.Settings;
 import ru.overwrite.rtp.channels.settings.Actions;
 import ru.overwrite.rtp.channels.settings.Bossbar;
-import ru.overwrite.rtp.channels.settings.Particles;
 import ru.overwrite.rtp.utils.Utils;
-
-import java.util.Iterator;
-import java.util.List;
 
 @RequiredArgsConstructor
 public class RtpTask {
@@ -33,8 +28,8 @@ public class RtpTask {
 
     private int preTeleportCooldown;
     private BossBar bossBar;
-    private BukkitTask runnable;
-    private BukkitTask particleTask;
+    private BukkitTask countdownTask;
+    private BukkitTask animationTask;
 
     public void startPreTeleportTimer(Player player, Channel channel, Location location) {
         this.preTeleportCooldown = this.finalPreTeleportCooldown;
@@ -43,9 +38,9 @@ public class RtpTask {
             this.setupBossBar(player, settings.bossbar());
         }
         if (settings.particles().preTeleportEnabled()) {
-            this.particleTask = new BasicAnimation(player, preTeleportCooldown * 20, settings.particles()).runTaskTimerAsynchronously(plugin, 0, 1);
+            this.animationTask = new BasicAnimation(player, preTeleportCooldown * 20, settings.particles()).runTaskTimerAsynchronously(plugin, 0, 1);
         }
-        this.runnable = new BukkitRunnable() {
+        this.countdownTask = new BukkitRunnable() {
             @Override
             public void run() {
                 preTeleportCooldown--;
@@ -102,10 +97,10 @@ public class RtpTask {
         if (bossBar != null) {
             bossBar.removeAll();
         }
-        if (particleTask != null) {
-            particleTask.cancel();
+        if (animationTask != null) {
+            animationTask.cancel();
         }
-        runnable.cancel();
+        countdownTask.cancel();
         rtpManager.getPerPlayerActiveRtpTask().remove(playerName);
         rtpManager.getTeleportingNow().remove(playerName);
         rtpManager.printDebug("RtpTask cancel called");
