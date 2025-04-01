@@ -3,7 +3,7 @@ package ru.overwrite.rtp.actions.impl;
 import net.kyori.adventure.key.Key;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import ru.overwrite.rtp.Main;
+import ru.overwrite.rtp.OvRandomTeleport;
 import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.actions.ActionType;
 import ru.overwrite.rtp.channels.Channel;
@@ -20,7 +20,7 @@ public final class TitleActionType implements ActionType {
     private static final int FADE_OUT_INDEX = 4;
 
     @Override
-    public @NotNull Action instance(@NotNull String context, @NotNull Main plugin) {
+    public @NotNull Action instance(@NotNull String context, @NotNull OvRandomTeleport plugin) {
         String[] titleMessages = context.split(";");
         int length = titleMessages.length;
 

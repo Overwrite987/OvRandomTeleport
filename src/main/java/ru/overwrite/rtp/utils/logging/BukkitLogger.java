@@ -1,12 +1,12 @@
 package ru.overwrite.rtp.utils.logging;
 
-import ru.overwrite.rtp.Main;
+import ru.overwrite.rtp.OvRandomTeleport;
 
 public class BukkitLogger implements Logger {
 
     private final java.util.logging.Logger logger;
 
-    public BukkitLogger(Main plugin) {
+    public BukkitLogger(OvRandomTeleport plugin) {
         this.logger = plugin.getLogger();
     }
 

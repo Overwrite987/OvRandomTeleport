@@ -29,7 +29,7 @@ public class LocationGenerator {
     @Getter
     private final WGLocationGenerator wgLocationGenerator;
 
-    public LocationGenerator(Main plugin, RtpManager rtpManager) {
+    public LocationGenerator(OvRandomTeleport plugin, RtpManager rtpManager) {
         this.rtpManager = rtpManager;
         this.wgLocationGenerator = plugin.hasWorldGuard() ? new WGLocationGenerator(rtpManager, this) : null;
     }

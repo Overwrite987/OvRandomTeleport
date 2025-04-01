@@ -16,7 +16,7 @@ public class RtpExpansion extends PlaceholderExpansion {
     private final RtpManager rtpManager;
     private final Config pluginConfig;
 
-    public RtpExpansion(Main plugin) {
+    public RtpExpansion(OvRandomTeleport plugin) {
         this.rtpManager = plugin.getRtpManager();
         this.pluginConfig = plugin.getPluginConfig();
     }

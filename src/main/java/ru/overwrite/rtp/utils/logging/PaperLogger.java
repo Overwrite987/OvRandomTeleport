@@ -1,7 +1,7 @@
 package ru.overwrite.rtp.utils.logging;
 
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import ru.overwrite.rtp.Main;
+import ru.overwrite.rtp.OvRandomTeleport;
 
 public class PaperLogger implements Logger {
 
@@ -9,7 +9,7 @@ public class PaperLogger implements Logger {
 
     private final LegacyComponentSerializer legacySection;
 
-    public PaperLogger(Main plugin) {
+    public PaperLogger(OvRandomTeleport plugin) {
         this.logger = plugin.getComponentLogger();
         this.legacySection = LegacyComponentSerializer.legacySection();
     }

@@ -21,10 +21,10 @@ import java.util.Set;
 
 public class RtpListener implements Listener {
 
-    private final Main plugin;
+    private final OvRandomTeleport plugin;
     private final RtpManager rtpManager;
 
-    public RtpListener(Main plugin) {
+    public RtpListener(OvRandomTeleport plugin) {
         this.plugin = plugin;
         this.rtpManager = plugin.getRtpManager();
     }

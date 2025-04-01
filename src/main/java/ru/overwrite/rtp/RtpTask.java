@@ -22,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RtpTask {
 
-    private final Main plugin;
+    private final OvRandomTeleport plugin;
     private final RtpManager rtpManager;
     private final String playerName;
     private final int finalPreTeleportCooldown;

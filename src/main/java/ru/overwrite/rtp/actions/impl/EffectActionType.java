@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
-import ru.overwrite.rtp.Main;
+import ru.overwrite.rtp.OvRandomTeleport;
 import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.actions.ActionType;
 import ru.overwrite.rtp.channels.Channel;
@@ -19,7 +19,7 @@ public final class EffectActionType implements ActionType {
     private static final int AMPLIFIER_INDEX = 2;
 
     @Override
-    public @NotNull Action instance(@NotNull String context, @NotNull Main plugin) {
+    public @NotNull Action instance(@NotNull String context, @NotNull OvRandomTeleport plugin) {
         String[] effectArgs = context.split(";");
         int length = effectArgs.length;
 

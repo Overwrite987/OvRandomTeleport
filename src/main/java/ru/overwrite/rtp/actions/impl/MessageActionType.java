@@ -9,7 +9,7 @@ import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import ru.overwrite.rtp.Main;
+import ru.overwrite.rtp.OvRandomTeleport;
 import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.actions.ActionType;
 import ru.overwrite.rtp.channels.Channel;
@@ -25,7 +25,7 @@ public final class MessageActionType implements ActionType {
     private static final Key KEY = Key.key("ovrandomteleport:message");
 
     @Override
-    public @NotNull Action instance(@NotNull String context, @NotNull Main plugin) {
+    public @NotNull Action instance(@NotNull String context, @NotNull OvRandomTeleport plugin) {
         String text = Utils.COLORIZER.colorize(context);
         return new MessageAction(text);
     }

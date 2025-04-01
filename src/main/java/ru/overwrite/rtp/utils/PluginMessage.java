@@ -7,17 +7,17 @@ import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
-import ru.overwrite.rtp.Main;
+import ru.overwrite.rtp.OvRandomTeleport;
 import ru.overwrite.rtp.RtpManager;
 
 public final class PluginMessage implements PluginMessageListener {
 
-    private final Main plugin;
+    private final OvRandomTeleport plugin;
     private final RtpManager rtpManager;
     @Getter
     private final String serverId;
 
-    public PluginMessage(Main plugin, String serverId) {
+    public PluginMessage(OvRandomTeleport plugin, String serverId) {
         this.plugin = plugin;
         this.rtpManager = plugin.getRtpManager();
         this.serverId = serverId;

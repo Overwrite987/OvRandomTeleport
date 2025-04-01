@@ -25,7 +25,7 @@ import ru.overwrite.rtp.utils.regions.WGUtils;
 import java.lang.reflect.Constructor;
 
 @Getter
-public final class Main extends JavaPlugin {
+public final class OvRandomTeleport extends JavaPlugin {
 
     @Getter(AccessLevel.NONE)
     private final Server server = getServer();

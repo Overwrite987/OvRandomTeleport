@@ -4,7 +4,7 @@ import net.kyori.adventure.key.Key;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import ru.overwrite.rtp.Main;
+import ru.overwrite.rtp.OvRandomTeleport;
 import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.actions.ActionType;
 import ru.overwrite.rtp.channels.Channel;
@@ -20,7 +20,7 @@ public final class SoundActionType implements ActionType {
     private static final int PITCH_INDEX = 2;
 
     @Override
-    public @NotNull Action instance(@NotNull String context, @NotNull Main plugin) {
+    public @NotNull Action instance(@NotNull String context, @NotNull OvRandomTeleport plugin) {
         String[] soundArgs = context.split(";");
         int length = soundArgs.length;
 

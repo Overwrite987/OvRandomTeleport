@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class RtpManager {
 
     @Getter(AccessLevel.NONE)
-    private final Main plugin;
+    private final OvRandomTeleport plugin;
     @Getter(AccessLevel.NONE)
     private final Config pluginConfig;
 
@@ -45,7 +45,7 @@ public final class RtpManager {
 
     private Map<String, String> proxyCalls;
 
-    public RtpManager(Main plugin) {
+    public RtpManager(OvRandomTeleport plugin) {
         this.plugin = plugin;
         this.pluginConfig = plugin.getPluginConfig();
         this.actionRegistry = new ActionRegistry(plugin);

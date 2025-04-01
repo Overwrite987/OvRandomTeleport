@@ -5,7 +5,7 @@ import lombok.Getter;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import ru.overwrite.rtp.Main;
+import ru.overwrite.rtp.OvRandomTeleport;
 import ru.overwrite.rtp.RtpManager;
 import ru.overwrite.rtp.channels.Settings;
 import ru.overwrite.rtp.channels.settings.Messages;
@@ -23,11 +23,11 @@ import java.util.Map;
 public class Config {
 
     @Getter(AccessLevel.NONE)
-    private final Main plugin;
+    private final OvRandomTeleport plugin;
     @Getter(AccessLevel.NONE)
     private final RtpManager rtpManager;
 
-    public Config(Main plugin) {
+    public Config(OvRandomTeleport plugin) {
         this.plugin = plugin;
         this.rtpManager = plugin.getRtpManager();
     }

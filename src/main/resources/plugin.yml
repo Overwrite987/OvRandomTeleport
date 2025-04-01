@@ -1,7 +1,7 @@
 name: OvRandomTeleport
 version: '${project.version}'
 author: OverwriteMC
-main: ru.overwrite.rtp.Main
+main: ru.overwrite.rtp.OvRandomTeleport
 api-version: 1.16
 softdepend: [Vault, WorldGuard, WorldEdit, Towny, PlayerPoints, PlaceholderAPI]
 libraries:

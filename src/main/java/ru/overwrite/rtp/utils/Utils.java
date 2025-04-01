@@ -6,7 +6,7 @@ import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import ru.overwrite.rtp.Main;
+import ru.overwrite.rtp.OvRandomTeleport;
 import ru.overwrite.rtp.channels.settings.Particles;
 import ru.overwrite.rtp.configuration.Config;
 import ru.overwrite.rtp.utils.color.*;
@@ -78,7 +78,7 @@ public final class Utils {
         return new Particle.DustOptions(Color.fromRGB(red, green, blue), size);
     }
 
-    public void checkUpdates(Main plugin, Consumer<String> consumer) {
+    public void checkUpdates(OvRandomTeleport plugin, Consumer<String> consumer) {
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(
                     new URL("https://raw.githubusercontent.com/Overwrite987/OvRandomTeleport/master/VERSION")

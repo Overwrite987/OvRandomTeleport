@@ -13,7 +13,7 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.Nullable;
-import ru.overwrite.rtp.Main;
+import ru.overwrite.rtp.OvRandomTeleport;
 import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.actions.ActionRegistry;
 import ru.overwrite.rtp.channels.settings.*;
@@ -35,7 +35,7 @@ public record Settings(
         @Nullable Avoidance avoidance,
         @Nullable Actions actions) {
 
-    public static Settings create(Main plugin, ConfigurationSection config, Config pluginConfig, Settings template, boolean applyTemplate) {
+    public static Settings create(OvRandomTeleport plugin, ConfigurationSection config, Config pluginConfig, Settings template, boolean applyTemplate) {
         return new Settings(
                 setupCosts(plugin, config.getConfigurationSection("costs"), template, pluginConfig, applyTemplate),
                 setupLocationGenOptions(config.getConfigurationSection("location_generation_options"), template, pluginConfig, applyTemplate),
@@ -48,7 +48,7 @@ public record Settings(
         );
     }
 
-    public static Costs setupCosts(Main plugin, ConfigurationSection channelCosts, Settings template, Config pluginConfig, boolean applyTemplate) {
+    public static Costs setupCosts(OvRandomTeleport plugin, ConfigurationSection channelCosts, Settings template, Config pluginConfig, boolean applyTemplate) {
         if (pluginConfig.isNullSection(channelCosts)) {
             if (!applyTemplate) {
                 return null;
@@ -87,7 +87,7 @@ public record Settings(
         return new LocationGenOptions(shape, genFormat, minX, maxX, minZ, maxZ, nearRadiusMin, nearRadiusMax, centerX, centerZ, maxLocationAttempts);
     }
 
-    public static Cooldown setupCooldown(Main plugin, ConfigurationSection cooldown, Settings template, Config pluginConfig, boolean applyTemplate) {
+    public static Cooldown setupCooldown(OvRandomTeleport plugin, ConfigurationSection cooldown, Settings template, Config pluginConfig, boolean applyTemplate) {
         Object2IntSortedMap<String> groupCooldownsMap = new Object2IntLinkedOpenHashMap<>();
         Object2IntSortedMap<String> preTeleportCooldownsMap = new Object2IntLinkedOpenHashMap<>();
         if (pluginConfig.isNullSection(cooldown)) {
@@ -110,7 +110,7 @@ public record Settings(
         return new Cooldown(defaultCooldown, playerCooldowns, groupCooldownsMap, defaultPreTeleportCooldown, preTeleportCooldownsMap);
     }
 
-    private static int processCooldownSection(Main plugin, ConfigurationSection section, Object2IntSortedMap<String> map, boolean useLastGroup, int currentDefault, Config pluginConfig) {
+    private static int processCooldownSection(OvRandomTeleport plugin, ConfigurationSection section, Object2IntSortedMap<String> map, boolean useLastGroup, int currentDefault, Config pluginConfig) {
         if (!pluginConfig.isNullSection(section) && plugin.getPerms() != null) {
             for (String groupName : section.getKeys(false)) {
                 map.put(groupName, section.getInt(groupName));
@@ -237,7 +237,7 @@ public record Settings(
         return new Avoidance(avoidBlocksBlacklist, avoidBlocks, avoidBiomesBlacklist, avoidBiomes, avoidRegions, avoidTowns);
     }
 
-    public static Actions setupActions(Main plugin, ConfigurationSection actions, Settings template, Config pluginConfig, boolean applyTemplate) {
+    public static Actions setupActions(OvRandomTeleport plugin, ConfigurationSection actions, Settings template, Config pluginConfig, boolean applyTemplate) {
         if (pluginConfig.isNullSection(actions)) {
             if (!applyTemplate) {
                 return null;
@@ -266,7 +266,7 @@ public record Settings(
         return new Actions(preTeleportActions, onCooldownActions, afterTeleportActions);
     }
 
-    private static ImmutableList<Action> getActionList(Main plugin, ActionRegistry actionRegistry, List<String> actionStrings) {
+    private static ImmutableList<Action> getActionList(OvRandomTeleport plugin, ActionRegistry actionRegistry, List<String> actionStrings) {
         List<Action> actions = new ArrayList<>(actionStrings.size());
         for (String actionStr : actionStrings) {
             try {

@@ -24,11 +24,11 @@ import java.util.List;
 
 public class RtpCommand implements TabExecutor {
 
-    private final Main plugin;
+    private final OvRandomTeleport plugin;
     private final Config pluginConfig;
     private final RtpManager rtpManager;
 
-    public RtpCommand(Main plugin) {
+    public RtpCommand(OvRandomTeleport plugin) {
         this.plugin = plugin;
         this.rtpManager = plugin.getRtpManager();
         this.pluginConfig = plugin.getPluginConfig();
@@ -186,7 +186,7 @@ public class RtpCommand implements TabExecutor {
         }
     }
 
-    public void checkAndUpdatePlugin(CommandSender sender, Main plugin) {
+    public void checkAndUpdatePlugin(CommandSender sender, OvRandomTeleport plugin) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> Utils.checkUpdates(plugin, version -> {
             sender.sendMessage("§6Подождите немного...");
 

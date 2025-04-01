@@ -2,7 +2,7 @@ package ru.overwrite.rtp.actions;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ru.overwrite.rtp.Main;
+import ru.overwrite.rtp.OvRandomTeleport;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -14,10 +14,10 @@ public final class ActionRegistry {
 
     private static final Pattern ACTION_PATTERN = Pattern.compile("\\[(\\S+)] ?(.*)");
 
-    private final Main plugin;
+    private final OvRandomTeleport plugin;
     private final Map<String, ActionType> types;
 
-    public ActionRegistry(Main plugin) {
+    public ActionRegistry(OvRandomTeleport plugin) {
         this.plugin = plugin;
         this.types = new HashMap<>();
     }
