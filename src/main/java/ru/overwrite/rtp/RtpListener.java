@@ -1,5 +1,6 @@
 package ru.overwrite.rtp;
 
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.*;
@@ -35,17 +36,22 @@ public class RtpListener implements Listener {
             return;
         }
         Player player = e.getPlayer();
-        if (e.getTo().getBlockY() < VersionUtils.VOID_LEVEL) {
-            Map<String, List<World>> voidChannels = rtpManager.getSpecifications().voidChannels();
-            if (voidChannels.isEmpty()) {
-                return;
-            }
+        RtpManager.Specifications specifications = rtpManager.getSpecifications();
+        Map<String, List<World>> voidChannels = specifications.voidChannels();
+        if (!voidChannels.isEmpty() && e.getFrom().getBlockY() > e.getTo().getBlockY()) {
             for (Map.Entry<String, List<World>> entry : voidChannels.entrySet()) {
+                String channelId = entry.getKey();
+                Object2IntMap<String> voidLevels = specifications.voidLevels();
+                if (e.getTo().getBlockY() >
+                        (voidLevels.isEmpty()
+                                ? VersionUtils.VOID_LEVEL
+                                : voidLevels.getOrDefault(channelId, VersionUtils.VOID_LEVEL))) {
+                    continue;
+                }
                 List<World> worlds = entry.getValue();
                 if (!worlds.contains(player.getWorld())) {
                     continue;
                 }
-                String channelId = entry.getKey();
                 if (!player.hasPermission("rtp.channel." + channelId)) {
                     continue;
                 }

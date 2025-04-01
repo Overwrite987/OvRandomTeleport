@@ -1,5 +1,7 @@
 package ru.overwrite.rtp;
 
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntSortedMap;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -19,6 +21,7 @@ import ru.overwrite.rtp.channels.ChannelType;
 import ru.overwrite.rtp.channels.settings.*;
 import ru.overwrite.rtp.configuration.Config;
 import ru.overwrite.rtp.utils.Utils;
+import ru.overwrite.rtp.utils.VersionUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,7 +40,7 @@ public final class RtpManager {
 
     private final Map<String, Channel> namedChannels = new HashMap<>();
 
-    private final Specifications specifications = new Specifications(new HashSet<>(), new HashMap<>(), new HashMap<>());
+    private final Specifications specifications = new Specifications(new HashSet<>(), new HashMap<>(), new Object2IntOpenHashMap<>(), new HashMap<>());
 
     private final Map<String, RtpTask> perPlayerActiveRtpTask = new ConcurrentHashMap<>();
 
@@ -123,11 +126,13 @@ public final class RtpManager {
 
     public record Specifications(Set<String> joinChannels,
                                  Map<String, List<World>> voidChannels,
+                                 Object2IntMap<String> voidLevels,
                                  Map<String, List<World>> respawnChannels) {
 
         public void clearAll() {
             this.joinChannels.clear();
             this.voidChannels.clear();
+            this.voidLevels.clear();
             this.respawnChannels.clear();
         }
 
@@ -141,6 +146,10 @@ public final class RtpManager {
             List<World> voidWorlds = Utils.getWorldList(section.getStringList("void_worlds"));
             if (!voidWorlds.isEmpty()) {
                 voidChannels.put(newChannel.id(), voidWorlds);
+            }
+            int voidLevel = section.getInt("voidLevel");
+            if (voidLevel != VersionUtils.VOID_LEVEL && voidChannels.containsKey(newChannel.id())) {
+                voidLevels.put(newChannel.id(), section.getInt("voidLevel"));
             }
             List<World> respawnWorlds = Utils.getWorldList(section.getStringList("respawn_worlds"));
             if (!respawnWorlds.isEmpty()) {

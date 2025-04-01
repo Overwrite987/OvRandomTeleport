@@ -17,6 +17,7 @@ invulnerable_after_teleport: 12
 specifications:
   teleport_on_first_join: false
   void_worlds: []
+  void_level: 0
   respawn_worlds: []
 # Необязательный параметр
 template: 'default_actions'
