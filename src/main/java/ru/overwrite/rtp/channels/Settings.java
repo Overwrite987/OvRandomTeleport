@@ -12,7 +12,6 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.PluginManager;
-import org.jetbrains.annotations.Nullable;
 import ru.overwrite.rtp.OvRandomTeleport;
 import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.actions.ActionRegistry;
@@ -26,14 +25,14 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public record Settings(
-        @Nullable Costs costs,
-        @Nullable LocationGenOptions locationGenOptions,
-        @Nullable Cooldown cooldown,
-        @Nullable Bossbar bossbar,
-        @Nullable Particles particles,
-        @Nullable Restrictions restrictions,
-        @Nullable Avoidance avoidance,
-        @Nullable Actions actions) {
+        Costs costs,
+        LocationGenOptions locationGenOptions,
+        Cooldown cooldown,
+        Bossbar bossbar,
+        Particles particles,
+        Restrictions restrictions,
+        Avoidance avoidance,
+        Actions actions) {
 
     public static Settings create(OvRandomTeleport plugin, ConfigurationSection config, Config pluginConfig, Settings template, boolean applyTemplate) {
         return new Settings(
