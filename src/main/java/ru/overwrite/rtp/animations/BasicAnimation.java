@@ -14,20 +14,20 @@ public class BasicAnimation extends Animation {
         super(player, duration, particles);
     }
 
-    double angle;
-    double yOffset = particles.preTeleportInvert() ? 0.0 : 2.0;
-    int tickCounter;
+    private double angle;
+    private double yOffset = particles.preTeleportInvert() ? 0.0 : 2.0;
+    private int tickCounter;
 
-    final double initialRadius = particles.preTeleportRadius();
-    final double radiusStep = particles.preTeleportMoveNear() ? initialRadius / duration : 0;
-    final double rotationSpeed = ((2 * Math.PI * particles.preTeleportSpeed()) / duration)
+    private final double initialRadius = particles.preTeleportRadius();
+    private final double radiusStep = particles.preTeleportMoveNear() ? initialRadius / duration : 0;
+    private final double rotationSpeed = ((2 * Math.PI * particles.preTeleportSpeed()) / duration)
             * ((particles.preTeleportInvert() && particles.preTeleportJumping()) ? 2 : 1);
-    final double yStep = particles.preTeleportInvert() ? (2.0 / duration) : (-2.0 / duration);
-    final double verticalRotationSpeed = 2 * Math.PI * 2 / duration;
+    private final double yStep = particles.preTeleportInvert() ? (2.0 / duration) : (-2.0 / duration);
+    private final double verticalRotationSpeed = 2 * Math.PI * 2 / duration;
 
-    final List<Player> receivers = particles.preTeleportSendOnlyToPlayer() ? List.of(player) : null;
+    private final List<Player> receivers = particles.preTeleportSendOnlyToPlayer() ? List.of(player) : null;
 
-    Iterator<Particles.ParticleData> preTeleportParticle = particles.preTeleportParticles().iterator();
+    private Iterator<Particles.ParticleData> preTeleportParticle = particles.preTeleportParticles().iterator();
 
     @Override
     public void run() {
