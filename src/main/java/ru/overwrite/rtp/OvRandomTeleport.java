@@ -116,18 +116,16 @@ public final class OvRandomTeleport extends JavaPlugin {
 
     private void setupEconomy(ServicesManager servicesManager) {
         economy = getProvider(servicesManager, Economy.class);
-        if (economy == null) {
-            return;
+        if (economy != null) {
+            pluginLogger.info("§6Экономика подключена!");
         }
-        pluginLogger.info("§6Экономика подключена!");
     }
 
     private void setupPerms(ServicesManager servicesManager) {
         perms = getProvider(servicesManager, Permission.class);
-        if (perms == null) {
-            return;
+        if (perms != null) {
+            pluginLogger.info("§aМенеджер прав подключён!");
         }
-        pluginLogger.info("§aМенеджер прав подключён!");
     }
 
     private <T> T getProvider(ServicesManager servicesManager, Class<T> clazz) {
