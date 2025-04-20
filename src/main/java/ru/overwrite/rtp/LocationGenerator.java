@@ -50,7 +50,7 @@ public class LocationGenerator {
             iterationsPerPlayer.addTo(player.getName(), 1);
             return generateRandomLocation(player, settings, world);
         }
-        rtpManager.printDebug("Location for player '" + player.getName() + "' found in " + iterationsPerPlayer.getInt(player.getName()) + " iterations");
+        rtpManager.printDebug(() -> "Location for player '" + player.getName() + "' found in " + iterationsPerPlayer.getInt(player.getName()) + " iterations");
         iterationsPerPlayer.removeInt(player.getName());
         return location;
     }
@@ -63,7 +63,7 @@ public class LocationGenerator {
         List<Player> nearbyPlayers = getNearbyPlayers(player, locationGenOptions, world);
 
         if (nearbyPlayers.isEmpty()) {
-            rtpManager.printDebug("No players found to generate location near player");
+            rtpManager.printDebug(() -> "No players found to generate location near player");
             return null;
         }
 
@@ -80,7 +80,7 @@ public class LocationGenerator {
             iterationsPerPlayer.addTo(player.getName(), 1);
             return generateRandomLocationNearPlayer(player, settings, world);
         }
-        rtpManager.printDebug("Location for player '" + player.getName() + "' found in " + iterationsPerPlayer.getInt(player.getName()) + " iterations");
+        rtpManager.printDebug(() -> "Location for player '" + player.getName() + "' found in " + iterationsPerPlayer.getInt(player.getName()) + " iterations");
         iterationsPerPlayer.removeInt(player.getName());
         return location;
     }
@@ -92,37 +92,26 @@ public class LocationGenerator {
         int maxZ = locationGenOptions.maxZ();
         List<Player> nearbyPlayers = new ArrayList<>();
         List<Player> worldPlayers = world.getPlayers();
-        if (Utils.DEBUG) {
-            List<String> playerNames = worldPlayers.stream().map(Player::getName).toList();
-            rtpManager.printDebug("Players in world " + world.getName() + ": " + playerNames);
-        }
+        rtpManager.printDebug(() -> "Players in world " + world.getName() + ": " + worldPlayers.stream().map(Player::getName).toList());
         worldPlayers.remove(player);
         for (int i = 0; i < worldPlayers.size(); i++) {
             Player worldPlayer = worldPlayers.get(i);
             String debugMsg = "Player " + worldPlayer.getName() + " excluded because: ";
             if (worldPlayer.hasPermission("rtp.near.bypass")) {
-                rtpManager.printDebug(debugMsg + "has bypass permission");
+                rtpManager.printDebug(() -> debugMsg + "has bypass permission");
                 continue;
             }
             if (isVanished(worldPlayer)) {
-                rtpManager.printDebug(debugMsg + "is vanished");
+                rtpManager.printDebug(() -> debugMsg + "is vanished");
                 continue;
             }
             Location loc = worldPlayer.getLocation();
             int px = loc.getBlockX();
             int pz = loc.getBlockZ();
 
-            if (px < minX || px > maxX || pz < minZ || pz > maxZ) {
-                continue;
+            if (px >= minX && px <= maxX && pz >= minZ && pz <= maxZ) {
+                nearbyPlayers.add(worldPlayer);
             }
-            nearbyPlayers.add(worldPlayer);
-            if (Utils.DEBUG) {
-                rtpManager.printDebug("Player " + worldPlayer.getName() + " ADDED to nearby (valid location)");
-            }
-        }
-        if (Utils.DEBUG) {
-            List<String> nearbyNames = nearbyPlayers.stream().map(Player::getName).toList();
-            rtpManager.printDebug("Final nearby players: " + nearbyNames);
         }
         return nearbyPlayers;
     }
@@ -133,10 +122,10 @@ public class LocationGenerator {
 
     public boolean hasReachedMaxIterations(String playerName, LocationGenOptions locationGenOptions) {
         int iterations = iterationsPerPlayer.getInt(playerName);
-        rtpManager.printDebug("Iterations for player '" + playerName + "': " + iterations);
+        rtpManager.printDebug(() -> "Iterations for player '" + playerName + "': " + iterations);
         if (iterations >= locationGenOptions.maxLocationAttempts()) {
             iterationsPerPlayer.removeInt(playerName);
-            rtpManager.printDebug("Max iterations reached for player " + playerName);
+            rtpManager.printDebug(() -> "Max iterations reached for player " + playerName);
             return true;
         }
         return false;
@@ -375,27 +364,27 @@ public class LocationGenerator {
 
     private boolean isLocationRestricted(Location location, Avoidance avoidance) {
         if (isOutsideWorldBorder(location)) {
-            rtpManager.printDebug("Location " + Utils.locationToString(location) + " is outside the world border.");
+            rtpManager.printDebug(() -> "Location " + Utils.locationToString(location) + " is outside the world border.");
             return true;
         }
         if (location.getWorld().getEnvironment() != World.Environment.NETHER && isInsideBlocks(location, true)) {
-            rtpManager.printDebug("Location " + Utils.locationToString(location) + " is inside blocks.");
+            rtpManager.printDebug(() -> "Location " + Utils.locationToString(location) + " is inside blocks.");
             return true;
         }
         if (isDisallowedBlock(location, avoidance)) {
-            rtpManager.printDebug("Location " + Utils.locationToString(location) + " contains a disallowed block.");
+            rtpManager.printDebug(() -> "Location " + Utils.locationToString(location) + " contains a disallowed block.");
             return true;
         }
         if (isDisallowedBiome(location, avoidance)) {
-            rtpManager.printDebug("Location " + Utils.locationToString(location) + " is in a disallowed biome.");
+            rtpManager.printDebug(() -> "Location " + Utils.locationToString(location) + " is in a disallowed biome.");
             return true;
         }
         if (isInsideRegion(location, avoidance)) {
-            rtpManager.printDebug("Location " + Utils.locationToString(location) + " is inside a disallowed region.");
+            rtpManager.printDebug(() -> "Location " + Utils.locationToString(location) + " is inside a disallowed region.");
             return true;
         }
         if (isInsideTown(location, avoidance)) {
-            rtpManager.printDebug("Location " + Utils.locationToString(location) + " is inside a disallowed town.");
+            rtpManager.printDebug(() -> "Location " + Utils.locationToString(location) + " is inside a disallowed town.");
             return true;
         }
         return false;

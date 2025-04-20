@@ -25,6 +25,7 @@ import ru.overwrite.rtp.utils.VersionUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 @Getter
 public final class RtpManager {
@@ -72,12 +73,12 @@ public final class RtpManager {
     public void setupChannels(FileConfiguration config, PluginManager pluginManager) {
         long startTime = System.currentTimeMillis();
         for (String channelId : config.getConfigurationSection("channels").getKeys(false)) {
-            printDebug("Id: " + channelId);
+            printDebug(() -> "Id: " + channelId);
             ConfigurationSection channelSection = config.getConfigurationSection("channels." + channelId);
             if (!channelSection.getString("file", "").isEmpty()) {
                 channelSection = pluginConfig.getChannelFile(plugin.getDataFolder().getAbsolutePath() + "/channels", channelSection.getString("file"));
                 if (channelSection == null) {
-                    printDebug("Unable to get channel settings. Skipping...");
+                    printDebug(() -> "Unable to get channel settings. Skipping...");
                     continue;
                 }
             }
@@ -95,7 +96,7 @@ public final class RtpManager {
             Settings channelSettings = Settings.create(plugin, channelSection, pluginConfig, baseTemplate, true);
             LocationGenOptions locationGenOptions = channelSettings.locationGenOptions();
             if (locationGenOptions == null) {
-                printDebug("Could not setup location generator options for channel '" + channelId + "'. Skipping...");
+                printDebug(() -> "Could not setup location generator options for channel '" + channelId + "'. Skipping...");
                 continue;
             }
 
@@ -116,12 +117,12 @@ public final class RtpManager {
         }
         this.defaultChannel = getChannelById(config.getString("main_settings.default_channel", ""));
         if (defaultChannel != null) {
-            printDebug("Default channel is: " + defaultChannel.id());
+            printDebug(() -> "Default channel is: " + defaultChannel.id());
         } else {
-            printDebug("Default channel not specified.");
+            printDebug(() -> "Default channel not specified.");
         }
         long endTime = System.currentTimeMillis();
-        printDebug("Channels setup done in " + (endTime - startTime) + " ms");
+        printDebug(() -> "Channels setup done in " + (endTime - startTime) + " ms");
     }
 
     public record Specifications(Set<String> joinChannels,
@@ -220,7 +221,7 @@ public final class RtpManager {
             return;
         }
         if (proxyCalls != null && !channel.serverToMove().isEmpty()) {
-            printDebug("Moving player '" + playerName + "' with channel '" + channel.id() + "' to server " + channel.serverToMove());
+            printDebug(() -> "Moving player '" + playerName + "' with channel '" + channel.id() + "' to server " + channel.serverToMove());
             plugin.getPluginMessage().sendCrossProxy(player, channel.serverToMove(), playerName + " " + channel.id() + ";" + world.getName());
             teleportingNow.remove(playerName);
             plugin.getPluginMessage().connectToServer(player, channel.serverToMove());
@@ -229,7 +230,7 @@ public final class RtpManager {
         Settings settings = channel.settings();
         int channelPreTeleportCooldown = getChannelPreTeleportCooldown(player, settings.cooldown());
         boolean finalForce = force || channelPreTeleportCooldown <= 0;
-        printDebug("Pre teleporting player '" + playerName + "' with channel '" + channel.id() + "' in world '" + world.getName() + "' (force: " + finalForce + ")");
+        printDebug(() -> "Pre teleporting player '" + playerName + "' with channel '" + channel.id() + "' in world '" + world.getName() + "' (force: " + finalForce + ")");
         teleportingNow.add(playerName);
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             locationGenerator.getIterationsPerPlayer().put(playerName, 1);
@@ -248,7 +249,7 @@ public final class RtpManager {
             }
             if (!finalForce) {
                 this.executeActions(player, channel, settings.actions().preTeleportActions(), player.getLocation());
-                printDebug("Generating task and starting pre teleport timer for player '" + playerName + "' with channel '" + channel.id() + "'");
+                printDebug(() -> "Generating task and starting pre teleport timer for player '" + playerName + "' with channel '" + channel.id() + "'");
                 RtpTask rtpTask = new RtpTask(plugin, this, playerName, channelPreTeleportCooldown, channel);
                 rtpTask.startPreTeleportTimer(player, channel, loc);
                 return;
@@ -272,7 +273,7 @@ public final class RtpManager {
     }
 
     public void teleportPlayer(Player player, Channel channel, Location loc) {
-        printDebug("Teleporting player '" + player.getName() + "' with channel '" + channel.id() + "' to location " + Utils.locationToString(loc));
+        printDebug(() -> "Teleporting player '" + player.getName() + "' with channel '" + channel.id() + "' to location " + Utils.locationToString(loc));
         if (channel.invulnerableTicks() > 0) {
             player.setInvulnerable(true);
             Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> player.setInvulnerable(false), channel.invulnerableTicks());
@@ -384,9 +385,9 @@ public final class RtpManager {
         }
     }
 
-    public void printDebug(String message) {
+    public void printDebug(final Supplier<String> messageEntry) {
         if (Utils.DEBUG) {
-            plugin.getPluginLogger().info(message);
+            plugin.getPluginLogger().info(messageEntry.get());
         }
     }
 }

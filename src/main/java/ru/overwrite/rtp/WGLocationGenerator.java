@@ -63,7 +63,7 @@ public class WGLocationGenerator {
         }
 
         if (regionsInRange.isEmpty()) {
-            rtpManager.printDebug("No regions found to generate location near region");
+            rtpManager.printDebug(() -> "No regions found to generate location near region");
             return null;
         }
 
@@ -79,7 +79,7 @@ public class WGLocationGenerator {
             locationGenerator.getIterationsPerPlayer().addTo(player.getName(), 1);
             return generateRandomLocationNearRandomRegion(player, settings, world);
         }
-        rtpManager.printDebug("Location for player '" + player.getName() + "' found in " + locationGenerator.getIterationsPerPlayer().getInt(player.getName()) + " iterations");
+        rtpManager.printDebug(() -> "Location for player '" + player.getName() + "' found in " + locationGenerator.getIterationsPerPlayer().getInt(player.getName()) + " iterations");
         locationGenerator.getIterationsPerPlayer().removeInt(player.getName());
         return location;
     }
