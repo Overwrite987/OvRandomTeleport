@@ -194,8 +194,9 @@ public final class MessageActionType implements ActionType {
             List<String> parts = new ArrayList<>();
             int start = 0;
             int depth = 0;
-            for (int i = 0; i < buttonContent.length(); i++) {
-                char c = buttonContent.charAt(i);
+            char[] chars = buttonContent.toCharArray();
+            for (int i = 0; i < chars.length; i++) {
+                char c = chars[i];
                 if (c == '{') {
                     depth++;
                 } else if (c == '}') {
