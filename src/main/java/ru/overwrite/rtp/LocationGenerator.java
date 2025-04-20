@@ -92,18 +92,37 @@ public class LocationGenerator {
         int maxZ = locationGenOptions.maxZ();
         List<Player> nearbyPlayers = new ArrayList<>();
         List<Player> worldPlayers = world.getPlayers();
-        rtpManager.printDebug("Players in world " + world.getName() + ": " + worldPlayers.stream().map(Player::getName).toList());
+        if (Utils.DEBUG) {
+            List<String> playerNames = worldPlayers.stream().map(Player::getName).toList();
+            rtpManager.printDebug("Players in world " + world.getName() + ": " + playerNames);
+        }
         worldPlayers.remove(player);
-        for (Player worldPlayer : worldPlayers) {
-            if (worldPlayer.hasPermission("rtp.near.bypass") || isVanished(worldPlayer)) {
+        for (int i = 0; i < worldPlayers.size(); i++) {
+            Player worldPlayer = worldPlayers.get(i);
+            String debugMsg = "Player " + worldPlayer.getName() + " excluded because: ";
+            if (worldPlayer.hasPermission("rtp.near.bypass")) {
+                rtpManager.printDebug(debugMsg + "has bypass permission");
+                continue;
+            }
+            if (isVanished(worldPlayer)) {
+                rtpManager.printDebug(debugMsg + "is vanished");
                 continue;
             }
             Location loc = worldPlayer.getLocation();
             int px = loc.getBlockX();
             int pz = loc.getBlockZ();
-            if (px >= minX && px <= maxX && pz >= minZ && pz <= maxZ) {
-                nearbyPlayers.add(worldPlayer);
+
+            if (px < minX || px > maxX || pz < minZ || pz > maxZ) {
+                continue;
             }
+            nearbyPlayers.add(worldPlayer);
+            if (Utils.DEBUG) {
+                rtpManager.printDebug("Player " + worldPlayer.getName() + " ADDED to nearby (valid location)");
+            }
+        }
+        if (Utils.DEBUG) {
+            List<String> nearbyNames = nearbyPlayers.stream().map(Player::getName).toList();
+            rtpManager.printDebug("Final nearby players: " + nearbyNames);
         }
         return nearbyPlayers;
     }
