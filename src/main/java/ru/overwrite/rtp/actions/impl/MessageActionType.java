@@ -1,7 +1,5 @@
 package ru.overwrite.rtp.actions.impl;
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -16,7 +14,6 @@ import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.utils.Utils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -226,8 +223,7 @@ public final class MessageActionType implements ActionType {
         private String extractMessage(String message) {
             String baseMessage = getBaseMessage(message);
 
-            for (int i = 0; i < HOVER_MARKERS.length; i++) {
-                String marker = HOVER_MARKERS[i];
+            for (String marker : HOVER_MARKERS) {
                 int startIndex = message.indexOf(marker);
                 if (startIndex != -1) {
                     int endIndexMarker = findClosingBracket(message, startIndex + marker.length() - 1);
@@ -241,17 +237,19 @@ public final class MessageActionType implements ActionType {
         }
 
         private String getBaseMessage(String message) {
-            IntList indices = new IntArrayList();
-            for (int i = 0; i < HOVER_MARKERS.length; i++) {
-                String marker = HOVER_MARKERS[i];
-                int index = message.indexOf(marker);
-                if (index != -1) {
-                    indices.add(index);
+            int endIndex = message.length();
+
+            for (String marker : HOVER_MARKERS) {
+                int idx = message.indexOf(marker);
+                if (idx != -1 && idx < endIndex) {
+                    endIndex = idx;
+                    if (endIndex == 0) break;
                 }
             }
-            int endIndex = indices.isEmpty() ? message.length() : Collections.min(indices);
 
-            return message.substring(0, endIndex).trim();
+            return endIndex == 0
+                    ? ""
+                    : message.substring(0, endIndex).trim();
         }
 
         private Component createHoverEvent(Component message, String hoverText) {
