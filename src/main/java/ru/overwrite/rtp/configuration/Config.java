@@ -14,6 +14,7 @@ import ru.overwrite.rtp.configuration.data.PlaceholderMessages;
 import ru.overwrite.rtp.utils.Utils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -128,8 +129,17 @@ public class Config {
     public FileConfiguration getChannelFile(String path, String fileName) {
         File file = new File(path, fileName);
         if (!file.exists()) {
-            plugin.saveResource("channels/" + fileName, false);
             plugin.getPluginLogger().warn("Channel file with name " + fileName + " does not exist.");
+            try {
+                plugin.saveResource("channels/" + fileName, false);
+            } catch (IllegalArgumentException ex) {
+                try {
+                    file.createNewFile();
+                    plugin.getPluginLogger().warn("Created empty channel file " + fileName);
+                } catch (IOException ioException) {
+                    plugin.getPluginLogger().warn("Unable to create channel file " + fileName + ". " + ex);
+                }
+            }
         }
         return YamlConfiguration.loadConfiguration(file);
     }
