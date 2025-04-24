@@ -306,10 +306,12 @@ public final class RtpManager {
 
                 double theta = goldenAngle * i;
 
-                double xOffset = particles.afterTeleportRadius() * radiusAtHeight * Math.cos(theta);
-                double zOffset = particles.afterTeleportRadius() * radiusAtHeight * Math.sin(theta);
+                double afterTeleportRadius = particles.afterTeleportRadius();
 
-                Location particleLocation = loc.clone().add(xOffset, yOffset * particles.afterTeleportRadius(), zOffset);
+                double xOffset = afterTeleportRadius * radiusAtHeight * Math.cos(theta);
+                double zOffset = afterTeleportRadius * radiusAtHeight * Math.sin(theta);
+
+                Location particleLocation = loc.clone().add(xOffset, yOffset * afterTeleportRadius, zOffset);
 
                 world.spawnParticle(
                         particles.afterTeleportParticle().particle(),
