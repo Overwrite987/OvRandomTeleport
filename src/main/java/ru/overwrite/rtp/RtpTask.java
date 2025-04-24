@@ -103,6 +103,6 @@ public class RtpTask {
         countdownTask.cancel();
         rtpManager.getPerPlayerActiveRtpTask().remove(playerName);
         rtpManager.getTeleportingNow().remove(playerName);
-        rtpManager.printDebug(() -> "RtpTask cancel called");
+        rtpManager.printDebug("RtpTask cancel called");
     }
 }

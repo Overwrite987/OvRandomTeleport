@@ -63,7 +63,7 @@ public class LocationGenerator {
         List<Player> nearbyPlayers = getNearbyPlayers(player, locationGenOptions, world);
 
         if (nearbyPlayers.isEmpty()) {
-            rtpManager.printDebug(() -> "No players found to generate location near player");
+            rtpManager.printDebug("No players found to generate location near player");
             return null;
         }
 
@@ -98,11 +98,11 @@ public class LocationGenerator {
             Player worldPlayer = worldPlayers.get(i);
             String debugMsg = "Player " + worldPlayer.getName() + " excluded because: ";
             if (worldPlayer.hasPermission("rtp.near.bypass")) {
-                rtpManager.printDebug(() -> debugMsg + "has bypass permission");
+                rtpManager.printDebug(debugMsg + "has bypass permission");
                 continue;
             }
             if (isVanished(worldPlayer)) {
-                rtpManager.printDebug(() -> debugMsg + "is vanished");
+                rtpManager.printDebug(debugMsg + "is vanished");
                 continue;
             }
             Location loc = worldPlayer.getLocation();
@@ -122,10 +122,10 @@ public class LocationGenerator {
 
     public boolean hasReachedMaxIterations(String playerName, LocationGenOptions locationGenOptions) {
         int iterations = iterationsPerPlayer.getInt(playerName);
-        rtpManager.printDebug(() -> "Iterations for player '" + playerName + "': " + iterations);
+        rtpManager.printDebug("Iterations for player '" + playerName + "': " + iterations);
         if (iterations >= locationGenOptions.maxLocationAttempts()) {
             iterationsPerPlayer.removeInt(playerName);
-            rtpManager.printDebug(() -> "Max iterations reached for player " + playerName);
+            rtpManager.printDebug("Max iterations reached for player " + playerName);
             return true;
         }
         return false;

@@ -63,7 +63,7 @@ public class WGLocationGenerator {
         }
 
         if (regionsInRange.isEmpty()) {
-            rtpManager.printDebug(() -> "No regions found to generate location near region");
+            rtpManager.printDebug("No regions found to generate location near region");
             return null;
         }
 

@@ -80,7 +80,7 @@ public class RtpCommand implements TabExecutor {
     }
 
     private void processTeleport(Player player, Channel channel) {
-        rtpManager.printDebug(() -> "Channel name: " + channel.name() + " Channel permission: " + "rtp.channel." + channel.id());
+        rtpManager.printDebug("Channel name: " + channel.name() + " Channel permission: rtp.channel." + channel.id());
         rtpManager.printDebug(() -> "Player permission status: " + player.hasPermission("rtp.channel." + channel.id()));
         if (!player.hasPermission("rtp.channel." + channel.id())) {
             Utils.sendMessage(channel.messages().noPerms(), player);
@@ -98,13 +98,13 @@ public class RtpCommand implements TabExecutor {
             return;
         }
         if (!rtpManager.takeCost(player, channel)) {
-            rtpManager.printDebug(() -> "Take cost for channel " + channel.id() + " didn't pass");
+            rtpManager.printDebug("Take cost for channel " + channel.id() + " didn't pass");
             return;
         }
         if (!channel.activeWorlds().contains(player.getWorld())) {
-            rtpManager.printDebug(() -> "Active worlds for channel " + channel.id() + " does not includes player's world: " + player.getWorld().getName());
+            rtpManager.printDebug("Active worlds for channel " + channel.id() + " does not includes player's world: " + player.getWorld().getName());
             if (channel.teleportToFirstAllowedWorld()) {
-                rtpManager.printDebug(() -> "Teleporting to first allowed world: " + channel.activeWorlds().get(0).getName());
+                rtpManager.printDebug("Teleporting to first allowed world: " + channel.activeWorlds().get(0).getName());
                 rtpManager.preTeleport(player, channel, channel.activeWorlds().get(0), false);
                 return;
             }
