@@ -3,7 +3,6 @@ package ru.overwrite.rtp.utils;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +13,6 @@ public final class PluginMessage implements PluginMessageListener {
 
     private final OvRandomTeleport plugin;
     private final RtpManager rtpManager;
-    @Getter
     private final String serverId;
 
     public PluginMessage(OvRandomTeleport plugin, String serverId) {
