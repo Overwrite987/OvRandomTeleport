@@ -305,6 +305,9 @@ public class RtpCommand implements TabExecutor {
     }
 
     private List<String> getResult(String[] args, List<String> completions) {
+        if (completions.isEmpty()) {
+            return completions;
+        }
         final List<String> result = new ArrayList<>();
         for (int i = 0; i < completions.size(); i++) {
             String c = completions.get(i);
