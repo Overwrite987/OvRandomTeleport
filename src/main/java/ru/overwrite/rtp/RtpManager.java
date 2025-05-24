@@ -16,8 +16,8 @@ import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.actions.ActionRegistry;
 import ru.overwrite.rtp.actions.impl.*;
 import ru.overwrite.rtp.channels.Channel;
-import ru.overwrite.rtp.channels.Settings;
 import ru.overwrite.rtp.channels.ChannelType;
+import ru.overwrite.rtp.channels.Settings;
 import ru.overwrite.rtp.channels.settings.*;
 import ru.overwrite.rtp.configuration.Config;
 import ru.overwrite.rtp.utils.Utils;
@@ -228,7 +228,7 @@ public final class RtpManager {
             return;
         }
         Settings settings = channel.settings();
-        int channelPreTeleportCooldown = getChannelPreTeleportCooldown(player, settings.cooldown());
+        int channelPreTeleportCooldown = getCooldown(player, settings.cooldown().defaultPreTeleportCooldown(), settings.cooldown().preTeleportCooldowns());
         boolean finalForce = force || channelPreTeleportCooldown <= 0;
         printDebug("Pre teleporting player '" + playerName + "' with channel '" + channel.id() + "' in world '" + world.getName() + "' (force: " + finalForce + ")");
         teleportingNow.add(playerName);
@@ -331,34 +331,21 @@ public final class RtpManager {
     }
 
     private void handlePlayerCooldown(Player player, Cooldown cooldown) {
-        int cooldownTime = getChannelCooldown(player, cooldown);
-        if (getChannelCooldown(player, cooldown) > 0 && !player.hasPermission("rtp.bypasscooldown")) {
+        int cooldownTime = getCooldown(player, cooldown.defaultCooldown(), cooldown.groupCooldowns());
+        if (cooldownTime > 0 && !player.hasPermission("rtp.bypasscooldown")) {
             cooldown.setCooldown(player.getName(), cooldownTime);
         }
     }
 
-    public int getChannelCooldown(Player player, Cooldown cooldown) {
-        if (cooldown.defaultCooldown() < 0) {
+    public int getCooldown(Player player, int defaultCooldown, Object2IntSortedMap<String> groupCooldowns) {
+        if (defaultCooldown < 0) {
             return -1;
         }
-        Object2IntSortedMap<String> groupCooldowns = cooldown.groupCooldowns();
         if (groupCooldowns.isEmpty()) {
-            return cooldown.defaultCooldown();
+            return defaultCooldown;
         }
         final String playerGroup = plugin.getPerms().getPrimaryGroup(player);
-        return groupCooldowns.getOrDefault(playerGroup, cooldown.defaultCooldown());
-    }
-
-    public int getChannelPreTeleportCooldown(Player player, Cooldown cooldown) {
-        if (cooldown.defaultPreTeleportCooldown() < 0) {
-            return -1;
-        }
-        Object2IntSortedMap<String> preTeleportCooldowns = cooldown.preTeleportCooldowns();
-        if (preTeleportCooldowns.isEmpty()) {
-            return cooldown.defaultPreTeleportCooldown();
-        }
-        final String playerGroup = plugin.getPerms().getPrimaryGroup(player);
-        return preTeleportCooldowns.getOrDefault(playerGroup, cooldown.defaultPreTeleportCooldown());
+        return groupCooldowns.getOrDefault(playerGroup, defaultCooldown);
     }
 
     @Getter(AccessLevel.NONE)
@@ -369,7 +356,13 @@ public final class RtpManager {
             return;
         }
         String name = channel.name();
-        String cd = Utils.getTime(getChannelPreTeleportCooldown(player, channel.settings().cooldown()));
+        String cd = Utils.getTime(
+                getCooldown(
+                        player,
+                        channel.settings().cooldown().defaultPreTeleportCooldown(),
+                        channel.settings().cooldown().preTeleportCooldowns()
+                )
+        );
         String x = Integer.toString(loc.getBlockX());
         String y = Integer.toString(loc.getBlockY());
         String z = Integer.toString(loc.getBlockZ());
