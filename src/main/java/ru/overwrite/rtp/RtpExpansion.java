@@ -98,7 +98,7 @@ public class RtpExpansion extends PlaceholderExpansion {
 
     private int calculateCooldown(Player player, Cooldown channelCooldown) {
         final long playerCooldownStart = channelCooldown.playerCooldowns().get(player.getName());
-        return (int) (rtpManager.getChannelCooldown(player, channelCooldown) - (System.currentTimeMillis() - playerCooldownStart) / 1000);
+        return (int) (rtpManager.getCooldown(player, channelCooldown.defaultCooldown(), channelCooldown.groupCooldowns()) - (System.currentTimeMillis() - playerCooldownStart) / 1000);
     }
 
     private String getCooldownTimeComponent(String timeUnit, int cooldown) {
@@ -136,8 +136,8 @@ public class RtpExpansion extends PlaceholderExpansion {
                     getValueIfPositiveOrDefault(cooldown.defaultCooldown());
             case "byplayergroup" -> isPlayerValid(player) ?
                     (args.length == 5 && args[4].equalsIgnoreCase("formatted") ?
-                            Utils.getTime(rtpManager.getChannelCooldown(player, cooldown)) :
-                            getValueIfPositiveOrDefault(rtpManager.getChannelCooldown(player, cooldown))) :
+                            Utils.getTime(rtpManager.getCooldown(player, cooldown.defaultCooldown(), cooldown.groupCooldowns())) :
+                            getValueIfPositiveOrDefault(rtpManager.getCooldown(player, cooldown.defaultCooldown(), cooldown.groupCooldowns()))) :
                     null;
             default -> null;
         };

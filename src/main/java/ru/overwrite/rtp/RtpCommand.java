@@ -90,7 +90,7 @@ public class RtpCommand implements TabExecutor {
         if (cooldown.hasCooldown(player)) {
             Utils.sendMessage(channel.messages().cooldown()
                     .replace("%time%",
-                            Utils.getTime((int) (rtpManager.getChannelCooldown(player, cooldown) - (System.currentTimeMillis() - cooldown.playerCooldowns().get(player.getName())) / 1000))), player);
+                            Utils.getTime((int) (rtpManager.getCooldown(player, cooldown.defaultCooldown(), cooldown.groupCooldowns()) - (System.currentTimeMillis() - cooldown.playerCooldowns().get(player.getName())) / 1000))), player);
             return;
         }
         if (channel.minPlayersToUse() > 0 && (Bukkit.getOnlinePlayers().size() - 1) < channel.minPlayersToUse()) {
