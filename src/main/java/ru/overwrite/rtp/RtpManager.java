@@ -345,6 +345,7 @@ public final class RtpManager {
             return defaultCooldown;
         }
         final String playerGroup = plugin.getPerms().getPrimaryGroup(player);
+        printDebug("Player group for cooldown is " + playerGroup);
         return groupCooldowns.getOrDefault(playerGroup, defaultCooldown);
     }
 
