@@ -88,7 +88,7 @@ public class RtpTask {
         }
         for (int time : actions.onCooldownActions().keySet()) {
             if (time == preTeleportCooldown) {
-                rtpManager.executeActions(player, channel, actions.onCooldownActions().get(time), player.getLocation());
+                rtpManager.executeActions(player, channel, finalPreTeleportCooldown, actions.onCooldownActions().get(time), player.getLocation());
             }
         }
     }

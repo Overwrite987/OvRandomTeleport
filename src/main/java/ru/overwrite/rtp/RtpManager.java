@@ -248,7 +248,7 @@ public final class RtpManager {
                 return;
             }
             if (!finalForce) {
-                this.executeActions(player, channel, settings.actions().preTeleportActions(), player.getLocation());
+                this.executeActions(player, channel, channelPreTeleportCooldown, settings.actions().preTeleportActions(), player.getLocation());
                 printDebug(() -> "Generating task and starting pre teleport timer for player '" + playerName + "' with channel '" + channel.id() + "'");
                 RtpTask rtpTask = new RtpTask(plugin, this, playerName, channelPreTeleportCooldown, channel);
                 rtpTask.startPreTeleportTimer(player, channel, loc);
@@ -283,7 +283,7 @@ public final class RtpManager {
             player.teleport(loc);
             teleportingNow.remove(player.getName());
             this.spawnParticleSphere(player, channel.settings().particles());
-            this.executeActions(player, channel, channel.settings().actions().afterTeleportActions(), loc);
+            this.executeActions(player, channel, 0, channel.settings().actions().afterTeleportActions(), loc);
         });
     }
 
@@ -351,18 +351,12 @@ public final class RtpManager {
     @Getter(AccessLevel.NONE)
     private final String[] searchList = {"%player%", "%name%", "%time%", "%x%", "%y%", "%z%"};
 
-    public void executeActions(Player player, Channel channel, List<Action> actionList, Location loc) {
+    public void executeActions(Player player, Channel channel, int cooldown, List<Action> actionList, Location loc) {
         if (actionList.isEmpty()) {
             return;
         }
         String name = channel.name();
-        String cd = Utils.getTime(
-                getCooldown(
-                        player,
-                        channel.settings().cooldown().defaultPreTeleportCooldown(),
-                        channel.settings().cooldown().preTeleportCooldowns()
-                )
-        );
+        String cd = Utils.getTime(cooldown);
         String x = Integer.toString(loc.getBlockX());
         String y = Integer.toString(loc.getBlockY());
         String z = Integer.toString(loc.getBlockZ());
