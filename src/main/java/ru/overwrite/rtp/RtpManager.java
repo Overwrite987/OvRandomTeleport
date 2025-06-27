@@ -234,6 +234,7 @@ public final class RtpManager {
         teleportingNow.add(playerName);
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             locationGenerator.getIterationsPerPlayer().put(playerName, 1);
+            long startTime = System.currentTimeMillis();
             Location loc = switch (channel.type()) {
                 case DEFAULT -> locationGenerator.generateRandomLocation(player, settings, world);
                 case NEAR_PLAYER -> locationGenerator.generateRandomLocationNearPlayer(player, settings, world);
@@ -241,6 +242,12 @@ public final class RtpManager {
                         locationGenerator.getWgLocationGenerator().generateRandomLocationNearRandomRegion(player, settings, world) :
                         locationGenerator.generateRandomLocation(player, settings, world);
             };
+            long endTime = System.currentTimeMillis();
+            long locationFound = endTime - startTime;
+            if (locationFound > 750) {
+                plugin.getPluginLogger().warn("Генерация локации заняла слишком много времени! (" + locationFound + "ms)");
+                plugin.getPluginLogger().warn("Убедитесь, что вы прогрузили карту при помощи Chunky!");
+            }
             if (loc == null) {
                 teleportingNow.remove(playerName);
                 Utils.sendMessage(channel.messages().failToFindLocation(), player);
