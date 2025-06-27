@@ -244,7 +244,7 @@ public final class RtpManager {
             };
             long endTime = System.currentTimeMillis();
             long locationFound = endTime - startTime;
-            if (locationFound > 750) {
+            if (locationFound > 500) {
                 plugin.getPluginLogger().warn("Генерация локации заняла слишком много времени! (" + locationFound + "ms)");
                 plugin.getPluginLogger().warn("Убедитесь, что вы прогрузили карту при помощи Chunky!");
             }
