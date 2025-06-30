@@ -1,28 +1,28 @@
 package ru.overwrite.rtp.utils.economy;
 
+import lombok.experimental.UtilityClass;
 import org.black_ixx.playerpoints.PlayerPoints;
 import org.black_ixx.playerpoints.PlayerPointsAPI;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-public final class PlayerPointsUtils {
+@UtilityClass
+public class PlayerPointsUtils {
 
-    private PlayerPointsUtils() {}
+    private final PlayerPointsAPI API = PlayerPoints.getInstance().getAPI();
 
-    private static final PlayerPointsAPI API = PlayerPoints.getInstance().getAPI();
-
-    public static void withdraw(Player player, int amount) {
+    public void withdraw(Player player, int amount) {
         UUID uuid = player.getUniqueId();
         API.take(uuid, amount);
     }
 
-    public static void deposit(Player player, int amount) {
+    public void deposit(Player player, int amount) {
         UUID uuid = player.getUniqueId();
         API.give(uuid, amount);
     }
 
-    public static int getBalance(Player player) {
+    public int getBalance(Player player) {
         return API.look(player.getUniqueId());
     }
 }
