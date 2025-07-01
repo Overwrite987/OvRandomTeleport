@@ -92,6 +92,7 @@ public final class RtpManager {
             String serverToMove = channelSection.getString("server_to_move", "");
             int minPlayersToUse = channelSection.getInt("min_players_to_use", -1);
             int invulnerableTicks = channelSection.getInt("invulnerable_after_teleport", 12);
+            boolean allowInCommands = channelSection.getBoolean("allow_in_command", true);
             Settings baseTemplate = pluginConfig.getChannelTemplates().get(channelSection.getString("template"));
             Settings channelSettings = Settings.create(plugin, channelSection, pluginConfig, baseTemplate, true);
             LocationGenOptions locationGenOptions = channelSettings.locationGenOptions();
@@ -110,6 +111,7 @@ public final class RtpManager {
                     serverToMove,
                     minPlayersToUse,
                     invulnerableTicks,
+                    allowInCommands,
                     channelSettings,
                     messages);
             namedChannels.put(channelId, newChannel);

@@ -13,6 +13,8 @@ server_to_move: ''
 min_players_to_use: 5
 # Необязательный параметр
 invulnerable_after_teleport: 12
+# Необязательный параметр
+allow_in_command: true
 # Необязательные параметры
 specifications:
   teleport_on_first_join: false

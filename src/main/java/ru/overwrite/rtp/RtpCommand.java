@@ -68,7 +68,7 @@ public class RtpCommand implements TabExecutor {
                 return true;
             }
             Channel channel = rtpManager.getChannelById(args[0]);
-            if (channel == null) {
+            if (channel == null || !channel.allowInCommand()) {
                 Utils.sendMessage(pluginConfig.getCommandMessages().incorrectChannel(), player);
                 return true;
             }

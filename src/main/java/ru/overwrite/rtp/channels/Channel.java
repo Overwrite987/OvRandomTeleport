@@ -15,6 +15,7 @@ public record Channel(
         String serverToMove,
         int minPlayersToUse,
         int invulnerableTicks,
+        boolean allowInCommand,
         @NotNull Settings settings,
         @NotNull Messages messages) {
 }
