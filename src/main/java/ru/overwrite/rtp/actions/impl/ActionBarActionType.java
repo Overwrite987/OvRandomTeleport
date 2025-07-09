@@ -15,7 +15,8 @@ public final class ActionBarActionType implements ActionType {
 
     @Override
     public @NotNull Action instance(@NotNull String context, @NotNull OvRandomTeleport plugin) {
-        return new ActionBarAction(context);
+        String text = Utils.COLORIZER.colorize(context);
+        return new ActionBarAction(text);
     }
 
     @Override
