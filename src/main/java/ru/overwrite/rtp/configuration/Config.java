@@ -97,7 +97,11 @@ public class Config {
 
     public void setupTemplates() {
         final FileConfiguration templatesConfig = getFile(plugin.getDataFolder().getAbsolutePath(), "templates.yml");
-        for (String templateID : templatesConfig.getKeys(false)) {
+        Set<String> keys = templatesConfig.getKeys(false);
+        if (keys.isEmpty()) {
+            return;
+        }
+        for (String templateID : keys) {
             final ConfigurationSection templateSection = templatesConfig.getConfigurationSection(templateID);
             Settings newTemplate = Settings.create(plugin, templateSection, this, null, false);
             channelTemplates.put(templateID, newTemplate);
