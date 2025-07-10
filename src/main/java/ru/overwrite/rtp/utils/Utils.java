@@ -37,11 +37,10 @@ public final class Utils {
     }
 
     public List<World> getWorldList(List<String> worldNames) {
-        final List<World> worldList = new ArrayList<>(worldNames.size());
         if (!worldNames.isEmpty() && worldNames.get(0).equals("*")) {
-            worldList.addAll(Bukkit.getWorlds());
-            return worldList;
+            return Bukkit.getWorlds();
         }
+        final List<World> worldList = new ArrayList<>(worldNames.size());
         for (String w : worldNames) {
             worldList.add(Bukkit.getWorld(w));
         }
