@@ -72,9 +72,10 @@ public final class RtpManager {
 
     public void setupChannels(FileConfiguration config, PluginManager pluginManager) {
         long startTime = System.currentTimeMillis();
-        for (String channelId : config.getConfigurationSection("channels").getKeys(false)) {
+        ConfigurationSection channelsSection = config.getConfigurationSection("channels");
+        for (String channelId : channelsSection.getKeys(false)) {
             printDebug("Id: " + channelId);
-            ConfigurationSection channelSection = config.getConfigurationSection("channels." + channelId);
+            ConfigurationSection channelSection = channelsSection.getConfigurationSection(channelId);
             if (!channelSection.getString("file", "").isEmpty()) {
                 channelSection = pluginConfig.getChannelFile(plugin.getDataFolder().getAbsolutePath() + "/channels", channelSection.getString("file"));
                 if (channelSection == null) {
