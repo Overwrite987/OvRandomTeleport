@@ -49,11 +49,18 @@ public final class RtpManager {
 
     private Map<String, String> proxyCalls;
 
+    @Getter(AccessLevel.NONE)
+    private final int maxTeleporting;
+
+    private final List<String> teleportingNow;
+
     public RtpManager(OvRandomTeleport plugin) {
         this.plugin = plugin;
         this.pluginConfig = plugin.getPluginConfig();
         this.actionRegistry = new ActionRegistry(plugin);
         this.locationGenerator = new LocationGenerator(plugin, this);
+        this.maxTeleporting = plugin.getConfig().getInt("main_settings.max_teleporting", 30);
+        this.teleportingNow = new ArrayList<>(maxTeleporting);
         registerDefaultActions();
     }
 
@@ -94,6 +101,7 @@ public final class RtpManager {
             int minPlayersToUse = channelSection.getInt("min_players_to_use", -1);
             int invulnerableTicks = channelSection.getInt("invulnerable_after_teleport", 12);
             boolean allowInCommands = channelSection.getBoolean("allow_in_command", true);
+            boolean bypassMaxTeleportLimit = channelsSection.getBoolean("bypass_max_teleport_limit", false);
             Settings baseTemplate = pluginConfig.getChannelTemplates().get(channelSection.getString("template"));
             Settings channelSettings = Settings.create(plugin, channelSection, pluginConfig, baseTemplate, true);
             LocationGenOptions locationGenOptions = channelSettings.locationGenOptions();
@@ -113,6 +121,7 @@ public final class RtpManager {
                     minPlayersToUse,
                     invulnerableTicks,
                     allowInCommands,
+                    bypassMaxTeleportLimit,
                     channelSettings,
                     messages);
             namedChannels.put(channelId, newChannel);
@@ -216,8 +225,6 @@ public final class RtpManager {
         return !perPlayerActiveRtpTask.isEmpty() && perPlayerActiveRtpTask.containsKey(playerName);
     }
 
-    private final List<String> teleportingNow = new ArrayList<>();
-
     public void preTeleport(Player player, Channel channel, World world, boolean force) {
         String playerName = player.getName();
         if (teleportingNow.contains(playerName)) {
@@ -226,8 +233,12 @@ public final class RtpManager {
         if (proxyCalls != null && !channel.serverToMove().isEmpty()) {
             printDebug("Moving player '" + playerName + "' with channel '" + channel.id() + "' to server " + channel.serverToMove());
             plugin.getPluginMessage().sendCrossProxy(player, channel.serverToMove(), playerName + " " + channel.id() + ";" + world.getName());
-            teleportingNow.remove(playerName);
             plugin.getPluginMessage().connectToServer(player, channel.serverToMove());
+            return;
+        }
+        if (teleportingNow.size() > maxTeleporting && !channel.bypassMaxTeleportLimit()) {
+            player.sendMessage(pluginConfig.getCommandMessages().tooMuchTeleporting());
+            printDebug("Unable to pre teleport player '" + playerName + "' because too much players are teleporting and channel '" + channel.id() + "' does not have a bypass");
             return;
         }
         Settings settings = channel.settings();

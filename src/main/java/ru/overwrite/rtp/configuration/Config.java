@@ -15,10 +15,7 @@ import ru.overwrite.rtp.utils.Utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Getter
 public class Config {
@@ -70,6 +67,7 @@ public class Config {
                 getPrefixed(messages.getString("incorrect_channel", "messages.incorrect_channel"), messagesPrefix),
                 getPrefixed(messages.getString("channel_not_specified", "messages.channel_not_specified"), messagesPrefix),
                 getPrefixed(messages.getString("canceled", "messages.canceled"), messagesPrefix),
+                getPrefixed(messages.getString("too_much_teleporting", "messages.too_much_teleporting"), messagesPrefix),
                 getPrefixed(admin.getString("reload"), messagesPrefix),
                 getPrefixed(admin.getString("unknown_argument"), messagesPrefix),
                 getPrefixed(admin.getString("player_not_found"), messagesPrefix),

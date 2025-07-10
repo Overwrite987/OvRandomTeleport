@@ -15,6 +15,8 @@ min_players_to_use: 5
 invulnerable_after_teleport: 12
 # Необязательный параметр
 allow_in_command: true
+# Необязательный параметр
+bypass_max_teleport_limit: true
 # Необязательные параметры
 specifications:
   teleport_on_first_join: false

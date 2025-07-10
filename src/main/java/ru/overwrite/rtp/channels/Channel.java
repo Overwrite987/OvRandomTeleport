@@ -16,6 +16,7 @@ public record Channel(
         int minPlayersToUse,
         int invulnerableTicks,
         boolean allowInCommand,
+        boolean bypassMaxTeleportLimit,
         @NotNull Settings settings,
         @NotNull Messages messages) {
 }
