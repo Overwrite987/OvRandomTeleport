@@ -155,7 +155,8 @@ public class RtpListener implements Listener {
         String playerName = player.getName();
         if (rtpManager.hasActiveTasks(playerName)) {
             Channel activeChannel = rtpManager.getPerPlayerActiveRtpTask().get(playerName).getActiveChannel();
-            if (activeChannel.settings().restrictions().restrictDamage() && !activeChannel.settings().restrictions().damageCheckOnlyPlayers()) {
+            Restrictions restrictions = activeChannel.settings().restrictions();
+            if (restrictions.restrictDamage() && !restrictions.damageCheckOnlyPlayers()) {
                 Utils.sendMessage(activeChannel.messages().damagedOnTeleport(), player);
                 cancelTeleportation(playerName);
             }
