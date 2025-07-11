@@ -164,6 +164,7 @@ public record Settings(
             return null;
         }
         boolean hasTemplateParticles = template != null && template.particles() != null;
+
         boolean preTeleportEnabled = hasTemplateParticles && template.particles().preTeleportEnabled();
         boolean preTeleportSendOnlyToPlayer = hasTemplateParticles && template.particles().preTeleportSendOnlyToPlayer();
         List<Particles.ParticleData> preTeleportParticles = hasTemplateParticles ? template.particles().preTeleportParticles() : null;
@@ -232,50 +233,38 @@ public record Settings(
         boolean hasTemplateAvoidance = template != null && template.avoidance() != null;
 
         ConfigurationSection blocksSection = avoidSection.getConfigurationSection("blocks");
-        boolean avoidBlocksBlacklist;
+        boolean avoidBlocksBlacklist = !pluginConfig.isNullSection(blocksSection)
+                ? blocksSection.getBoolean("blacklist", hasTemplateAvoidance && template.avoidance().avoidBlocksBlacklist())
+                : hasTemplateAvoidance && template.avoidance().avoidBlocksBlacklist();
         Set<Material> avoidBlocks;
-        if (!pluginConfig.isNullSection(blocksSection)) {
-            avoidBlocksBlacklist = blocksSection.getBoolean("blacklist", true);
-            if (blocksSection.contains("list")) {
-                avoidBlocks = EnumSet.noneOf(Material.class);
-                for (String material : blocksSection.getStringList("list")) {
-                    avoidBlocks.add(Material.valueOf(material.toUpperCase(Locale.ENGLISH)));
-                }
-            } else {
-                avoidBlocks = hasTemplateAvoidance ? template.avoidance().avoidBlocks() : Set.of();
+        if (!pluginConfig.isNullSection(blocksSection) && blocksSection.contains("list")) {
+            avoidBlocks = EnumSet.noneOf(Material.class);
+            for (String material : blocksSection.getStringList("list")) {
+                avoidBlocks.add(Material.valueOf(material.toUpperCase(Locale.ENGLISH)));
             }
         } else {
-            avoidBlocksBlacklist = hasTemplateAvoidance && template.avoidance().avoidBlocksBlacklist();
             avoidBlocks = hasTemplateAvoidance ? template.avoidance().avoidBlocks() : Set.of();
         }
 
         ConfigurationSection biomesSection = avoidSection.getConfigurationSection("biomes");
-        boolean avoidBiomesBlacklist;
+        boolean avoidBiomesBlacklist = !pluginConfig.isNullSection(biomesSection)
+                ? biomesSection.getBoolean("blacklist", hasTemplateAvoidance && template.avoidance().avoidBiomesBlacklist())
+                : hasTemplateAvoidance && template.avoidance().avoidBiomesBlacklist();
         Set<Biome> avoidBiomes;
-        if (!pluginConfig.isNullSection(biomesSection)) {
-            avoidBiomesBlacklist = biomesSection.getBoolean("blacklist", true);
-            if (blocksSection.contains("list")) {
-                avoidBiomes = VersionUtils.SUB_VERSION > 20
-                        ? new HashSet<>()
-                        : EnumSet.noneOf(Biome.class);
-                for (String biome : biomesSection.getStringList("list")) {
-                    avoidBiomes.add(Biome.valueOf(biome.toUpperCase(Locale.ENGLISH)));
-                }
-            } else {
-                avoidBiomes = hasTemplateAvoidance ? template.avoidance().avoidBiomes() : Set.of();
+        if (!pluginConfig.isNullSection(biomesSection) && biomesSection.contains("list")) {
+            avoidBiomes = VersionUtils.SUB_VERSION > 20
+                    ? new HashSet<>()
+                    : EnumSet.noneOf(Biome.class);
+            for (String biome : biomesSection.getStringList("list")) {
+                avoidBiomes.add(Biome.valueOf(biome.toUpperCase(Locale.ENGLISH)));
             }
         } else {
-            avoidBiomesBlacklist = hasTemplateAvoidance && template.avoidance().avoidBiomesBlacklist();
             avoidBiomes = hasTemplateAvoidance ? template.avoidance().avoidBiomes() : Set.of();
         }
 
-        boolean avoidRegions = avoidSection.contains("regions")
-                ? avoidSection.getBoolean("regions", false) && pluginManager.isPluginEnabled("WorldGuard")
-                : hasTemplateAvoidance && template.avoidance().avoidRegions();
+        boolean avoidRegions = avoidSection.getBoolean("regions", hasTemplateAvoidance && template.avoidance().avoidRegions()) && pluginManager.isPluginEnabled("WorldGuard");
 
-        boolean avoidTowns = avoidSection.contains("towns")
-                ? avoidSection.getBoolean("towns", false) && pluginManager.isPluginEnabled("Towny")
-                : hasTemplateAvoidance && template.avoidance().avoidTowns();
+        boolean avoidTowns = avoidSection.getBoolean("towns", hasTemplateAvoidance && template.avoidance().avoidTowns()) && pluginManager.isPluginEnabled("Towny");
 
         return new Avoidance(avoidBlocksBlacklist, avoidBlocks, avoidBiomesBlacklist, avoidBiomes, avoidRegions, avoidTowns);
     }
