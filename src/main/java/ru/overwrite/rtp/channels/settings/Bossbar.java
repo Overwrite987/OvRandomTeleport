@@ -7,5 +7,5 @@ public record Bossbar(
         boolean bossbarEnabled,
         String bossbarTitle,
         BarColor bossbarColor,
-        BarStyle bossbarType) {
+        BarStyle bossbarStyle) {
 }
