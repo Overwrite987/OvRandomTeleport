@@ -211,7 +211,6 @@ public record Settings(
         if (pluginConfig.isNullSection(restrictions) && !applyTemplate) {
             return null;
         }
-
         boolean hasTemplateRestrictions = template != null && template.avoidance() != null;
 
         return new Restrictions(
@@ -235,10 +234,7 @@ public record Settings(
                 : hasTemplateAvoidance && template.avoidance().avoidBlocksBlacklist();
         Set<Material> avoidBlocks = hasTemplateAvoidance ? template.avoidance().avoidBlocks() : Set.of();
         if (!pluginConfig.isNullSection(blocksSection) && blocksSection.contains("list")) {
-            avoidBlocks = EnumSet.noneOf(Material.class);
-            for (String material : blocksSection.getStringList("list")) {
-                avoidBlocks.add(Material.valueOf(material.toUpperCase(Locale.ENGLISH)));
-            }
+            avoidBlocks = createMaterialSet(blocksSection.getStringList("list"));
         }
 
         ConfigurationSection biomesSection = avoidSection.getConfigurationSection("biomes");
@@ -247,12 +243,7 @@ public record Settings(
                 : hasTemplateAvoidance && template.avoidance().avoidBiomesBlacklist();
         Set<Biome> avoidBiomes = hasTemplateAvoidance ? template.avoidance().avoidBiomes() : Set.of();
         if (!pluginConfig.isNullSection(biomesSection) && biomesSection.contains("list")) {
-            avoidBiomes = VersionUtils.SUB_VERSION > 20
-                    ? new HashSet<>()
-                    : EnumSet.noneOf(Biome.class);
-            for (String biome : biomesSection.getStringList("list")) {
-                avoidBiomes.add(Biome.valueOf(biome.toUpperCase(Locale.ENGLISH)));
-            }
+            avoidBiomes = createBiomeSet(biomesSection.getStringList("list"));
         }
 
         boolean avoidRegions = avoidSection.getBoolean("regions", hasTemplateAvoidance && template.avoidance().avoidRegions()) && pluginManager.isPluginEnabled("WorldGuard");
@@ -260,6 +251,24 @@ public record Settings(
         boolean avoidTowns = avoidSection.getBoolean("towns", hasTemplateAvoidance && template.avoidance().avoidTowns()) && pluginManager.isPluginEnabled("Towny");
 
         return new Avoidance(avoidBlocksBlacklist, avoidBlocks, avoidBiomesBlacklist, avoidBiomes, avoidRegions, avoidTowns);
+    }
+
+    private static Set<Material> createMaterialSet(List<String> stringList) {
+        Set<Material> materialSet = EnumSet.noneOf(Material.class);
+        for (String material : stringList) {
+            materialSet.add(Material.valueOf(material.toUpperCase(Locale.ENGLISH)));
+        }
+        return materialSet;
+    }
+
+    private static Set<Biome> createBiomeSet(List<String> stringList) {
+        Set<Biome> biomeSet = VersionUtils.SUB_VERSION > 20
+                ? new HashSet<>()
+                : EnumSet.noneOf(Biome.class);
+        for (String biome : stringList) {
+            biomeSet.add(Biome.valueOf(biome.toUpperCase(Locale.ENGLISH)));
+        }
+        return biomeSet;
     }
 
     public static Actions setupActions(OvRandomTeleport plugin, ConfigurationSection actionsSection, Settings template, Config pluginConfig, boolean applyTemplate) {
