@@ -18,7 +18,10 @@ import ru.overwrite.rtp.actions.impl.*;
 import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.channels.ChannelType;
 import ru.overwrite.rtp.channels.Settings;
-import ru.overwrite.rtp.channels.settings.*;
+import ru.overwrite.rtp.channels.settings.Cooldown;
+import ru.overwrite.rtp.channels.settings.Costs;
+import ru.overwrite.rtp.channels.settings.Messages;
+import ru.overwrite.rtp.channels.settings.Particles;
 import ru.overwrite.rtp.configuration.Config;
 import ru.overwrite.rtp.utils.Utils;
 import ru.overwrite.rtp.utils.VersionUtils;
@@ -104,11 +107,6 @@ public final class RtpManager {
             boolean bypassMaxTeleportLimit = channelsSection.getBoolean("bypass_max_teleport_limit", false);
             Settings baseTemplate = pluginConfig.getChannelTemplates().get(channelSection.getString("template"));
             Settings channelSettings = Settings.create(plugin, channelSection, pluginConfig, baseTemplate, true);
-            LocationGenOptions locationGenOptions = channelSettings.locationGenOptions();
-            if (locationGenOptions == null) {
-                printDebug("Could not setup location generator options for channel '" + channelId + "'. Skipping...");
-                continue;
-            }
 
             Messages messages = setupChannelMessages(channelSection.getConfigurationSection("messages"));
 
