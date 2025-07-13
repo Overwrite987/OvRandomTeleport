@@ -71,52 +71,37 @@ public record Settings(
                 )
         );
 
+        Supplier<Double> moneyCostSupplier = () -> getOrDefaultValue(
+                hasTemplateCosts,
+                () -> template.costs().moneyCost(),
+                -1.0
+        );
         double moneyCost = getOrDefaultValue(
                 !isNullSection,
-                () -> channelCosts.getDouble("money_cost",
-                        getOrDefaultValue(
-                                hasTemplateCosts,
-                                () -> template.costs().moneyCost(),
-                                -1.0
-                        )
-                ),
-                getOrDefaultValue(
-                        hasTemplateCosts,
-                        () -> template.costs().moneyCost(),
-                        -1.0
-                )
+                () -> channelCosts.getDouble("money_cost", moneyCostSupplier.get()),
+                moneyCostSupplier.get()
         );
 
+        Supplier<Integer> hungerCostSupplier = () -> getOrDefaultValue(
+                hasTemplateCosts,
+                () -> template.costs().hungerCost(),
+                -1
+        );
         int hungerCost = getOrDefaultValue(
                 !isNullSection,
-                () -> channelCosts.getInt("hunger_cost",
-                        getOrDefaultValue(
-                                hasTemplateCosts,
-                                () -> template.costs().hungerCost(),
-                                -1
-                        )
-                ),
-                getOrDefaultValue(
-                        hasTemplateCosts,
-                        () -> template.costs().hungerCost(),
-                        -1
-                )
+                () -> channelCosts.getInt("hunger_cost", hungerCostSupplier.get()),
+                hungerCostSupplier.get()
         );
 
+        Supplier<Integer> expCostSupplier = () -> getOrDefaultValue(
+                hasTemplateCosts,
+                () -> template.costs().expCost(),
+                -1
+        );
         int expCost = getOrDefaultValue(
                 !isNullSection,
-                () -> channelCosts.getInt("experience_cost",
-                        getOrDefaultValue(
-                                hasTemplateCosts,
-                                () -> template.costs().expCost(),
-                                -1
-                        )
-                ),
-                getOrDefaultValue(
-                        hasTemplateCosts,
-                        () -> template.costs().expCost(),
-                        -1
-                )
+                () -> channelCosts.getInt("experience_cost", expCostSupplier.get()),
+                expCostSupplier.get()
         );
 
         return new Costs(plugin.getEconomy(), moneyType, moneyCost, hungerCost, expCost);
