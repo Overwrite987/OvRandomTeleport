@@ -2,7 +2,9 @@ package ru.overwrite.rtp;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.command.*;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
@@ -21,6 +23,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class RtpCommand implements TabExecutor {
 
@@ -256,8 +259,10 @@ public class RtpCommand implements TabExecutor {
                 completions.add("cancel");
                 return getResult(args, completions);
             }
-            for (String channelName : rtpManager.getNamedChannels().keySet()) {
-                if (player.hasPermission("rtp.channel." + channelName)) {
+            for (Map.Entry<String, Channel> entry : rtpManager.getNamedChannels().entrySet()) {
+                String channelName = entry.getKey();
+                Channel channel = entry.getValue();
+                if (player.hasPermission("rtp.channel." + channelName) && channel.allowInCommand()) {
                     completions.add(channelName);
                 }
             }
