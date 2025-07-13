@@ -49,76 +49,286 @@ public record Settings(
     }
 
     public static Costs setupCosts(OvRandomTeleport plugin, ConfigurationSection channelCosts, Settings template, Config pluginConfig, boolean applyTemplate) {
-        if (pluginConfig.isNullSection(channelCosts) && !applyTemplate) {
+        boolean isNullSection = pluginConfig.isNullSection(channelCosts);
+        if (isNullSection && !applyTemplate) {
             return null;
         }
         boolean hasTemplateCosts = template != null && template.costs() != null;
 
-        Costs.MoneyType moneyType = channelCosts.contains("money_type")
-                ? Costs.MoneyType.valueOf(channelCosts.getString("money_type", "VAULT").toUpperCase(Locale.ENGLISH))
-                : getTemplateOrDefaultValue(hasTemplateCosts, () -> template.costs().moneyType(), null);
+        Costs.MoneyType moneyType = getOrDefaultValue(
+                !isNullSection && channelCosts.contains("money_type"),
+                () -> Costs.MoneyType.valueOf(
+                        getOrDefaultValue(
+                                !isNullSection,
+                                () -> channelCosts.getString("money_type", "VAULT"),
+                                "VAULT"
+                        ).toUpperCase(Locale.ENGLISH)
+                ),
+                getOrDefaultValue(
+                        hasTemplateCosts,
+                        () -> template.costs().moneyType(),
+                        null
+                )
+        );
 
-        double moneyCost = channelCosts.getDouble("money_cost", getTemplateOrDefaultValue(hasTemplateCosts, () -> template.costs().moneyCost(), -1.0));
-        int hungerCost = channelCosts.getInt("hunger_cost", getTemplateOrDefaultValue(hasTemplateCosts, () -> template.costs().hungerCost(), -1));
-        int expCost = channelCosts.getInt("experience_cost", getTemplateOrDefaultValue(hasTemplateCosts, () -> template.costs().expCost(), -1));
+        double moneyCost = getOrDefaultValue(
+                !isNullSection,
+                () -> channelCosts.getDouble("money_cost",
+                        getOrDefaultValue(
+                                hasTemplateCosts,
+                                () -> template.costs().moneyCost(),
+                                -1.0
+                        )
+                ),
+                getOrDefaultValue(
+                        hasTemplateCosts,
+                        () -> template.costs().moneyCost(),
+                        -1.0
+                )
+        );
+
+        int hungerCost = getOrDefaultValue(
+                !isNullSection,
+                () -> channelCosts.getInt("hunger_cost",
+                        getOrDefaultValue(
+                                hasTemplateCosts,
+                                () -> template.costs().hungerCost(),
+                                -1
+                        )
+                ),
+                getOrDefaultValue(
+                        hasTemplateCosts,
+                        () -> template.costs().hungerCost(),
+                        -1
+                )
+        );
+
+        int expCost = getOrDefaultValue(
+                !isNullSection,
+                () -> channelCosts.getInt("experience_cost",
+                        getOrDefaultValue(
+                                hasTemplateCosts,
+                                () -> template.costs().expCost(),
+                                -1
+                        )
+                ),
+                getOrDefaultValue(
+                        hasTemplateCosts,
+                        () -> template.costs().expCost(),
+                        -1
+                )
+        );
 
         return new Costs(plugin.getEconomy(), moneyType, moneyCost, hungerCost, expCost);
     }
 
     public static LocationGenOptions setupLocationGenOptions(ConfigurationSection locationGenOptions, Settings template, Config pluginConfig, boolean applyTemplate) {
-        if (pluginConfig.isNullSection(locationGenOptions) && !applyTemplate) {
+        boolean isNullSection = pluginConfig.isNullSection(locationGenOptions);
+        if (isNullSection && !applyTemplate) {
             return null;
         }
         boolean hasTemplateOptions = template != null && template.locationGenOptions() != null;
 
-        LocationGenOptions.Shape shape = locationGenOptions.contains("shape")
-                ? LocationGenOptions.Shape.valueOf(locationGenOptions.getString("shape", "SQUARE").toUpperCase(Locale.ENGLISH))
-                : getTemplateOrDefaultValue(hasTemplateOptions, () -> template.locationGenOptions().shape(), LocationGenOptions.Shape.SQUARE);
+        LocationGenOptions.Shape shape = getOrDefaultValue(
+                !isNullSection && locationGenOptions.contains("shape"),
+                () -> LocationGenOptions.Shape.valueOf(
+                        getOrDefaultValue(
+                                !isNullSection,
+                                () -> locationGenOptions.getString("shape", "SQUARE"),
+                                "SQUARE"
+                        ).toUpperCase(Locale.ENGLISH)
+                ),
+                getOrDefaultValue(
+                        hasTemplateOptions,
+                        () -> template.locationGenOptions().shape(),
+                        LocationGenOptions.Shape.SQUARE
+                )
+        );
 
-        LocationGenOptions.GenFormat genFormat = locationGenOptions.contains("gen_format")
-                ? LocationGenOptions.GenFormat.valueOf(locationGenOptions.getString("gen_format", "RECTANGULAR").toUpperCase(Locale.ENGLISH))
-                : getTemplateOrDefaultValue(hasTemplateOptions, () -> template.locationGenOptions().genFormat(), LocationGenOptions.GenFormat.RECTANGULAR);
+        LocationGenOptions.GenFormat genFormat = getOrDefaultValue(
+                !isNullSection && locationGenOptions.contains("gen_format"),
+                () -> LocationGenOptions.GenFormat.valueOf(
+                        getOrDefaultValue(
+                                !isNullSection,
+                                () -> locationGenOptions.getString("gen_format", "RECTANGULAR"),
+                                "RECTANGULAR"
+                        ).toUpperCase(Locale.ENGLISH)
+                ),
+                getOrDefaultValue(
+                        hasTemplateOptions,
+                        () -> template.locationGenOptions().genFormat(),
+                        LocationGenOptions.GenFormat.RECTANGULAR
+                )
+        );
 
-        int minX = locationGenOptions.getInt("min_x", getTemplateOrDefaultValue(hasTemplateOptions, () -> template.locationGenOptions().minX(), 0));
-        int maxX = locationGenOptions.getInt("max_x", getTemplateOrDefaultValue(hasTemplateOptions, () -> template.locationGenOptions().maxX(), 0));
-        int minZ = locationGenOptions.getInt("min_z", getTemplateOrDefaultValue(hasTemplateOptions, () -> template.locationGenOptions().minZ(), 0));
-        int maxZ = locationGenOptions.getInt("max_z", getTemplateOrDefaultValue(hasTemplateOptions, () -> template.locationGenOptions().maxZ(), 0));
-        int nearRadiusMin = locationGenOptions.getInt("min_near_point_distance", getTemplateOrDefaultValue(hasTemplateOptions, () -> template.locationGenOptions().nearRadiusMin(), 30));
-        int nearRadiusMax = locationGenOptions.getInt("max_near_point_distance", getTemplateOrDefaultValue(hasTemplateOptions, () -> template.locationGenOptions().nearRadiusMax(), 60));
-        int centerX = locationGenOptions.getInt("center_x", getTemplateOrDefaultValue(hasTemplateOptions, () -> template.locationGenOptions().centerX(), 0));
-        int centerZ = locationGenOptions.getInt("center_z", getTemplateOrDefaultValue(hasTemplateOptions, () -> template.locationGenOptions().centerZ(), 0));
-        int maxLocationAttempts = locationGenOptions.getInt("max_location_attempts", getTemplateOrDefaultValue(hasTemplateOptions, () -> template.locationGenOptions().maxLocationAttempts(), 50));
+        // Numeric parameters with suppliers (reused values)
+        Supplier<Integer> minXSupplier = () -> getOrDefaultValue(
+                hasTemplateOptions,
+                () -> template.locationGenOptions().minX(),
+                0
+        );
+        int minX = getOrDefaultValue(
+                !isNullSection,
+                () -> locationGenOptions.getInt("min_x", minXSupplier.get()),
+                minXSupplier.get()
+        );
 
-        return new LocationGenOptions(shape, genFormat, minX, maxX, minZ, maxZ, nearRadiusMin, nearRadiusMax, centerX, centerZ, maxLocationAttempts);
+        Supplier<Integer> maxXSupplier = () -> getOrDefaultValue(
+                hasTemplateOptions,
+                () -> template.locationGenOptions().maxX(),
+                0
+        );
+        int maxX = getOrDefaultValue(
+                !isNullSection,
+                () -> locationGenOptions.getInt("max_x", maxXSupplier.get()),
+                maxXSupplier.get()
+        );
+
+        Supplier<Integer> minZSupplier = () -> getOrDefaultValue(
+                hasTemplateOptions,
+                () -> template.locationGenOptions().minZ(),
+                0
+        );
+        int minZ = getOrDefaultValue(
+                !isNullSection,
+                () -> locationGenOptions.getInt("min_z", minZSupplier.get()),
+                minZSupplier.get()
+        );
+
+        Supplier<Integer> maxZSupplier = () -> getOrDefaultValue(
+                hasTemplateOptions,
+                () -> template.locationGenOptions().maxZ(),
+                0
+        );
+        int maxZ = getOrDefaultValue(
+                !isNullSection,
+                () -> locationGenOptions.getInt("max_z", maxZSupplier.get()),
+                maxZSupplier.get()
+        );
+
+        Supplier<Integer> radiusMinSupplier = () -> getOrDefaultValue(
+                hasTemplateOptions,
+                () -> template.locationGenOptions().nearRadiusMin(),
+                30
+        );
+        int nearRadiusMin = getOrDefaultValue(
+                !isNullSection,
+                () -> locationGenOptions.getInt("min_near_point_distance", radiusMinSupplier.get()),
+                radiusMinSupplier.get()
+        );
+
+        Supplier<Integer> radiusMaxSupplier = () -> getOrDefaultValue(
+                hasTemplateOptions,
+                () -> template.locationGenOptions().nearRadiusMax(),
+                60
+        );
+        int nearRadiusMax = getOrDefaultValue(
+                !isNullSection,
+                () -> locationGenOptions.getInt("max_near_point_distance", radiusMaxSupplier.get()),
+                radiusMaxSupplier.get()
+        );
+
+        Supplier<Integer> centerXSupplier = () -> getOrDefaultValue(
+                hasTemplateOptions,
+                () -> template.locationGenOptions().centerX(),
+                0
+        );
+        int centerX = getOrDefaultValue(
+                !isNullSection,
+                () -> locationGenOptions.getInt("center_x", centerXSupplier.get()),
+                centerXSupplier.get()
+        );
+
+        Supplier<Integer> centerZSupplier = () -> getOrDefaultValue(
+                hasTemplateOptions,
+                () -> template.locationGenOptions().centerZ(),
+                0
+        );
+        int centerZ = getOrDefaultValue(
+                !isNullSection,
+                () -> locationGenOptions.getInt("center_z", centerZSupplier.get()),
+                centerZSupplier.get()
+        );
+
+        Supplier<Integer> attemptsSupplier = () -> getOrDefaultValue(
+                hasTemplateOptions,
+                () -> template.locationGenOptions().maxLocationAttempts(),
+                50
+        );
+        int maxLocationAttempts = getOrDefaultValue(
+                !isNullSection,
+                () -> locationGenOptions.getInt("max_location_attempts", attemptsSupplier.get()),
+                attemptsSupplier.get()
+        );
+
+        return new LocationGenOptions(shape, genFormat, minX, maxX, minZ, maxZ, nearRadiusMin, nearRadiusMax, centerX, centerZ, maxLocationAttempts
+        );
     }
 
     public static Cooldown setupCooldown(OvRandomTeleport plugin, ConfigurationSection cooldown, Settings template, Config pluginConfig, boolean applyTemplate) {
-        if (pluginConfig.isNullSection(cooldown) && !applyTemplate) {
+        boolean isNullSection = pluginConfig.isNullSection(cooldown);
+        if (isNullSection && !applyTemplate) {
             return null;
         }
         boolean hasTemplateCooldown = template != null && template.cooldown() != null;
 
-        int defaultCooldown = cooldown.getInt("default_cooldown", getTemplateOrDefaultValue(hasTemplateCooldown, () -> template.cooldown().defaultCooldown(), -1));
+        Supplier<Integer> defaultCooldownSupplier = () -> getOrDefaultValue(
+                hasTemplateCooldown,
+                () -> template.cooldown().defaultCooldown(),
+                -1
+        );
+        int defaultCooldown = getOrDefaultValue(
+                !isNullSection,
+                () -> cooldown.getInt("default_cooldown", defaultCooldownSupplier.get()),
+                defaultCooldownSupplier.get()
+        );
 
-        TimedExpiringMap<String, Long> playerCooldowns = defaultCooldown > 0 ? new TimedExpiringMap<>(TimeUnit.SECONDS) : null;
+        TimedExpiringMap<String, Long> playerCooldowns = defaultCooldown > 0
+                ? new TimedExpiringMap<>(TimeUnit.SECONDS)
+                : null;
 
         Object2IntSortedMap<String> groupCooldownsMap = new Object2IntLinkedOpenHashMap<>();
         Object2IntSortedMap<String> preTeleportCooldownsMap = new Object2IntLinkedOpenHashMap<>();
 
-        boolean useLastGroupCooldown = cooldown.getBoolean("use_last_group_cooldown", false);
-        ConfigurationSection groupCooldowns = cooldown.getConfigurationSection("group_cooldowns");
+        boolean useLastGroupCooldown = getOrDefaultValue(
+                !isNullSection,
+                () -> cooldown.getBoolean("use_last_group_cooldown", false),
+                false
+        );
+
+        ConfigurationSection groupCooldowns = getOrDefaultValue(
+                !isNullSection,
+                () -> cooldown.getConfigurationSection("group_cooldowns"),
+                null
+        );
         if (!pluginConfig.isNullSection(groupCooldowns)) {
             defaultCooldown = processCooldownSection(plugin, groupCooldowns, groupCooldownsMap, useLastGroupCooldown, defaultCooldown, pluginConfig);
-        } else {
-            groupCooldownsMap = getTemplateOrDefaultValue(hasTemplateCooldown, () -> template.cooldown().groupCooldowns(), groupCooldownsMap);
+        } else if (hasTemplateCooldown) {
+            groupCooldownsMap.putAll(template.cooldown().groupCooldowns());
         }
-        int defaultPreTeleportCooldown = cooldown.getInt("default_pre_teleport_cooldown", getTemplateOrDefaultValue(hasTemplateCooldown, () -> template.cooldown().defaultPreTeleportCooldown(), -1));
-        ConfigurationSection preTeleportGroupCooldowns = cooldown.getConfigurationSection("pre_teleport_group_cooldowns");
+
+        Supplier<Integer> preTeleportCooldownSupplier = () -> getOrDefaultValue(
+                hasTemplateCooldown,
+                () -> template.cooldown().defaultPreTeleportCooldown(),
+                -1
+        );
+        int defaultPreTeleportCooldown = getOrDefaultValue(
+                !isNullSection,
+                () -> cooldown.getInt("default_pre_teleport_cooldown", preTeleportCooldownSupplier.get()),
+                preTeleportCooldownSupplier.get()
+        );
+
+        ConfigurationSection preTeleportGroupCooldowns = getOrDefaultValue(
+                !isNullSection,
+                () -> cooldown.getConfigurationSection("pre_teleport_group_cooldowns"),
+                null
+        );
         if (!pluginConfig.isNullSection(preTeleportGroupCooldowns)) {
             defaultPreTeleportCooldown = processCooldownSection(plugin, preTeleportGroupCooldowns, preTeleportCooldownsMap, useLastGroupCooldown, defaultPreTeleportCooldown, pluginConfig);
-        } else {
-            preTeleportCooldownsMap = getTemplateOrDefaultValue(hasTemplateCooldown, () -> template.cooldown().preTeleportCooldowns(), preTeleportCooldownsMap);
+        } else if (hasTemplateCooldown) {
+            preTeleportCooldownsMap.putAll(template.cooldown().preTeleportCooldowns());
         }
+
         return new Cooldown(defaultCooldown, playerCooldowns, groupCooldownsMap, defaultPreTeleportCooldown, preTeleportCooldownsMap);
     }
 
@@ -136,57 +346,162 @@ public record Settings(
     }
 
     public static Bossbar setupBossBar(ConfigurationSection bossbar, Settings template, Config pluginConfig, boolean applyTemplate) {
-        if (pluginConfig.isNullSection(bossbar) && !applyTemplate) {
+        boolean isNullSection = pluginConfig.isNullSection(bossbar);
+        if (isNullSection && !applyTemplate) {
             return null;
         }
         boolean hasTemplateBossbar = template != null && template.bossbar() != null;
 
-        boolean enabled = bossbar.getBoolean("enabled",
-                getTemplateOrDefaultValue(hasTemplateBossbar, () -> template.bossbar().bossbarEnabled(), false));
+        Supplier<Boolean> enabledSupplier = () -> getOrDefaultValue(
+                hasTemplateBossbar,
+                () -> template.bossbar().bossbarEnabled(),
+                false
+        );
+        boolean enabled = getOrDefaultValue(
+                !isNullSection,
+                () -> bossbar.getBoolean("enabled", enabledSupplier.get()),
+                enabledSupplier.get()
+        );
 
-        String title = bossbar.contains("title")
-                ? Utils.COLORIZER.colorize(bossbar.getString("title"))
-                : getTemplateOrDefaultValue(hasTemplateBossbar, () -> template.bossbar().bossbarTitle(), null);
+        String title = getOrDefaultValue(
+                !isNullSection && bossbar.contains("title"),
+                () -> Utils.COLORIZER.colorize(bossbar.getString("title")),
+                getOrDefaultValue(
+                        hasTemplateBossbar,
+                        () -> template.bossbar().bossbarTitle(),
+                        null
+                )
+        );
 
-        BarColor color = bossbar.contains("color")
-                ? BarColor.valueOf(bossbar.getString("color", "WHITE").toUpperCase(Locale.ENGLISH))
-                : getTemplateOrDefaultValue(hasTemplateBossbar, () -> template.bossbar().bossbarColor(), null);
+        BarColor color = getOrDefaultValue(
+                !isNullSection && bossbar.contains("color"),
+                () -> BarColor.valueOf(bossbar.getString("color", "WHITE").toUpperCase(Locale.ENGLISH)),
+                getOrDefaultValue(
+                        hasTemplateBossbar,
+                        () -> template.bossbar().bossbarColor(),
+                        null
+                )
+        );
 
-        BarStyle style = bossbar.contains("style")
-                ? BarStyle.valueOf(bossbar.getString("style", "SEGMENTED_12").toUpperCase(Locale.ENGLISH))
-                : getTemplateOrDefaultValue(hasTemplateBossbar, () -> template.bossbar().bossbarStyle(), null);
+        BarStyle style = getOrDefaultValue(
+                !isNullSection && bossbar.contains("style"),
+                () -> BarStyle.valueOf(bossbar.getString("style", "SEGMENTED_12").toUpperCase(Locale.ENGLISH)),
+                getOrDefaultValue(
+                        hasTemplateBossbar,
+                        () -> template.bossbar().bossbarStyle(),
+                        null
+                )
+        );
 
         return new Bossbar(enabled, title, color, style);
     }
 
     public static Particles setupParticles(ConfigurationSection particles, Settings template, Config pluginConfig, boolean applyTemplate) {
-        if (pluginConfig.isNullSection(particles) && !applyTemplate) {
+        boolean isNullSection = pluginConfig.isNullSection(particles);
+        if (isNullSection && !applyTemplate) {
             return null;
         }
         boolean hasTemplateParticles = template != null && template.particles() != null;
 
-        boolean preTeleportEnabled = hasTemplateParticles && template.particles().preTeleportEnabled();
-        boolean preTeleportSendOnlyToPlayer = hasTemplateParticles && template.particles().preTeleportSendOnlyToPlayer();
-        List<Particles.ParticleData> preTeleportParticles = getTemplateOrDefaultValue(hasTemplateParticles, () -> template.particles().preTeleportParticles(), null);
-        int preTeleportDots = getTemplateOrDefaultValue(hasTemplateParticles, () -> template.particles().preTeleportDots(), 0);
-        double preTeleportRadius = getTemplateOrDefaultValue(hasTemplateParticles, () -> template.particles().preTeleportRadius(), 0.0);
-        double preTeleportParticleSpeed = getTemplateOrDefaultValue(hasTemplateParticles, () -> template.particles().preTeleportParticleSpeed(), 0.0);
-        double preTeleportSpeed = getTemplateOrDefaultValue(hasTemplateParticles, () -> template.particles().preTeleportSpeed(), 0.0);
-        boolean preTeleportInvert = hasTemplateParticles && template.particles().preTeleportInvert();
-        boolean preTeleportJumping = hasTemplateParticles && template.particles().preTeleportJumping();
-        boolean preTeleportMoveNear = hasTemplateParticles && template.particles().preTeleportMoveNear();
-        boolean afterTeleportParticleEnabled = hasTemplateParticles && template.particles().afterTeleportEnabled();
-        boolean afterTeleportSendOnlyToPlayer = hasTemplateParticles && template.particles().afterTeleportSendOnlyToPlayer();
-        Particles.ParticleData afterTeleportParticle = getTemplateOrDefaultValue(hasTemplateParticles, () -> template.particles().afterTeleportParticle(), null);
-        int afterTeleportCount = getTemplateOrDefaultValue(hasTemplateParticles, () -> template.particles().afterTeleportCount(), 0);
-        double afterTeleportRadius = getTemplateOrDefaultValue(hasTemplateParticles, () -> template.particles().afterTeleportRadius(), 0.0);
-        double afterTeleportParticleSpeed = getTemplateOrDefaultValue(hasTemplateParticles, () -> template.particles().afterTeleportParticleSpeed(), 0.0);
+        boolean preTeleportEnabled = getOrDefaultValue(
+                hasTemplateParticles,
+                () -> template.particles().preTeleportEnabled(),
+                false
+        );
+        boolean preTeleportSendOnlyToPlayer = getOrDefaultValue(
+                hasTemplateParticles,
+                () -> template.particles().preTeleportSendOnlyToPlayer(),
+                false
+        );
+        List<Particles.ParticleData> preTeleportParticles = getOrDefaultValue(
+                hasTemplateParticles,
+                () -> template.particles().preTeleportParticles(),
+                null
+        );
+        int preTeleportDots = getOrDefaultValue(
+                hasTemplateParticles,
+                () -> template.particles().preTeleportDots(),
+                0
+        );
+        double preTeleportRadius = getOrDefaultValue(
+                hasTemplateParticles,
+                () -> template.particles().preTeleportRadius(),
+                0.0
+        );
+        double preTeleportParticleSpeed = getOrDefaultValue(
+                hasTemplateParticles,
+                () -> template.particles().preTeleportParticleSpeed(),
+                0.0
+        );
+        double preTeleportSpeed = getOrDefaultValue(
+                hasTemplateParticles,
+                () -> template.particles().preTeleportSpeed(),
+                0.0
+        );
+        boolean preTeleportInvert = getOrDefaultValue(
+                hasTemplateParticles,
+                () -> template.particles().preTeleportInvert(),
+                false
+        );
+        boolean preTeleportJumping = getOrDefaultValue(
+                hasTemplateParticles,
+                () -> template.particles().preTeleportJumping(),
+                false
+        );
+        boolean preTeleportMoveNear = getOrDefaultValue(
+                hasTemplateParticles,
+                () -> template.particles().preTeleportMoveNear(),
+                false
+        );
 
-        final ConfigurationSection preTeleport = particles.getConfigurationSection("pre_teleport");
+        boolean afterTeleportParticleEnabled = getOrDefaultValue(
+                hasTemplateParticles,
+                () -> template.particles().afterTeleportEnabled(),
+                false
+        );
+        boolean afterTeleportSendOnlyToPlayer = getOrDefaultValue(
+                hasTemplateParticles,
+                () -> template.particles().afterTeleportSendOnlyToPlayer(),
+                false
+        );
+        Particles.ParticleData afterTeleportParticle = getOrDefaultValue(
+                hasTemplateParticles,
+                () -> template.particles().afterTeleportParticle(),
+                null
+        );
+        int afterTeleportCount = getOrDefaultValue(
+                hasTemplateParticles,
+                () -> template.particles().afterTeleportCount(),
+                0
+        );
+        double afterTeleportRadius = getOrDefaultValue(
+                hasTemplateParticles,
+                () -> template.particles().afterTeleportRadius(),
+                0.0
+        );
+        double afterTeleportParticleSpeed = getOrDefaultValue(
+                hasTemplateParticles,
+                () -> template.particles().afterTeleportParticleSpeed(),
+                0.0
+        );
+
+        ConfigurationSection preTeleport = getOrDefaultValue(
+                !isNullSection,
+                () -> particles.getConfigurationSection("pre_teleport"),
+                null
+        );
+
         if (!pluginConfig.isNullSection(preTeleport)) {
             preTeleportEnabled = preTeleport.getBoolean("enabled", preTeleportEnabled);
             preTeleportSendOnlyToPlayer = preTeleport.getBoolean("send_only_to_player", preTeleportSendOnlyToPlayer);
-            preTeleportParticles = ImmutableList.copyOf(pluginConfig.getStringListInAnyCase(preTeleport.get("id")).stream().map(Utils::createParticleData).toList());
+            if (preTeleport.contains("id")) {
+                preTeleportParticles = ImmutableList.copyOf(
+                        pluginConfig.getStringListInAnyCase(preTeleport.get("id"))
+                                .stream()
+                                .map(Utils::createParticleData)
+                                .toList()
+                );
+            }
             preTeleportDots = preTeleport.getInt("dots", preTeleportDots);
             preTeleportRadius = preTeleport.getDouble("radius", preTeleportRadius);
             preTeleportParticleSpeed = preTeleport.getDouble("particle_speed", preTeleportParticleSpeed);
@@ -195,65 +510,193 @@ public record Settings(
             preTeleportJumping = preTeleport.getBoolean("jumping", preTeleportJumping);
             preTeleportMoveNear = preTeleport.getBoolean("move_near", preTeleportMoveNear);
         }
-        final ConfigurationSection afterTeleport = particles.getConfigurationSection("after_teleport");
+
+        ConfigurationSection afterTeleport = getOrDefaultValue(
+                !isNullSection,
+                () -> particles.getConfigurationSection("after_teleport"),
+                null
+        );
+
         if (!pluginConfig.isNullSection(afterTeleport)) {
             afterTeleportParticleEnabled = afterTeleport.getBoolean("enabled", afterTeleportParticleEnabled);
             afterTeleportSendOnlyToPlayer = afterTeleport.getBoolean("send_only_to_player", afterTeleportSendOnlyToPlayer);
-            afterTeleportParticle = Utils.createParticleData(afterTeleport.getString("id"));
+            if (afterTeleport.contains("id")) {
+                afterTeleportParticle = Utils.createParticleData(afterTeleport.getString("id"));
+            }
             afterTeleportCount = afterTeleport.getInt("count", afterTeleportCount);
             afterTeleportRadius = afterTeleport.getDouble("radius", afterTeleportRadius);
             afterTeleportParticleSpeed = afterTeleport.getDouble("particle_speed", afterTeleportParticleSpeed);
         }
 
         return new Particles(
-                preTeleportEnabled, preTeleportSendOnlyToPlayer, preTeleportParticles, preTeleportDots, preTeleportRadius, preTeleportParticleSpeed, preTeleportSpeed, preTeleportInvert, preTeleportJumping, preTeleportMoveNear,
-                afterTeleportParticleEnabled, afterTeleportSendOnlyToPlayer, afterTeleportParticle, afterTeleportCount, afterTeleportRadius, afterTeleportParticleSpeed);
-    }
-
-    public static Restrictions setupRestrictions(ConfigurationSection restrictions, Settings template, Config pluginConfig, boolean applyTemplate) {
-        if (pluginConfig.isNullSection(restrictions) && !applyTemplate) {
-            return null;
-        }
-        boolean hasTemplateRestrictions = template != null && template.avoidance() != null;
-
-        return new Restrictions(
-                restrictions.getBoolean("move", hasTemplateRestrictions && template.restrictions().restrictMove()),
-                restrictions.getBoolean("teleport", hasTemplateRestrictions && template.restrictions().restrictTeleport()),
-                restrictions.getBoolean("damage", hasTemplateRestrictions && template.restrictions().restrictDamage()),
-                restrictions.getBoolean("damage_others", hasTemplateRestrictions && template.restrictions().restrictDamageOthers()),
-                restrictions.getBoolean("damage_check_only_players", hasTemplateRestrictions && template.restrictions().damageCheckOnlyPlayers())
+                preTeleportEnabled,
+                preTeleportSendOnlyToPlayer,
+                preTeleportParticles,
+                preTeleportDots,
+                preTeleportRadius,
+                preTeleportParticleSpeed,
+                preTeleportSpeed,
+                preTeleportInvert,
+                preTeleportJumping,
+                preTeleportMoveNear,
+                afterTeleportParticleEnabled,
+                afterTeleportSendOnlyToPlayer,
+                afterTeleportParticle,
+                afterTeleportCount,
+                afterTeleportRadius,
+                afterTeleportParticleSpeed
         );
     }
 
+    public static Restrictions setupRestrictions(ConfigurationSection restrictions, Settings template, Config pluginConfig, boolean applyTemplate) {
+        boolean isNullSection = pluginConfig.isNullSection(restrictions);
+        if (isNullSection && !applyTemplate) {
+            return null;
+        }
+        boolean hasTemplateRestrictions = template != null && template.restrictions() != null;
+
+        Supplier<Boolean> restrictMoveSupplier = () -> getOrDefaultValue(
+                hasTemplateRestrictions,
+                () -> template.restrictions().restrictMove(),
+                false
+        );
+        boolean restrictMove = getOrDefaultValue(
+                !isNullSection,
+                () -> restrictions.getBoolean("move", restrictMoveSupplier.get()),
+                restrictMoveSupplier.get()
+        );
+
+        Supplier<Boolean> restrictTeleportSupplier = () -> getOrDefaultValue(
+                hasTemplateRestrictions,
+                () -> template.restrictions().restrictTeleport(),
+                false
+        );
+        boolean restrictTeleport = getOrDefaultValue(
+                !isNullSection,
+                () -> restrictions.getBoolean("teleport", restrictTeleportSupplier.get()),
+                restrictTeleportSupplier.get()
+        );
+
+        Supplier<Boolean> restrictDamageSupplier = () -> getOrDefaultValue(
+                hasTemplateRestrictions,
+                () -> template.restrictions().restrictDamage(),
+                false
+        );
+        boolean restrictDamage = getOrDefaultValue(
+                !isNullSection,
+                () -> restrictions.getBoolean("damage", restrictDamageSupplier.get()),
+                restrictDamageSupplier.get()
+        );
+
+        Supplier<Boolean> restrictDamageOthersSupplier = () -> getOrDefaultValue(
+                hasTemplateRestrictions,
+                () -> template.restrictions().restrictDamageOthers(),
+                false
+        );
+        boolean restrictDamageOthers = getOrDefaultValue(
+                !isNullSection,
+                () -> restrictions.getBoolean("damage_others", restrictDamageOthersSupplier.get()),
+                restrictDamageOthersSupplier.get()
+        );
+
+        Supplier<Boolean> damageCheckOnlyPlayersSupplier = () -> getOrDefaultValue(
+                hasTemplateRestrictions,
+                () -> template.restrictions().damageCheckOnlyPlayers(),
+                false
+        );
+        boolean damageCheckOnlyPlayers = getOrDefaultValue(
+                !isNullSection,
+                () -> restrictions.getBoolean("damage_check_only_players", damageCheckOnlyPlayersSupplier.get()),
+                damageCheckOnlyPlayersSupplier.get()
+        );
+
+        return new Restrictions(restrictMove, restrictTeleport, restrictDamage, restrictDamageOthers, damageCheckOnlyPlayers);
+    }
+
     public static Avoidance setupAvoidance(ConfigurationSection avoidSection, PluginManager pluginManager, Settings template, Config pluginConfig, boolean applyTemplate) {
-        if (pluginConfig.isNullSection(avoidSection) && !applyTemplate) {
+        boolean isNullSection = pluginConfig.isNullSection(avoidSection);
+        if (isNullSection && !applyTemplate) {
             return null;
         }
         boolean hasTemplateAvoidance = template != null && template.avoidance() != null;
 
-        ConfigurationSection blocksSection = avoidSection.getConfigurationSection("blocks");
-        Supplier<Boolean> blocksBlacklistSupplier = () -> getTemplateOrDefaultValue(hasTemplateAvoidance, () -> template.avoidance().avoidBlocksBlacklist(), false);
-        boolean avoidBlocksBlacklist = !pluginConfig.isNullSection(blocksSection)
-                ? blocksSection.getBoolean("blacklist", blocksBlacklistSupplier.get())
-                : blocksBlacklistSupplier.get();
-        Set<Material> avoidBlocks = getTemplateOrDefaultValue(hasTemplateAvoidance, () -> template.avoidance().avoidBlocks(), Set.of());
-        if (!pluginConfig.isNullSection(blocksSection) && blocksSection.contains("list")) {
-            avoidBlocks = createMaterialSet(blocksSection.getStringList("list"));
-        }
+        ConfigurationSection blocksSection = getOrDefaultValue(
+                !isNullSection,
+                () -> avoidSection.getConfigurationSection("blocks"),
+                null
+        );
 
-        ConfigurationSection biomesSection = avoidSection.getConfigurationSection("biomes");
-        Supplier<Boolean> biomesBlacklistSupplier = () -> getTemplateOrDefaultValue(hasTemplateAvoidance, () -> template.avoidance().avoidBiomesBlacklist(), false);
-        boolean avoidBiomesBlacklist = !pluginConfig.isNullSection(biomesSection)
-                ? biomesSection.getBoolean("blacklist", biomesBlacklistSupplier.get())
-                : biomesBlacklistSupplier.get();
-        Set<Biome> avoidBiomes = getTemplateOrDefaultValue(hasTemplateAvoidance, () -> template.avoidance().avoidBiomes(), Set.of());
-        if (!pluginConfig.isNullSection(biomesSection) && biomesSection.contains("list")) {
-            avoidBiomes = createBiomeSet(biomesSection.getStringList("list"));
-        }
+        Supplier<Boolean> blocksBlacklistSupplier = () -> getOrDefaultValue(
+                hasTemplateAvoidance,
+                () -> template.avoidance().avoidBlocksBlacklist(),
+                false
+        );
+        boolean avoidBlocksBlacklist = getOrDefaultValue(
+                !pluginConfig.isNullSection(blocksSection),
+                () -> blocksSection.getBoolean("blacklist", blocksBlacklistSupplier.get()),
+                blocksBlacklistSupplier.get()
+        );
 
-        boolean avoidRegions = avoidSection.getBoolean("regions", getTemplateOrDefaultValue(hasTemplateAvoidance, () -> template.avoidance().avoidRegions(), false)) && pluginManager.isPluginEnabled("WorldGuard");
+        Supplier<Set<Material>> blocksSupplier = () -> getOrDefaultValue(
+                hasTemplateAvoidance,
+                () -> template.avoidance().avoidBlocks(),
+                Set.of()
+        );
+        Set<Material> avoidBlocks = getOrDefaultValue(
+                !pluginConfig.isNullSection(blocksSection) && blocksSection.contains("list"),
+                () -> createMaterialSet(blocksSection.getStringList("list")),
+                blocksSupplier.get()
+        );
 
-        boolean avoidTowns = avoidSection.getBoolean("towns", getTemplateOrDefaultValue(hasTemplateAvoidance, () -> template.avoidance().avoidTowns(), false)) && pluginManager.isPluginEnabled("Towny");
+        ConfigurationSection biomesSection = getOrDefaultValue(
+                !isNullSection,
+                () -> avoidSection.getConfigurationSection("biomes"),
+                null
+        );
+
+        Supplier<Boolean> biomesBlacklistSupplier = () -> getOrDefaultValue(
+                hasTemplateAvoidance,
+                () -> template.avoidance().avoidBiomesBlacklist(),
+                false
+        );
+        boolean avoidBiomesBlacklist = getOrDefaultValue(
+                !pluginConfig.isNullSection(biomesSection),
+                () -> biomesSection.getBoolean("blacklist", biomesBlacklistSupplier.get()),
+                biomesBlacklistSupplier.get()
+        );
+
+        Supplier<Set<Biome>> biomesSupplier = () -> getOrDefaultValue(
+                hasTemplateAvoidance,
+                () -> template.avoidance().avoidBiomes(),
+                Set.of()
+        );
+        Set<Biome> avoidBiomes = getOrDefaultValue(
+                !pluginConfig.isNullSection(biomesSection) && biomesSection.contains("list"),
+                () -> createBiomeSet(biomesSection.getStringList("list")),
+                biomesSupplier.get()
+        );
+
+        Supplier<Boolean> regionsSupplier = () -> getOrDefaultValue(
+                hasTemplateAvoidance,
+                () -> template.avoidance().avoidRegions(),
+                false
+        );
+        boolean avoidRegions = getOrDefaultValue(
+                !isNullSection,
+                () -> avoidSection.getBoolean("regions", regionsSupplier.get()),
+                regionsSupplier.get()
+        ) && pluginManager.isPluginEnabled("WorldGuard");
+
+        Supplier<Boolean> townsSupplier = () -> getOrDefaultValue(
+                hasTemplateAvoidance,
+                () -> template.avoidance().avoidTowns(),
+                false
+        );
+        boolean avoidTowns = getOrDefaultValue(
+                !isNullSection,
+                () -> avoidSection.getBoolean("towns", townsSupplier.get()),
+                townsSupplier.get()
+        ) && pluginManager.isPluginEnabled("Towny");
 
         return new Avoidance(avoidBlocksBlacklist, avoidBlocks, avoidBiomesBlacklist, avoidBiomes, avoidRegions, avoidTowns);
     }
@@ -276,44 +719,58 @@ public record Settings(
         return biomeSet;
     }
 
-    public static Actions setupActions(OvRandomTeleport plugin, ConfigurationSection actionsSection, Settings template, Config pluginConfig, boolean applyTemplate) {
-        if (pluginConfig.isNullSection(actionsSection) && !applyTemplate) {
+    public static Actions setupActions(OvRandomTeleport plugin, ConfigurationSection actionsSection,
+                                       Settings template, Config pluginConfig, boolean applyTemplate) {
+        boolean isNullSection = pluginConfig.isNullSection(actionsSection);
+        if (isNullSection && !applyTemplate) {
             return null;
         }
         boolean hasTemplateActions = template != null && template.actions() != null;
 
         ActionRegistry actionRegistry = plugin.getRtpManager().getActionRegistry();
 
-        List<Action> preTeleportActions = actionsSection.contains("pre_teleport")
-                ? getActionList(plugin, actionRegistry, actionsSection.getStringList("pre_teleport"))
-                : getTemplateOrDefaultValue(hasTemplateActions, () -> template.actions().preTeleportActions(), List.of());
+        List<Action> preTeleportActions = getOrDefaultValue(
+                !isNullSection && actionsSection.contains("pre_teleport"),
+                () -> getActionList(plugin, actionRegistry, actionsSection.getStringList("pre_teleport")),
+                getOrDefaultValue(
+                        hasTemplateActions,
+                        () -> template.actions().preTeleportActions(),
+                        List.of()
+                )
+        );
 
         Int2ObjectMap<List<Action>> onCooldownActions = new Int2ObjectOpenHashMap<>();
-        if (actionsSection.contains("on_cooldown")) {
+        if (!isNullSection && actionsSection.contains("on_cooldown")) {
             ConfigurationSection cdSection = actionsSection.getConfigurationSection("on_cooldown");
             if (!pluginConfig.isNullSection(cdSection)) {
                 for (String key : cdSection.getKeys(false)) {
-                    if (!Utils.isNumeric(key)) {
-                        continue;
+                    if (Utils.isNumeric(key)) {
+                        onCooldownActions.put(
+                                Integer.parseInt(key),
+                                getActionList(plugin, actionRegistry, cdSection.getStringList(key))
+                        );
                     }
-                    int time = Integer.parseInt(key);
-                    List<Action> list = getActionList(plugin, actionRegistry, cdSection.getStringList(key));
-                    onCooldownActions.put(time, list);
                 }
             }
         } else if (hasTemplateActions) {
             onCooldownActions.putAll(template.actions().onCooldownActions());
         }
 
-        List<Action> afterTeleportActions = actionsSection.contains("after_teleport")
-                ? getActionList(plugin, actionRegistry, actionsSection.getStringList("after_teleport"))
-                : getTemplateOrDefaultValue(hasTemplateActions, () -> template.actions().afterTeleportActions(), List.of());
+        List<Action> afterTeleportActions = getOrDefaultValue(
+                !isNullSection && actionsSection.contains("after_teleport"),
+                () -> getActionList(plugin, actionRegistry, actionsSection.getStringList("after_teleport")),
+                getOrDefaultValue(
+                        hasTemplateActions,
+                        () -> template.actions().afterTeleportActions(),
+                        List.of()
+                )
+        );
 
         return new Actions(preTeleportActions, onCooldownActions, afterTeleportActions);
     }
 
-    private static <T> T getTemplateOrDefaultValue(boolean hasTemplate, Supplier<T> supplier, T defaultValue) {
-        return hasTemplate ? supplier.get() : defaultValue;
+    private static <T> T getOrDefaultValue(boolean hasValue, Supplier<T> supplier, T defaultValue) {
+        return hasValue ? supplier.get() : defaultValue;
     }
 
     private static ImmutableList<Action> getActionList(OvRandomTeleport plugin, ActionRegistry actionRegistry, List<String> actionStrings) {
