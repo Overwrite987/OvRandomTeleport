@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 @UtilityClass
 public final class Utils {
 
-    public boolean DEBUG;
+    public boolean DEBUG = Boolean.getBoolean("OvRandomTeleport.Debug");
 
     public Colorizer COLORIZER;
 
