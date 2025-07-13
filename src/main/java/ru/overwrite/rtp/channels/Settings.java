@@ -288,11 +288,7 @@ public record Settings(
         Object2IntSortedMap<String> groupCooldownsMap = new Object2IntLinkedOpenHashMap<>();
         Object2IntSortedMap<String> preTeleportCooldownsMap = new Object2IntLinkedOpenHashMap<>();
 
-        boolean useLastGroupCooldown = getOrDefaultValue(
-                !isNullSection,
-                () -> cooldown.getBoolean("use_last_group_cooldown", false),
-                false
-        );
+        boolean useLastGroupCooldown = !isNullSection && cooldown.getBoolean("use_last_group_cooldown", false);
 
         ConfigurationSection groupCooldowns = getOrDefaultValue(
                 !isNullSection,
@@ -350,16 +346,8 @@ public record Settings(
         }
         boolean hasTemplateBossbar = template != null && template.bossbar() != null;
 
-        Supplier<Boolean> enabledSupplier = () -> getOrDefaultValue(
-                hasTemplateBossbar,
-                () -> template.bossbar().bossbarEnabled(),
-                false
-        );
-        boolean enabled = getOrDefaultValue(
-                !isNullSection,
-                () -> bossbar.getBoolean("enabled", enabledSupplier.get()),
-                enabledSupplier.get()
-        );
+        boolean enabledDefault = hasTemplateBossbar && template.bossbar().bossbarEnabled();
+        boolean enabled = !isNullSection ? bossbar.getBoolean("enabled", enabledDefault) : enabledDefault;
 
         String title = getOrDefaultValue(
                 !isNullSection && bossbar.contains("title"),
@@ -401,16 +389,8 @@ public record Settings(
         }
         boolean hasTemplateParticles = template != null && template.particles() != null;
 
-        boolean preTeleportEnabled = getOrDefaultValue(
-                hasTemplateParticles,
-                () -> template.particles().preTeleportEnabled(),
-                false
-        );
-        boolean preTeleportSendOnlyToPlayer = getOrDefaultValue(
-                hasTemplateParticles,
-                () -> template.particles().preTeleportSendOnlyToPlayer(),
-                false
-        );
+        boolean preTeleportEnabled = hasTemplateParticles && template.particles().preTeleportEnabled();
+        boolean preTeleportSendOnlyToPlayer = hasTemplateParticles && template.particles().preTeleportSendOnlyToPlayer();
         List<Particles.ParticleData> preTeleportParticles = getOrDefaultValue(
                 hasTemplateParticles,
                 () -> template.particles().preTeleportParticles(),
@@ -436,32 +416,12 @@ public record Settings(
                 () -> template.particles().preTeleportSpeed(),
                 0.0
         );
-        boolean preTeleportInvert = getOrDefaultValue(
-                hasTemplateParticles,
-                () -> template.particles().preTeleportInvert(),
-                false
-        );
-        boolean preTeleportJumping = getOrDefaultValue(
-                hasTemplateParticles,
-                () -> template.particles().preTeleportJumping(),
-                false
-        );
-        boolean preTeleportMoveNear = getOrDefaultValue(
-                hasTemplateParticles,
-                () -> template.particles().preTeleportMoveNear(),
-                false
-        );
+        boolean preTeleportInvert = hasTemplateParticles && template.particles().preTeleportInvert();
+        boolean preTeleportJumping = hasTemplateParticles && template.particles().preTeleportJumping();
+        boolean preTeleportMoveNear = hasTemplateParticles && template.particles().preTeleportMoveNear();
 
-        boolean afterTeleportParticleEnabled = getOrDefaultValue(
-                hasTemplateParticles,
-                () -> template.particles().afterTeleportEnabled(),
-                false
-        );
-        boolean afterTeleportSendOnlyToPlayer = getOrDefaultValue(
-                hasTemplateParticles,
-                () -> template.particles().afterTeleportSendOnlyToPlayer(),
-                false
-        );
+        boolean afterTeleportParticleEnabled = hasTemplateParticles && template.particles().afterTeleportEnabled();
+        boolean afterTeleportSendOnlyToPlayer = hasTemplateParticles && template.particles().afterTeleportSendOnlyToPlayer();
         Particles.ParticleData afterTeleportParticle = getOrDefaultValue(
                 hasTemplateParticles,
                 () -> template.particles().afterTeleportParticle(),
@@ -553,59 +513,34 @@ public record Settings(
         }
         boolean hasTemplateRestrictions = template != null && template.restrictions() != null;
 
-        Supplier<Boolean> restrictMoveSupplier = () -> getOrDefaultValue(
-                hasTemplateRestrictions,
-                () -> template.restrictions().restrictMove(),
-                false
-        );
-        boolean restrictMove = getOrDefaultValue(
-                !isNullSection,
-                () -> restrictions.getBoolean("move", restrictMoveSupplier.get()),
-                restrictMoveSupplier.get()
+        boolean templateRestrictMove = hasTemplateRestrictions && template.restrictions().restrictMove();
+        boolean restrictMove = getOrDefaultValue(!isNullSection,
+                () -> restrictions.getBoolean("move", templateRestrictMove),
+                templateRestrictMove
         );
 
-        Supplier<Boolean> restrictTeleportSupplier = () -> getOrDefaultValue(
-                hasTemplateRestrictions,
-                () -> template.restrictions().restrictTeleport(),
-                false
-        );
-        boolean restrictTeleport = getOrDefaultValue(
-                !isNullSection,
-                () -> restrictions.getBoolean("teleport", restrictTeleportSupplier.get()),
-                restrictTeleportSupplier.get()
+        boolean templateRestrictTeleport = hasTemplateRestrictions && template.restrictions().restrictTeleport();
+        boolean restrictTeleport = getOrDefaultValue(!isNullSection,
+                () -> restrictions.getBoolean("teleport", templateRestrictTeleport),
+                templateRestrictTeleport
         );
 
-        Supplier<Boolean> restrictDamageSupplier = () -> getOrDefaultValue(
-                hasTemplateRestrictions,
-                () -> template.restrictions().restrictDamage(),
-                false
-        );
-        boolean restrictDamage = getOrDefaultValue(
-                !isNullSection,
-                () -> restrictions.getBoolean("damage", restrictDamageSupplier.get()),
-                restrictDamageSupplier.get()
+        boolean templateRestrictDamage = hasTemplateRestrictions && template.restrictions().restrictDamage();
+        boolean restrictDamage = getOrDefaultValue(!isNullSection,
+                () -> restrictions.getBoolean("damage", templateRestrictDamage),
+                templateRestrictDamage
         );
 
-        Supplier<Boolean> restrictDamageOthersSupplier = () -> getOrDefaultValue(
-                hasTemplateRestrictions,
-                () -> template.restrictions().restrictDamageOthers(),
-                false
-        );
-        boolean restrictDamageOthers = getOrDefaultValue(
-                !isNullSection,
-                () -> restrictions.getBoolean("damage_others", restrictDamageOthersSupplier.get()),
-                restrictDamageOthersSupplier.get()
+        boolean templateRestrictDamageOthers = hasTemplateRestrictions && template.restrictions().restrictDamageOthers();
+        boolean restrictDamageOthers = getOrDefaultValue(!isNullSection,
+                () -> restrictions.getBoolean("damage_others", templateRestrictDamageOthers),
+                templateRestrictDamageOthers
         );
 
-        Supplier<Boolean> damageCheckOnlyPlayersSupplier = () -> getOrDefaultValue(
-                hasTemplateRestrictions,
-                () -> template.restrictions().damageCheckOnlyPlayers(),
-                false
-        );
-        boolean damageCheckOnlyPlayers = getOrDefaultValue(
-                !isNullSection,
-                () -> restrictions.getBoolean("damage_check_only_players", damageCheckOnlyPlayersSupplier.get()),
-                damageCheckOnlyPlayersSupplier.get()
+        boolean templateDamageCheckOnlyPlayers = hasTemplateRestrictions && template.restrictions().damageCheckOnlyPlayers();
+        boolean damageCheckOnlyPlayers = getOrDefaultValue(!isNullSection,
+                () -> restrictions.getBoolean("damage_check_only_players", templateDamageCheckOnlyPlayers),
+                templateDamageCheckOnlyPlayers
         );
 
         return new Restrictions(restrictMove, restrictTeleport, restrictDamage, restrictDamageOthers, damageCheckOnlyPlayers);
@@ -624,15 +559,11 @@ public record Settings(
                 null
         );
 
-        Supplier<Boolean> blocksBlacklistSupplier = () -> getOrDefaultValue(
-                hasTemplateAvoidance,
-                () -> template.avoidance().avoidBlocksBlacklist(),
-                false
-        );
+        boolean templateBlocksBlacklist = hasTemplateAvoidance && template.avoidance().avoidBlocksBlacklist();
         boolean avoidBlocksBlacklist = getOrDefaultValue(
                 !pluginConfig.isNullSection(blocksSection),
-                () -> blocksSection.getBoolean("blacklist", blocksBlacklistSupplier.get()),
-                blocksBlacklistSupplier.get()
+                () -> blocksSection.getBoolean("blacklist", templateBlocksBlacklist),
+                templateBlocksBlacklist
         );
 
         Supplier<Set<Material>> blocksSupplier = () -> getOrDefaultValue(
@@ -652,15 +583,11 @@ public record Settings(
                 null
         );
 
-        Supplier<Boolean> biomesBlacklistSupplier = () -> getOrDefaultValue(
-                hasTemplateAvoidance,
-                () -> template.avoidance().avoidBiomesBlacklist(),
-                false
-        );
+        boolean templateBiomesBlacklist = hasTemplateAvoidance && template.avoidance().avoidBiomesBlacklist();
         boolean avoidBiomesBlacklist = getOrDefaultValue(
                 !pluginConfig.isNullSection(biomesSection),
-                () -> biomesSection.getBoolean("blacklist", biomesBlacklistSupplier.get()),
-                biomesBlacklistSupplier.get()
+                () -> biomesSection.getBoolean("blacklist", templateBiomesBlacklist),
+                templateBiomesBlacklist
         );
 
         Supplier<Set<Biome>> biomesSupplier = () -> getOrDefaultValue(
@@ -674,27 +601,19 @@ public record Settings(
                 biomesSupplier.get()
         );
 
-        Supplier<Boolean> regionsSupplier = () -> getOrDefaultValue(
-                hasTemplateAvoidance,
-                () -> template.avoidance().avoidRegions(),
-                false
-        );
+        boolean templateAvoidRegions = hasTemplateAvoidance && template.avoidance().avoidRegions();
         boolean avoidRegions = getOrDefaultValue(
                 !isNullSection,
-                () -> avoidSection.getBoolean("regions", regionsSupplier.get()),
-                regionsSupplier.get()
-        ) && pluginManager.isPluginEnabled("WorldGuard");
+                () -> avoidSection.getBoolean("regions", templateAvoidRegions),
+                templateAvoidRegions)
+                && pluginManager.isPluginEnabled("WorldGuard");
 
-        Supplier<Boolean> townsSupplier = () -> getOrDefaultValue(
-                hasTemplateAvoidance,
-                () -> template.avoidance().avoidTowns(),
-                false
-        );
+        boolean templateAvoidTowns = hasTemplateAvoidance && template.avoidance().avoidTowns();
         boolean avoidTowns = getOrDefaultValue(
                 !isNullSection,
-                () -> avoidSection.getBoolean("towns", townsSupplier.get()),
-                townsSupplier.get()
-        ) && pluginManager.isPluginEnabled("Towny");
+                () -> avoidSection.getBoolean("towns", templateAvoidTowns),
+                templateAvoidTowns)
+                && pluginManager.isPluginEnabled("Towny");
 
         return new Avoidance(avoidBlocksBlacklist, avoidBlocks, avoidBiomesBlacklist, avoidBiomes, avoidRegions, avoidTowns);
     }
