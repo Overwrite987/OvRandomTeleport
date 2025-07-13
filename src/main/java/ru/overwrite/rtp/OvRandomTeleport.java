@@ -76,6 +76,7 @@ public final class OvRandomTeleport extends JavaPlugin {
         final FileConfiguration config = getConfig();
         final ConfigurationSection mainSettings = config.getConfigurationSection("main_settings");
         Utils.setupColorizer(mainSettings);
+        rtpManager.setMaxTeleporting(mainSettings.getInt("max_teleporting"));
         pluginConfig.setupMessages(config);
         pluginConfig.setupTemplates();
         PluginManager pluginManager = server.getPluginManager();

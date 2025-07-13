@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntSortedMap;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -53,17 +54,14 @@ public final class RtpManager {
     private Map<String, String> proxyCalls;
 
     @Getter(AccessLevel.NONE)
-    private final int maxTeleporting;
-
-    private final List<String> teleportingNow;
+    @Setter
+    private int maxTeleporting;
 
     public RtpManager(OvRandomTeleport plugin) {
         this.plugin = plugin;
         this.pluginConfig = plugin.getPluginConfig();
         this.actionRegistry = new ActionRegistry(plugin);
         this.locationGenerator = new LocationGenerator(plugin, this);
-        this.maxTeleporting = plugin.getConfig().getInt("main_settings.max_teleporting", 30);
-        this.teleportingNow = new ArrayList<>(maxTeleporting);
         registerDefaultActions();
     }
 
@@ -222,6 +220,8 @@ public final class RtpManager {
     public boolean hasActiveTasks(String playerName) {
         return !perPlayerActiveRtpTask.isEmpty() && perPlayerActiveRtpTask.containsKey(playerName);
     }
+
+    private final List<String> teleportingNow = new ArrayList<>();
 
     public void preTeleport(Player player, Channel channel, World world, boolean force) {
         String playerName = player.getName();
