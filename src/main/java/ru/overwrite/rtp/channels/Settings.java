@@ -438,12 +438,11 @@ public record Settings(
             preTeleportEnabled = preTeleport.getBoolean("enabled", preTeleportEnabled);
             preTeleportSendOnlyToPlayer = preTeleport.getBoolean("send_only_to_player", preTeleportSendOnlyToPlayer);
             if (preTeleport.contains("id")) {
-                preTeleportParticles = ImmutableList.copyOf(
-                        pluginConfig.getStringListInAnyCase(preTeleport.get("id"))
-                                .stream()
-                                .map(Utils::createParticleData)
-                                .toList()
-                );
+                ImmutableList.Builder<Particles.ParticleData> builder = ImmutableList.builder();
+                for (String particleId : pluginConfig.getStringListInAnyCase(preTeleport.get("id"))) {
+                    builder.add(Utils.createParticleData(particleId));
+                }
+                preTeleportParticles = builder.build();
             }
             preTeleportDots = preTeleport.getInt("dots", preTeleportDots);
             preTeleportRadius = preTeleport.getDouble("radius", preTeleportRadius);
