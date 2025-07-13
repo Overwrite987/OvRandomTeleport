@@ -161,7 +161,6 @@ public record Settings(
                 )
         );
 
-        // Numeric parameters with suppliers (reused values)
         Supplier<Integer> minXSupplier = () -> getOrDefaultValue(
                 hasTemplateOptions,
                 () -> template.locationGenOptions().minX(),
