@@ -184,8 +184,8 @@ public record Settings(
 
         final ConfigurationSection preTeleport = particles.getConfigurationSection("pre_teleport");
         if (!pluginConfig.isNullSection(preTeleport)) {
-            preTeleportEnabled = preTeleport.getBoolean("enabled", false);
-            preTeleportSendOnlyToPlayer = preTeleport.getBoolean("send_only_to_player", false);
+            preTeleportEnabled = preTeleport.getBoolean("enabled", preTeleportEnabled);
+            preTeleportSendOnlyToPlayer = preTeleport.getBoolean("send_only_to_player", preTeleportSendOnlyToPlayer);
             preTeleportParticles = ImmutableList.copyOf(pluginConfig.getStringListInAnyCase(preTeleport.get("id")).stream().map(Utils::createParticleData).toList());
             preTeleportDots = preTeleport.getInt("dots", preTeleportDots);
             preTeleportRadius = preTeleport.getDouble("radius", preTeleportRadius);
@@ -197,8 +197,8 @@ public record Settings(
         }
         final ConfigurationSection afterTeleport = particles.getConfigurationSection("after_teleport");
         if (!pluginConfig.isNullSection(afterTeleport)) {
-            afterTeleportParticleEnabled = afterTeleport.getBoolean("enabled", false);
-            afterTeleportSendOnlyToPlayer = afterTeleport.getBoolean("send_only_to_player", false);
+            afterTeleportParticleEnabled = afterTeleport.getBoolean("enabled", afterTeleportParticleEnabled);
+            afterTeleportSendOnlyToPlayer = afterTeleport.getBoolean("send_only_to_player", afterTeleportSendOnlyToPlayer);
             afterTeleportParticle = Utils.createParticleData(afterTeleport.getString("id"));
             afterTeleportCount = afterTeleport.getInt("count", afterTeleportCount);
             afterTeleportRadius = afterTeleport.getDouble("radius", afterTeleportRadius);
