@@ -774,7 +774,7 @@ public record Settings(
     }
 
     private static ImmutableList<Action> getActionList(OvRandomTeleport plugin, ActionRegistry actionRegistry, List<String> actionStrings) {
-        ImmutableList.Builder<Action> builder = ImmutableList.builderWithExpectedSize(actionStrings.size());
+        ImmutableList.Builder<Action> builder = ImmutableList.builder();
         for (String actionStr : actionStrings) {
             try {
                 builder.add(Objects.requireNonNull(actionRegistry.resolveAction(actionStr), "Type doesn't exist"));
