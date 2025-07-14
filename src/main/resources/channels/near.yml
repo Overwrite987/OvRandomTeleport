@@ -100,6 +100,13 @@ avoid:
   regions: true
   towns: false
 # Необязательный параметр
+actions:
+  after_teleport:
+    - '[MESSAGE] &7&l(&5&lOvRandomTeleport&7&l) &6» &aУспешная телепортация! &fВы телепортировались на координаты: &2%x% %y% %z%.'
+    - '[TITLE] &a&lУспех!;&fВы телепортировались на координаты: &2%x% %y% %z%.'
+    - '[SOUND] ENTITY_PLAYER_LEVELUP;1;1'
+    - '[PLAYER] near'
+# Необязательный параметр
 # Отдельные сообщения при использовании канала.
 # Если они не указаны - будут использованы дефолтные, из config.yml
 messages:
