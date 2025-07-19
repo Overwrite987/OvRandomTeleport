@@ -70,6 +70,7 @@ public final class RtpManager {
         actionRegistry.register(new ConsoleActionType());
         actionRegistry.register(new EffectActionType());
         actionRegistry.register(new MessageActionType());
+        actionRegistry.register(new PlayerActionType());
         actionRegistry.register(new SoundActionType());
         actionRegistry.register(new TitleActionType());
     }

@@ -1,14 +1,12 @@
 package ru.overwrite.rtp.actions.impl;
 
 import net.kyori.adventure.key.Key;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.OvRandomTeleport;
 import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.actions.ActionType;
 import ru.overwrite.rtp.channels.Channel;
-import ru.overwrite.rtp.utils.Utils;
 
 public final class PlayerActionType implements ActionType {
 
