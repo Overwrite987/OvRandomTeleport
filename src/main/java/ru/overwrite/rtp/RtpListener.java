@@ -55,7 +55,7 @@ public class RtpListener implements Listener {
                 if (!player.hasPermission("rtp.channel." + channelId)) {
                     continue;
                 }
-                processTeleport(player, rtpManager.getChannelById(channelId), true);
+                this.processTeleport(player, rtpManager.getChannelById(channelId), true);
                 return;
             }
         }
@@ -64,7 +64,7 @@ public class RtpListener implements Listener {
             Channel activeChannel = getActiveChannel(playerName);
             if (activeChannel.settings().restrictions().restrictMove()) {
                 Utils.sendMessage(activeChannel.messages().movedOnTeleport(), player);
-                cancelTeleportation(playerName);
+                this.cancelTeleportation(playerName);
             }
         }
     }
@@ -80,7 +80,7 @@ public class RtpListener implements Listener {
             Channel activeChannel = getActiveChannel(playerName);
             if (activeChannel.settings().restrictions().restrictTeleport()) {
                 Utils.sendMessage(activeChannel.messages().teleportedOnTeleport(), player);
-                cancelTeleportation(playerName);
+                this.cancelTeleportation(playerName);
             }
         }
     }
@@ -111,7 +111,7 @@ public class RtpListener implements Listener {
             if (!player.hasPermission("rtp.channel." + channelId)) {
                 continue;
             }
-            processTeleport(player, rtpManager.getChannelById(channelId), false);
+            this.processTeleport(player, rtpManager.getChannelById(channelId), false);
             return;
         }
     }
@@ -132,7 +132,7 @@ public class RtpListener implements Listener {
             if (!player.hasPermission("rtp.channel." + channelId)) {
                 continue;
             }
-            processTeleport(player, rtpManager.getChannelById(channelId), false);
+            this.processTeleport(player, rtpManager.getChannelById(channelId), false);
             return;
         }
     }
@@ -158,7 +158,7 @@ public class RtpListener implements Listener {
             Restrictions restrictions = activeChannel.settings().restrictions();
             if (restrictions.restrictDamage() && !restrictions.damageCheckOnlyPlayers()) {
                 Utils.sendMessage(activeChannel.messages().damagedOnTeleport(), player);
-                cancelTeleportation(playerName);
+                this.cancelTeleportation(playerName);
             }
         }
     }
@@ -169,10 +169,10 @@ public class RtpListener implements Listener {
         Entity damagedEntity = e.getEntity();
 
         if (damagerEntity instanceof Player damager) {
-            handleDamagerPlayer(damager, damagedEntity);
+            this.handleDamagerPlayer(damager, damagedEntity);
         }
         if (damagedEntity instanceof Player damaged) {
-            handleDamagedPlayer(damagerEntity, damaged);
+            this.handleDamagedPlayer(damagerEntity, damaged);
         }
     }
 
@@ -186,7 +186,7 @@ public class RtpListener implements Listener {
                     return;
                 }
                 damager.sendMessage(activeChannel.messages().damagedOtherOnTeleport());
-                cancelTeleportation(damagerName);
+                this.cancelTeleportation(damagerName);
             }
         }
     }
@@ -202,7 +202,7 @@ public class RtpListener implements Listener {
                     return;
                 }
                 damaged.sendMessage(activeChannel.messages().damagedOnTeleport());
-                cancelTeleportation(damagedName);
+                this.cancelTeleportation(damagedName);
             }
         }
     }
@@ -241,26 +241,26 @@ public class RtpListener implements Listener {
         if (!(e.getEntity() instanceof Player player)) {
             return;
         }
-        handlePlayerLeave(player);
+        this.handlePlayerLeave(player);
     }
 
     @EventHandler
     public void onLeave(PlayerQuitEvent e) {
         Player player = e.getPlayer();
-        handlePlayerLeave(player);
+        this.handlePlayerLeave(player);
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onKick(PlayerKickEvent e) {
         Player player = e.getPlayer();
-        handlePlayerLeave(player);
+        this.handlePlayerLeave(player);
     }
 
     private void handlePlayerLeave(Player player) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             String playerName = player.getName();
             if (rtpManager.hasActiveTasks(playerName)) {
-                cancelTeleportation(playerName);
+                this.cancelTeleportation(playerName);
             }
         });
     }
