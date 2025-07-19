@@ -43,6 +43,7 @@ public final class RtpManager {
 
     private Channel defaultChannel;
 
+    @Getter(AccessLevel.NONE)
     private final Map<String, Channel> namedChannels = new HashMap<>();
 
     private final Specifications specifications = new Specifications(new HashSet<>(), new HashMap<>(), new Object2IntOpenHashMap<>(), new HashMap<>());
