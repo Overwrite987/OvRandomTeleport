@@ -270,8 +270,8 @@ public final class RtpManager {
             if (!finalForce) {
                 this.executeActions(player, channel, channelPreTeleportCooldown, settings.actions().preTeleportActions(), player.getLocation());
                 printDebug(() -> "Generating task and starting pre teleport timer for player '" + playerName + "' with channel '" + channel.id() + "'");
-                RtpTask rtpTask = new RtpTask(plugin, this, playerName, channelPreTeleportCooldown, channel);
-                rtpTask.startPreTeleportTimer(player, channel, loc);
+                RtpTask rtpTask = new RtpTask(plugin, this, player, channel, channelPreTeleportCooldown);
+                rtpTask.startPreTeleportTimer(loc);
                 return;
             }
             this.teleportPlayer(player, channel, loc);
@@ -285,7 +285,7 @@ public final class RtpManager {
                 costs.processExpCost(player, channel);
     }
 
-    private void returnCost(Player player, Channel channel) {
+    public void returnCost(Player player, Channel channel) {
         Costs costs = channel.settings().costs();
         costs.processMoneyReturn(player);
         costs.processHungerReturn(player);

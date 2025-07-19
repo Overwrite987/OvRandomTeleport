@@ -20,56 +20,55 @@ public class RtpTask {
 
     private final OvRandomTeleport plugin;
     private final RtpManager rtpManager;
-    private final String playerName;
-    private final int finalPreTeleportCooldown;
-
+    private final Player player;
     @Getter
     private final Channel activeChannel;
+    private final int finalPreTeleportCooldown;
 
     private int preTeleportCooldown;
     private BossBar bossBar;
     private BukkitTask countdownTask;
     private BukkitTask animationTask;
 
-    public void startPreTeleportTimer(Player player, Channel channel, Location location) {
+    public void startPreTeleportTimer(Location location) {
         this.preTeleportCooldown = this.finalPreTeleportCooldown;
-        Settings settings = channel.settings();
+        Settings settings = this.activeChannel.settings();
         if (settings.bossbar().bossbarEnabled()) {
-            this.setupBossBar(player, settings.bossbar());
+            this.setupBossBar(settings.bossbar());
         }
         if (settings.particles().preTeleportEnabled()) {
-            this.animationTask = new BasicAnimation(player, preTeleportCooldown * 20, settings.particles()).runTaskTimerAsynchronously(plugin, 0, 1);
+            this.animationTask = new BasicAnimation(this.player, preTeleportCooldown * 20, settings.particles()).runTaskTimerAsynchronously(plugin, 0, 1);
         }
         this.countdownTask = new BukkitRunnable() {
             @Override
             public void run() {
                 preTeleportCooldown--;
                 if (preTeleportCooldown <= 0) {
-                    cleanupAndTeleport(player, channel, location);
+                    cleanupAndTeleport(location);
                     return;
                 }
-                updateBossBar(channel);
-                handleCooldownActions(player, channel);
+                updateBossBar();
+                handleCooldownActions();
             }
         }.runTaskTimerAsynchronously(plugin, 20L, 20L);
-        rtpManager.getPerPlayerActiveRtpTask().put(this.playerName, this);
+        rtpManager.getPerPlayerActiveRtpTask().put(this.player.getName(), this);
     }
 
-    private void setupBossBar(Player player, Bossbar bossbar) {
+    private void setupBossBar(Bossbar bossbar) {
         String title = Utils.COLORIZER.colorize(bossbar.bossbarTitle().replace("%time%", Utils.getTime(finalPreTeleportCooldown)));
         this.bossBar = Bukkit.createBossBar(title, bossbar.bossbarColor(), bossbar.bossbarStyle());
-        this.bossBar.addPlayer(player);
+        this.bossBar.addPlayer(this.player);
     }
 
-    private void cleanupAndTeleport(Player player, Channel channel, Location location) {
+    private void cleanupAndTeleport(Location location) {
         if (bossBar != null) {
             bossBar.removeAll();
         }
-        rtpManager.teleportPlayer(player, channel, location);
+        rtpManager.teleportPlayer(this.player, this.activeChannel, location);
         this.cancel();
     }
 
-    private void updateBossBar(Channel channel) {
+    private void updateBossBar() {
         if (bossBar == null) {
             return;
         }
@@ -77,18 +76,18 @@ public class RtpTask {
         if (progress < 1 && progress > 0) {
             bossBar.setProgress(progress);
         }
-        String title = Utils.COLORIZER.colorize(channel.settings().bossbar().bossbarTitle().replace("%time%", Utils.getTime(preTeleportCooldown)));
+        String title = Utils.COLORIZER.colorize(this.activeChannel.settings().bossbar().bossbarTitle().replace("%time%", Utils.getTime(preTeleportCooldown)));
         bossBar.setTitle(title);
     }
 
-    private void handleCooldownActions(Player player, Channel channel) {
-        Actions actions = channel.settings().actions();
+    private void handleCooldownActions() {
+        Actions actions = this.activeChannel.settings().actions();
         if (actions.onCooldownActions().isEmpty()) {
             return;
         }
         for (int time : actions.onCooldownActions().keySet()) {
             if (time == preTeleportCooldown) {
-                rtpManager.executeActions(player, channel, finalPreTeleportCooldown, actions.onCooldownActions().get(time), player.getLocation());
+                rtpManager.executeActions(this.player, this.activeChannel, finalPreTeleportCooldown, actions.onCooldownActions().get(time), this.player.getLocation());
             }
         }
     }
@@ -101,8 +100,9 @@ public class RtpTask {
             animationTask.cancel();
         }
         countdownTask.cancel();
-        rtpManager.getPerPlayerActiveRtpTask().remove(playerName);
-        rtpManager.getTeleportingNow().remove(playerName);
+        rtpManager.getPerPlayerActiveRtpTask().remove(this.player.getName());
+        rtpManager.getTeleportingNow().remove(this.player.getName());
         rtpManager.printDebug("RtpTask cancel called");
+        rtpManager.returnCost(player, this.activeChannel);
     }
 }
