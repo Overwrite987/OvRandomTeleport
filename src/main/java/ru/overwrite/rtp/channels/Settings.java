@@ -405,12 +405,12 @@ public record Settings(
         return hasValue ? supplier.get() : defaultValue;
     }
 
-    private static int getOrDefaultValue(boolean condition, IntSupplier supplier, int defaultValue) {
-        return condition ? supplier.getAsInt() : defaultValue;
+    private static int getOrDefaultValue(boolean hasValue, IntSupplier supplier, int defaultValue) {
+        return hasValue ? supplier.getAsInt() : defaultValue;
     }
 
-    private static double getOrDefaultValue(boolean condition, DoubleSupplier supplier, double defaultValue) {
-        return condition ? supplier.getAsDouble() : defaultValue;
+    private static double getOrDefaultValue(boolean hasValue, DoubleSupplier supplier, double defaultValue) {
+        return hasValue ? supplier.getAsDouble() : defaultValue;
     }
 
     private static ImmutableList<Action> getActionList(OvRandomTeleport plugin, ActionRegistry actionRegistry, List<String> actionStrings) {
