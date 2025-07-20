@@ -23,6 +23,8 @@ import ru.overwrite.rtp.utils.VersionUtils;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.DoubleSupplier;
+import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 public record Settings(
@@ -57,14 +59,20 @@ public record Settings(
 
         Costs.MoneyType moneyType = getOrDefaultValue(!isNullSection && channelCosts.contains("money_type"), () -> Costs.MoneyType.valueOf(getOrDefaultValue(!isNullSection, () -> channelCosts.getString("money_type", "VAULT"), "VAULT").toUpperCase(Locale.ENGLISH)), getOrDefaultValue(hasTemplateCosts, () -> template.costs().moneyType(), null));
 
-        Supplier<Double> moneyCostTemplateValue = () -> getOrDefaultValue(hasTemplateCosts, () -> template.costs().moneyCost(), -1.0);
-        double moneyCost = getOrDefaultValue(!isNullSection, () -> channelCosts.getDouble("money_cost", moneyCostTemplateValue.get()), moneyCostTemplateValue.get());
+        DoubleSupplier moneyCostTemplateValue = () -> getOrDefaultValue(hasTemplateCosts, () -> template.costs().moneyCost(), -1.0D);
+        double moneyCost = getOrDefaultValue(!isNullSection,
+                () -> channelCosts.getDouble("money_cost", moneyCostTemplateValue.getAsDouble()),
+                moneyCostTemplateValue.getAsDouble());
 
-        Supplier<Integer> hungerCostTemplateValue = () -> getOrDefaultValue(hasTemplateCosts, () -> template.costs().hungerCost(), -1);
-        int hungerCost = getOrDefaultValue(!isNullSection, () -> channelCosts.getInt("hunger_cost", hungerCostTemplateValue.get()), hungerCostTemplateValue.get());
+        IntSupplier hungerCostTemplateValue = () -> getOrDefaultValue(hasTemplateCosts, () -> template.costs().hungerCost(), -1);
+        int hungerCost = getOrDefaultValue(!isNullSection,
+                () -> channelCosts.getInt("hunger_cost", hungerCostTemplateValue.getAsInt()),
+                hungerCostTemplateValue.getAsInt());
 
-        Supplier<Integer> expCostTemplateValue = () -> getOrDefaultValue(hasTemplateCosts, () -> template.costs().expCost(), -1);
-        int expCost = getOrDefaultValue(!isNullSection, () -> channelCosts.getInt("experience_cost", expCostTemplateValue.get()), expCostTemplateValue.get());
+        IntSupplier expCostTemplateValue = () -> getOrDefaultValue(hasTemplateCosts, () -> template.costs().expCost(), -1);
+        int expCost = getOrDefaultValue(!isNullSection,
+                () -> channelCosts.getInt("experience_cost", expCostTemplateValue.getAsInt()),
+                expCostTemplateValue.getAsInt());
 
         return new Costs(plugin.getEconomy(), moneyType, moneyCost, hungerCost, expCost);
     }
@@ -108,32 +116,32 @@ public record Settings(
                 )
         );
 
-        Supplier<Integer> minXTemplateValue = () -> getOrDefaultValue(hasTemplateOptions, () -> template.locationGenOptions().minX(), 0);
-        int minX = getOrDefaultValue(!isNullSection, () -> locationGenOptions.getInt("min_x", minXTemplateValue.get()), minXTemplateValue.get());
+        IntSupplier minXTemplateValue = () -> getOrDefaultValue(hasTemplateOptions, () -> template.locationGenOptions().minX(), 0);
+        int minX = getOrDefaultValue(!isNullSection, () -> locationGenOptions.getInt("min_x", minXTemplateValue.getAsInt()), minXTemplateValue.getAsInt());
 
-        Supplier<Integer> maxXTemplateValue = () -> getOrDefaultValue(hasTemplateOptions, () -> template.locationGenOptions().maxX(), 0);
-        int maxX = getOrDefaultValue(!isNullSection, () -> locationGenOptions.getInt("max_x", maxXTemplateValue.get()), maxXTemplateValue.get());
+        IntSupplier maxXTemplateValue = () -> getOrDefaultValue(hasTemplateOptions, () -> template.locationGenOptions().maxX(), 0);
+        int maxX = getOrDefaultValue(!isNullSection, () -> locationGenOptions.getInt("max_x", maxXTemplateValue.getAsInt()), maxXTemplateValue.getAsInt());
 
-        Supplier<Integer> minZTemplateValue = () -> getOrDefaultValue(hasTemplateOptions, () -> template.locationGenOptions().minZ(), 0);
-        int minZ = getOrDefaultValue(!isNullSection, () -> locationGenOptions.getInt("min_z", minZTemplateValue.get()), minZTemplateValue.get());
+        IntSupplier minZTemplateValue = () -> getOrDefaultValue(hasTemplateOptions, () -> template.locationGenOptions().minZ(), 0);
+        int minZ = getOrDefaultValue(!isNullSection, () -> locationGenOptions.getInt("min_z", minZTemplateValue.getAsInt()), minZTemplateValue.getAsInt());
 
-        Supplier<Integer> maxZTemplateValue = () -> getOrDefaultValue(hasTemplateOptions, () -> template.locationGenOptions().maxZ(), 0);
-        int maxZ = getOrDefaultValue(!isNullSection, () -> locationGenOptions.getInt("max_z", maxZTemplateValue.get()), maxZTemplateValue.get());
+        IntSupplier maxZTemplateValue = () -> getOrDefaultValue(hasTemplateOptions, () -> template.locationGenOptions().maxZ(), 0);
+        int maxZ = getOrDefaultValue(!isNullSection, () -> locationGenOptions.getInt("max_z", maxZTemplateValue.getAsInt()), maxZTemplateValue.getAsInt());
 
-        Supplier<Integer> radiusMinTemplateValue = () -> getOrDefaultValue(hasTemplateOptions, () -> template.locationGenOptions().nearRadiusMin(), 30);
-        int nearRadiusMin = getOrDefaultValue(!isNullSection, () -> locationGenOptions.getInt("min_near_point_distance", radiusMinTemplateValue.get()), radiusMinTemplateValue.get());
+        IntSupplier radiusMinTemplateValue = () -> getOrDefaultValue(hasTemplateOptions, () -> template.locationGenOptions().nearRadiusMin(), 30);
+        int nearRadiusMin = getOrDefaultValue(!isNullSection, () -> locationGenOptions.getInt("min_near_point_distance", radiusMinTemplateValue.getAsInt()), radiusMinTemplateValue.getAsInt());
 
-        Supplier<Integer> radiusMaxTemplateValue = () -> getOrDefaultValue(hasTemplateOptions, () -> template.locationGenOptions().nearRadiusMax(), 60);
-        int nearRadiusMax = getOrDefaultValue(!isNullSection, () -> locationGenOptions.getInt("max_near_point_distance", radiusMaxTemplateValue.get()), radiusMaxTemplateValue.get());
+        IntSupplier radiusMaxTemplateValue = () -> getOrDefaultValue(hasTemplateOptions, () -> template.locationGenOptions().nearRadiusMax(), 60);
+        int nearRadiusMax = getOrDefaultValue(!isNullSection, () -> locationGenOptions.getInt("max_near_point_distance", radiusMaxTemplateValue.getAsInt()), radiusMaxTemplateValue.getAsInt());
 
-        Supplier<Integer> centerXTemplateValue = () -> getOrDefaultValue(hasTemplateOptions, () -> template.locationGenOptions().centerX(), 0);
-        int centerX = getOrDefaultValue(!isNullSection, () -> locationGenOptions.getInt("center_x", centerXTemplateValue.get()), centerXTemplateValue.get());
+        IntSupplier centerXTemplateValue = () -> getOrDefaultValue(hasTemplateOptions, () -> template.locationGenOptions().centerX(), 0);
+        int centerX = getOrDefaultValue(!isNullSection, () -> locationGenOptions.getInt("center_x", centerXTemplateValue.getAsInt()), centerXTemplateValue.getAsInt());
 
-        Supplier<Integer> centerZTemplateValue = () -> getOrDefaultValue(hasTemplateOptions, () -> template.locationGenOptions().centerZ(), 0);
-        int centerZ = getOrDefaultValue(!isNullSection, () -> locationGenOptions.getInt("center_z", centerZTemplateValue.get()), centerZTemplateValue.get());
+        IntSupplier centerZTemplateValue = () -> getOrDefaultValue(hasTemplateOptions, () -> template.locationGenOptions().centerZ(), 0);
+        int centerZ = getOrDefaultValue(!isNullSection, () -> locationGenOptions.getInt("center_z", centerZTemplateValue.getAsInt()), centerZTemplateValue.getAsInt());
 
-        Supplier<Integer> attemptsTemplateValue = () -> getOrDefaultValue(hasTemplateOptions, () -> template.locationGenOptions().maxLocationAttempts(), 50);
-        int maxLocationAttempts = getOrDefaultValue(!isNullSection, () -> locationGenOptions.getInt("max_location_attempts", attemptsTemplateValue.get()), attemptsTemplateValue.get());
+        IntSupplier attemptsTemplateValue = () -> getOrDefaultValue(hasTemplateOptions, () -> template.locationGenOptions().maxLocationAttempts(), 50);
+        int maxLocationAttempts = getOrDefaultValue(!isNullSection, () -> locationGenOptions.getInt("max_location_attempts", attemptsTemplateValue.getAsInt()), attemptsTemplateValue.getAsInt());
 
         return new LocationGenOptions(shape, genFormat, minX, maxX, minZ, maxZ, nearRadiusMin, nearRadiusMax, centerX, centerZ, maxLocationAttempts);
     }
@@ -145,8 +153,8 @@ public record Settings(
         }
         boolean hasTemplateCooldown = template != null && template.cooldown() != null;
 
-        Supplier<Integer> defaultCooldownTemplateValue = () -> getOrDefaultValue(hasTemplateCooldown, () -> template.cooldown().defaultCooldown(), -1);
-        int defaultCooldown = getOrDefaultValue(!isNullSection, () -> cooldown.getInt("default_cooldown", defaultCooldownTemplateValue.get()), defaultCooldownTemplateValue.get());
+        IntSupplier defaultCooldownTemplateValue = () -> getOrDefaultValue(hasTemplateCooldown, () -> template.cooldown().defaultCooldown(), -1);
+        int defaultCooldown = getOrDefaultValue(!isNullSection, () -> cooldown.getInt("default_cooldown", defaultCooldownTemplateValue.getAsInt()), defaultCooldownTemplateValue.getAsInt());
 
         TimedExpiringMap<String, Long> playerCooldowns = defaultCooldown > 0 ? new TimedExpiringMap<>(TimeUnit.SECONDS) : null;
 
@@ -157,17 +165,17 @@ public record Settings(
 
         ConfigurationSection groupCooldowns = getOrDefaultValue(!isNullSection, () -> cooldown.getConfigurationSection("group_cooldowns"), null);
         if (!pluginConfig.isNullSection(groupCooldowns)) {
-            defaultCooldown = processCooldownSection(plugin, groupCooldowns, groupCooldownsMap, useLastGroupCooldown, defaultCooldown, pluginConfig);
+            defaultCooldown = processCooldownSection(plugin, groupCooldowns, groupCooldownsMap, useLastGroupCooldown, defaultCooldown);
         } else if (hasTemplateCooldown) {
             groupCooldownsMap.putAll(template.cooldown().groupCooldowns());
         }
 
-        Supplier<Integer> preTeleportCooldownTemplateValue = () -> getOrDefaultValue(hasTemplateCooldown, () -> template.cooldown().defaultPreTeleportCooldown(), -1);
-        int defaultPreTeleportCooldown = getOrDefaultValue(!isNullSection, () -> cooldown.getInt("default_pre_teleport_cooldown", preTeleportCooldownTemplateValue.get()), preTeleportCooldownTemplateValue.get());
+        IntSupplier preTeleportCooldownTemplateValue = () -> getOrDefaultValue(hasTemplateCooldown, () -> template.cooldown().defaultPreTeleportCooldown(), -1);
+        int defaultPreTeleportCooldown = getOrDefaultValue(!isNullSection, () -> cooldown.getInt("default_pre_teleport_cooldown", preTeleportCooldownTemplateValue.getAsInt()), preTeleportCooldownTemplateValue.getAsInt());
 
         ConfigurationSection preTeleportGroupCooldowns = getOrDefaultValue(!isNullSection, () -> cooldown.getConfigurationSection("pre_teleport_group_cooldowns"), null);
         if (!pluginConfig.isNullSection(preTeleportGroupCooldowns)) {
-            defaultPreTeleportCooldown = processCooldownSection(plugin, preTeleportGroupCooldowns, preTeleportCooldownsMap, useLastGroupCooldown, defaultPreTeleportCooldown, pluginConfig);
+            defaultPreTeleportCooldown = processCooldownSection(plugin, preTeleportGroupCooldowns, preTeleportCooldownsMap, useLastGroupCooldown, defaultPreTeleportCooldown);
         } else if (hasTemplateCooldown) {
             preTeleportCooldownsMap.putAll(template.cooldown().preTeleportCooldowns());
         }
@@ -175,7 +183,7 @@ public record Settings(
         return new Cooldown(defaultCooldown, playerCooldowns, groupCooldownsMap, defaultPreTeleportCooldown, preTeleportCooldownsMap);
     }
 
-    private static int processCooldownSection(OvRandomTeleport plugin, ConfigurationSection section, Object2IntSortedMap<String> map, boolean useLastGroup, int currentDefault, Config pluginConfig) {
+    private static int processCooldownSection(OvRandomTeleport plugin, ConfigurationSection section, Object2IntSortedMap<String> map, boolean useLastGroup, int currentDefault) {
         if (plugin.getPerms() != null) {
             for (String groupName : section.getKeys(false)) {
                 map.put(groupName, section.getInt(groupName));
@@ -218,9 +226,9 @@ public record Settings(
         boolean preTeleportSendOnlyToPlayer = hasTemplateParticles && template.particles().preTeleportSendOnlyToPlayer();
         List<Particles.ParticleData> preTeleportParticles = getOrDefaultValue(hasTemplateParticles, () -> template.particles().preTeleportParticles(), null);
         int preTeleportDots = getOrDefaultValue(hasTemplateParticles, () -> template.particles().preTeleportDots(), 0);
-        double preTeleportRadius = getOrDefaultValue(hasTemplateParticles, () -> template.particles().preTeleportRadius(), 0.0);
-        double preTeleportParticleSpeed = getOrDefaultValue(hasTemplateParticles, () -> template.particles().preTeleportParticleSpeed(), 0.0);
-        double preTeleportSpeed = getOrDefaultValue(hasTemplateParticles, () -> template.particles().preTeleportSpeed(), 0.0);
+        double preTeleportRadius = getOrDefaultValue(hasTemplateParticles, () -> template.particles().preTeleportRadius(), 0.0D);
+        double preTeleportParticleSpeed = getOrDefaultValue(hasTemplateParticles, () -> template.particles().preTeleportParticleSpeed(), 0.0D);
+        double preTeleportSpeed = getOrDefaultValue(hasTemplateParticles, () -> template.particles().preTeleportSpeed(), 0.0D);
         boolean preTeleportInvert = hasTemplateParticles && template.particles().preTeleportInvert();
         boolean preTeleportJumping = hasTemplateParticles && template.particles().preTeleportJumping();
         boolean preTeleportMoveNear = hasTemplateParticles && template.particles().preTeleportMoveNear();
@@ -229,8 +237,8 @@ public record Settings(
         boolean afterTeleportSendOnlyToPlayer = hasTemplateParticles && template.particles().afterTeleportSendOnlyToPlayer();
         Particles.ParticleData afterTeleportParticle = getOrDefaultValue(hasTemplateParticles, () -> template.particles().afterTeleportParticle(), null);
         int afterTeleportCount = getOrDefaultValue(hasTemplateParticles, () -> template.particles().afterTeleportCount(), 0);
-        double afterTeleportRadius = getOrDefaultValue(hasTemplateParticles, () -> template.particles().afterTeleportRadius(), 0.0);
-        double afterTeleportParticleSpeed = getOrDefaultValue(hasTemplateParticles, () -> template.particles().afterTeleportParticleSpeed(), 0.0);
+        double afterTeleportRadius = getOrDefaultValue(hasTemplateParticles, () -> template.particles().afterTeleportRadius(), 0.0D);
+        double afterTeleportParticleSpeed = getOrDefaultValue(hasTemplateParticles, () -> template.particles().afterTeleportParticleSpeed(), 0.0D);
 
         ConfigurationSection preTeleport = getOrDefaultValue(!isNullSection, () -> particles.getConfigurationSection("pre_teleport"), null);
 
@@ -395,6 +403,14 @@ public record Settings(
 
     private static <T> T getOrDefaultValue(boolean hasValue, Supplier<T> supplier, T defaultValue) {
         return hasValue ? supplier.get() : defaultValue;
+    }
+
+    private static int getOrDefaultValue(boolean condition, IntSupplier supplier, int defaultValue) {
+        return condition ? supplier.getAsInt() : defaultValue;
+    }
+
+    private static double getOrDefaultValue(boolean condition, DoubleSupplier supplier, double defaultValue) {
+        return condition ? supplier.getAsDouble() : defaultValue;
     }
 
     private static ImmutableList<Action> getActionList(OvRandomTeleport plugin, ActionRegistry actionRegistry, List<String> actionStrings) {
