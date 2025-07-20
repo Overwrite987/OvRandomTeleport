@@ -19,7 +19,9 @@ import ru.overwrite.rtp.configuration.Config;
 import ru.overwrite.rtp.utils.PluginMessage;
 import ru.overwrite.rtp.utils.Utils;
 import ru.overwrite.rtp.utils.VersionUtils;
-import ru.overwrite.rtp.utils.logging.*;
+import ru.overwrite.rtp.utils.logging.BukkitLogger;
+import ru.overwrite.rtp.utils.logging.Logger;
+import ru.overwrite.rtp.utils.logging.PaperLogger;
 import ru.overwrite.rtp.utils.regions.WGUtils;
 
 import java.lang.reflect.Constructor;

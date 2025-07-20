@@ -26,8 +26,8 @@ public final class SoundActionType implements ActionType {
 
         return new SoundAction(
                 Sound.valueOf(soundArgs[SOUND_INDEX].toUpperCase(Locale.ENGLISH)).key().toString(),
-                (length > VOLUME_INDEX) ? Float.parseFloat(soundArgs[VOLUME_INDEX]) : 1.0f,
-                (length > PITCH_INDEX) ? Float.parseFloat(soundArgs[PITCH_INDEX]) : 1.0f
+                (length > VOLUME_INDEX) ? Float.parseFloat(soundArgs[VOLUME_INDEX]) : 1.0F,
+                (length > PITCH_INDEX) ? Float.parseFloat(soundArgs[PITCH_INDEX]) : 1.0F
         );
     }
 

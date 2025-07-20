@@ -23,6 +23,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class RtpCommand implements TabExecutor {
@@ -37,6 +38,7 @@ public class RtpCommand implements TabExecutor {
         this.pluginConfig = plugin.getPluginConfig();
     }
 
+    @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
         if (!(sender instanceof Player) && (args.length == 0 || !args[0].equalsIgnoreCase("admin"))) {
             plugin.getPluginLogger().info("Вы должны быть игроком!");
@@ -127,7 +129,7 @@ public class RtpCommand implements TabExecutor {
             sender.sendMessage(commandMessages.adminHelp());
             return;
         }
-        switch (args[1].toLowerCase()) {
+        switch (args[1].toLowerCase(Locale.ENGLISH)) {
             case "reload": {
                 rtpManager.cancelAllTasks();
                 plugin.reloadConfig();

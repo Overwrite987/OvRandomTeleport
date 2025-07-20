@@ -10,7 +10,7 @@ public abstract class Animation extends BukkitRunnable {
     protected int duration;
     protected Particles particles;
 
-    public Animation(Player player, int duration, Particles particles) {
+    protected Animation(Player player, int duration, Particles particles) {
         this.player = player;
         this.duration = duration;
         this.particles = particles;

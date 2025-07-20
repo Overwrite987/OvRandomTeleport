@@ -11,6 +11,8 @@ import ru.overwrite.rtp.channels.settings.Costs;
 import ru.overwrite.rtp.configuration.Config;
 import ru.overwrite.rtp.utils.Utils;
 
+import java.util.Locale;
+
 public class RtpExpansion extends PlaceholderExpansion {
 
     private final RtpManager rtpManager;
@@ -49,7 +51,6 @@ public class RtpExpansion extends PlaceholderExpansion {
             return null;
         }
 
-        final String placeholderType = args[0].toLowerCase();
         final Channel channel = rtpManager.getChannelById(args[1]);
 
         if (channel == null) {
@@ -57,6 +58,8 @@ public class RtpExpansion extends PlaceholderExpansion {
         }
 
         final Cooldown channelCooldown = channel.settings().cooldown();
+
+        final String placeholderType = args[0].toLowerCase(Locale.ENGLISH);
 
         return switch (placeholderType) {
             case "hascooldown" -> getBooleanPlaceholder(channelCooldown.hasCooldown(player));
@@ -70,7 +73,7 @@ public class RtpExpansion extends PlaceholderExpansion {
         if (args.length < 3) {
             return null;
         }
-        String settingName = args[2].toLowerCase();
+        String settingName = args[2].toLowerCase(Locale.ENGLISH);
         return switch (settingName) {
             case "name" -> channel.name();
             case "type" -> channel.type().toString();
