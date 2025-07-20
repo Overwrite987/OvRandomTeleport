@@ -135,9 +135,9 @@ public class RtpExpansion extends PlaceholderExpansion {
                     Utils.getTime(cooldown.defaultCooldown()) :
                     getValueIfPositiveOrDefault(cooldown.defaultCooldown());
             case "byplayergroup" -> isPlayerValid(player) ?
-                    (args.length == 5 && args[4].equalsIgnoreCase("formatted") ?
+                    args.length == 5 && args[4].equalsIgnoreCase("formatted") ?
                             Utils.getTime(rtpManager.getCooldown(player, cooldown.defaultCooldown(), cooldown.groupCooldowns())) :
-                            getValueIfPositiveOrDefault(rtpManager.getCooldown(player, cooldown.defaultCooldown(), cooldown.groupCooldowns()))) :
+                            getValueIfPositiveOrDefault(rtpManager.getCooldown(player, cooldown.defaultCooldown(), cooldown.groupCooldowns())) :
                     null;
             default -> null;
         };

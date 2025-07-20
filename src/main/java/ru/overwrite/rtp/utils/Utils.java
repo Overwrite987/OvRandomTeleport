@@ -72,7 +72,7 @@ public final class Utils {
         int red = Integer.parseInt(parts[0].trim());
         int green = Integer.parseInt(parts[1].trim());
         int blue = Integer.parseInt(parts[2].trim());
-        float size = (parts.length > 3) ? Float.parseFloat(parts[3].trim()) : 1.0f;
+        float size = (parts.length > 3) ? Float.parseFloat(parts[3].trim()) : 1.0F;
 
         return new Particle.DustOptions(Color.fromRGB(red, green, blue), size);
     }
@@ -94,7 +94,7 @@ public final class Utils {
     public String translateAlternateColorCodes(char altColorChar, String textToTranslate) {
         final char[] b = textToTranslate.toCharArray();
 
-        for (int i = 0, length = b.length - 1; i < length; ++i) {
+        for (int i = 0, length = b.length; i < length; i++) {
             if (b[i] == altColorChar && isValidColorCharacter(b[i + 1])) {
                 b[i++] = COLOR_CHAR;
                 b[i] |= 0x20;
