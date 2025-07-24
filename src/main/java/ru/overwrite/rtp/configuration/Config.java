@@ -134,12 +134,12 @@ public class Config {
             plugin.getPluginLogger().warn("Channel file with name " + fileName + " does not exist.");
             try {
                 plugin.saveResource("channels/" + fileName, false);
-            } catch (IllegalArgumentException ex) {
+            } catch (IllegalArgumentException illegalArgumentException) {
                 try {
                     file.createNewFile();
                     plugin.getPluginLogger().warn("Created empty channel file " + fileName);
                 } catch (IOException ioException) {
-                    plugin.getPluginLogger().warn("Unable to create channel file " + fileName + ". " + ex);
+                    plugin.getPluginLogger().warn("Unable to create channel file " + fileName + ". " + ioException);
                 }
             }
         }
