@@ -1,8 +1,6 @@
 package ru.overwrite.rtp;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2IntSortedMap;
+import it.unimi.dsi.fastutil.objects.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -222,7 +220,7 @@ public final class RtpManager {
         return !perPlayerActiveRtpTask.isEmpty() && perPlayerActiveRtpTask.containsKey(playerName);
     }
 
-    private final List<String> teleportingNow = new ArrayList<>();
+    private final ReferenceList<String> teleportingNow = new ReferenceArrayList<>();
 
     public void preTeleport(Player player, Channel channel, World world, boolean force) {
         String playerName = player.getName();
