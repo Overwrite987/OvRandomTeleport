@@ -80,7 +80,6 @@ public final class OvRandomTeleport extends JavaPlugin {
         Utils.setupColorizer(mainSettings);
         rtpManager.setMaxTeleporting(mainSettings.getInt("max_teleporting"));
         pluginConfig.setupMessages(config);
-        pluginConfig.setupTemplates();
         PluginManager pluginManager = server.getPluginManager();
         registerCommand(pluginManager, mainSettings);
         if (mainSettings.getBoolean("enable_metrics")) {
@@ -91,6 +90,7 @@ public final class OvRandomTeleport extends JavaPlugin {
             setupEconomy(servicesManager);
             setupPerms(servicesManager);
         }
+        pluginConfig.setupTemplates();
         setupPlaceholders(mainSettings, pluginManager);
         setupProxy(mainSettings);
         pluginManager.registerEvents(new RtpListener(this), this);
