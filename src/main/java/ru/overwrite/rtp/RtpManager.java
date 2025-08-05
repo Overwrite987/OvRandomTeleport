@@ -390,7 +390,7 @@ public final class RtpManager {
 
     public void cancelAllTasks() {
         for (RtpTask task : perPlayerActiveRtpTask.values()) {
-            task.cancel();
+            task.cancel(true);
         }
     }
 
