@@ -67,7 +67,7 @@ public class RtpCommand implements TabExecutor {
             Player player = (Player) sender;
             if (rtpManager.hasActiveTasks(player.getName())) {
                 if (args[0].equalsIgnoreCase("cancel") && player.hasPermission("rtp.cancel")) {
-                    rtpManager.getPerPlayerActiveRtpTask().get(player.getName()).cancel();
+                    rtpManager.getPerPlayerActiveRtpTask().get(player.getName()).cancel(true);
                     Utils.sendMessage(pluginConfig.getCommandMessages().cancelled(), player);
                 }
                 return true;

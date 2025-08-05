@@ -65,7 +65,7 @@ public class RtpTask {
             bossBar.removeAll();
         }
         rtpManager.teleportPlayer(this.player, this.activeChannel, location);
-        this.cancel();
+        this.cancel(false);
     }
 
     private void updateBossBar() {
@@ -92,7 +92,7 @@ public class RtpTask {
         }
     }
 
-    public void cancel() {
+    public void cancel(boolean returnCost) {
         if (bossBar != null) {
             bossBar.removeAll();
         }
@@ -103,6 +103,8 @@ public class RtpTask {
         rtpManager.getPerPlayerActiveRtpTask().remove(this.player.getName());
         rtpManager.getTeleportingNow().remove(this.player.getName());
         rtpManager.printDebug("RtpTask cancel called");
-        rtpManager.returnCost(player, this.activeChannel);
+        if (returnCost) {
+            rtpManager.returnCost(player, this.activeChannel);
+        }
     }
 }
