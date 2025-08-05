@@ -241,7 +241,7 @@ public final class RtpManager {
         Settings settings = channel.settings();
         int channelPreTeleportCooldown = getCooldown(player, settings.cooldown().defaultPreTeleportCooldown(), settings.cooldown().preTeleportCooldowns());
         boolean finalForce = force || channelPreTeleportCooldown <= 0;
-        printDebug("Pre teleporting player '" + playerName + "' with channel '" + channel.id() + "' in world '" + world.getName() + "' (force: " + finalForce + ")");
+        printDebug("Pre teleporting player '" + playerName + "' with channel '" + channel.id() + "' in world '" + world.getName() + "' (cooldown: " + channelPreTeleportCooldown + " force: " + finalForce + ")");
         teleportingNow.add(playerName);
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             locationGenerator.getIterationsPerPlayer().put(playerName, 1);
@@ -360,10 +360,11 @@ public final class RtpManager {
             return -1;
         }
         if (groupCooldowns.isEmpty()) {
+            printDebug("Group cooldowns is empty. Returning default cooldown " + defaultCooldown);
             return defaultCooldown;
         }
         final String playerGroup = plugin.getPerms().getPrimaryGroup(player);
-        printDebug("Player group for cooldown is " + playerGroup);
+        printDebug("Group cooldowns isn't empty. Player group for cooldown is " + playerGroup);
         return groupCooldowns.getOrDefault(playerGroup, defaultCooldown);
     }
 
