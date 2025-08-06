@@ -132,8 +132,7 @@ public class RtpCommand implements TabExecutor {
         switch (args[1].toLowerCase(Locale.ENGLISH)) {
             case "reload": {
                 rtpManager.cancelAllTasks();
-                plugin.reloadConfig();
-                final FileConfiguration config = plugin.getConfig();
+                final FileConfiguration config = pluginConfig.getFile(plugin.getDataFolder().getAbsolutePath(), "config.yml");
                 Utils.setupColorizer(config.getConfigurationSection("main_settings"));
                 pluginConfig.setupMessages(config);
                 pluginConfig.setupTemplates();
