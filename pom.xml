@@ -6,7 +6,7 @@
 
     <groupId>ru.overwrite</groupId>
     <artifactId>OvRandomTeleport</artifactId>
-    <version>1.14.1</version>
+    <version>1.14.2</version>
     <packaging>jar</packaging>
 
     <name>OvRandomTeleport</name>
