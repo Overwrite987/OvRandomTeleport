@@ -8,12 +8,15 @@ import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.animations.BasicAnimation;
 import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.channels.Settings;
 import ru.overwrite.rtp.channels.settings.Actions;
 import ru.overwrite.rtp.channels.settings.Bossbar;
 import ru.overwrite.rtp.utils.Utils;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 public class RtpTask {
@@ -85,10 +88,9 @@ public class RtpTask {
         if (actions.onCooldownActions().isEmpty()) {
             return;
         }
-        for (int time : actions.onCooldownActions().keySet()) {
-            if (time == preTeleportCooldown) {
-                rtpManager.executeActions(this.player, this.activeChannel, finalPreTeleportCooldown, actions.onCooldownActions().get(time), this.player.getLocation());
-            }
+        List<Action> actionList = actions.onCooldownActions().get(preTeleportCooldown);
+        if (actionList != null) {
+            rtpManager.executeActions(this.player, this.activeChannel, finalPreTeleportCooldown, actionList, this.player.getLocation());
         }
     }
 
