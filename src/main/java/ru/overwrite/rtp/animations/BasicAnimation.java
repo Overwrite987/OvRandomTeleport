@@ -1,5 +1,6 @@
 package ru.overwrite.rtp.animations;
 
+import com.destroystokyo.paper.ParticleBuilder;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -43,52 +44,52 @@ public class BasicAnimation extends Animation {
 
         final Location location = player.getLocation();
         final World world = location.getWorld();
-        final double yRingOffset = Math.sin((Math.PI * tickCounter) / duration) * 2;
+        final double baseX = location.getX();
+        final double baseY = location.getY();
+        final double baseZ = location.getZ();
 
-        double currentRadius = particles.preTeleportMoveNear() ? initialRadius - (radiusStep * tickCounter) : initialRadius;
+        final double yRingOffset = Math.sin((Math.PI * tickCounter) / duration) * 2.0;
+        final double currentRadius = particles.preTeleportMoveNear() ? initialRadius - (radiusStep * tickCounter) : initialRadius;
+
+        final double cosRotation = Math.cos(verticalRotationSpeed * tickCounter);
+        final double sinRotation = Math.sin(verticalRotationSpeed * tickCounter);
+
+        final ParticleBuilder builder = preTeleportParticleData
+                .particle()
+                .builder()
+                .count(1)
+                .offset(0.0, 0.0, 0.0)
+                .extra(particles.preTeleportParticleSpeed())
+                .data(preTeleportParticleData.dustOptions())
+                .receivers(receivers)
+                .source(player);
+
+        final double twoPiOverDots = 2.0 * Math.PI / particles.preTeleportDots();
 
         for (int i = 0; i < particles.preTeleportDots(); i++) {
-            double phaseOffset = i * (2 * Math.PI / particles.preTeleportDots());
+            double phaseOffset = i * twoPiOverDots;
+            double ang = angle + phaseOffset;
 
-            double x, y, z;
+            double x = Math.cos(ang) * currentRadius;
+            double z = Math.sin(ang) * currentRadius;
+            double y;
 
             if (particles.preTeleportJumping()) {
                 y = yRingOffset;
 
-                x = Math.cos(angle + phaseOffset) * currentRadius;
-                z = Math.sin(angle + phaseOffset) * currentRadius;
-
-                double cosRotation = Math.cos(verticalRotationSpeed * tickCounter);
-                double sinRotation = Math.sin(verticalRotationSpeed * tickCounter);
-
                 double rotatedX = x * cosRotation - z * sinRotation;
                 double rotatedZ = x * sinRotation + z * cosRotation;
-
                 x = rotatedX;
                 z = rotatedZ;
             } else {
-                x = Math.cos(angle + phaseOffset) * currentRadius;
                 y = yOffset;
-                z = Math.sin(angle + phaseOffset) * currentRadius;
             }
 
-            location.add(x, y, z);
+            double px = baseX + x;
+            double py = baseY + y;
+            double pz = baseZ + z;
 
-            world.spawnParticle(
-                    preTeleportParticleData.particle(),
-                    receivers,
-                    player,
-                    location.getX(),
-                    location.getY(),
-                    location.getZ(),
-                    1,
-                    0,
-                    0,
-                    0,
-                    particles.preTeleportParticleSpeed(),
-                    preTeleportParticleData.dustOptions());
-
-            location.subtract(x, y, z);
+            builder.location(world, px, py, pz).spawn();
         }
 
         angle += particles.preTeleportInvert() ? -rotationSpeed : rotationSpeed;
