@@ -6,9 +6,9 @@ import ru.overwrite.rtp.channels.settings.Particles;
 
 public abstract class Animation extends BukkitRunnable {
 
-    protected Player player;
-    protected int duration;
-    protected Particles particles;
+    protected final Player player;
+    protected final int duration;
+    protected final Particles particles;
 
     protected Animation(Player player, int duration, Particles particles) {
         this.player = player;
