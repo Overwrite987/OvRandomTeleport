@@ -82,6 +82,10 @@ public final class RtpManager {
         ConfigurationSection channelsSection = config.getConfigurationSection("channels");
         for (String channelId : channelsSection.getKeys(false)) {
             printDebug("Id: " + channelId);
+            if (channelId.equalsIgnoreCase("admin")) {
+                plugin.getPluginLogger().warn("Channel ID cannot be 'admin'. Skipping...");
+                continue;
+            }
             ConfigurationSection channelSection = channelsSection.getConfigurationSection(channelId);
             if (!channelSection.getString("file", "").isEmpty()) {
                 channelSection = pluginConfig.getChannelFile(plugin.getDataFolder().getAbsolutePath() + "/channels", channelSection.getString("file"));
