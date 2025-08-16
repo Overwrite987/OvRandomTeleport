@@ -108,6 +108,8 @@ bossbar:
   title: '&fТелепортация через: &5%time%'
   color: WHITE
   style: SEGMENTED_12
+  # Должен ли прогресс боссбара быть плавным?
+  smooth_progress: false
 # Настройка партиклов
 particles:
   # Настройка анимации до телепорта

@@ -212,7 +212,10 @@ public record Settings(
 
         BarStyle style = getOrDefaultValue(!isNullSection && bossbar.contains("style"), () -> BarStyle.valueOf(bossbar.getString("style", "SEGMENTED_12").toUpperCase(Locale.ENGLISH)), getOrDefaultValue(hasTemplateBossbar, () -> template.bossbar().bossbarStyle(), null));
 
-        return new Bossbar(enabled, title, color, style);
+        boolean smoothProgressDefault = hasTemplateBossbar && template.bossbar().smoothProgress();
+        boolean smoothProgress = !isNullSection ? bossbar.getBoolean("smooth_progress", smoothProgressDefault) : smoothProgressDefault;
+
+        return new Bossbar(enabled, title, color, style, smoothProgress);
     }
 
     public static Particles setupParticles(ConfigurationSection particles, Settings template, Config pluginConfig, boolean applyTemplate) {

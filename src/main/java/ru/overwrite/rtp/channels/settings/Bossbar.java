@@ -7,5 +7,6 @@ public record Bossbar(
         boolean bossbarEnabled,
         String bossbarTitle,
         BarColor bossbarColor,
-        BarStyle bossbarStyle) {
+        BarStyle bossbarStyle,
+        boolean smoothProgress) {
 }
