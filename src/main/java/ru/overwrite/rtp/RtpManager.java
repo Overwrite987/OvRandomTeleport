@@ -379,12 +379,14 @@ public final class RtpManager {
         if (actionList.isEmpty()) {
             return;
         }
-        String name = channel.name();
-        String cd = Utils.getTime(cooldown);
-        String x = Integer.toString(loc.getBlockX());
-        String y = Integer.toString(loc.getBlockY());
-        String z = Integer.toString(loc.getBlockZ());
-        final String[] replacementList = {player.getName(), name, cd, x, y, z};
+        final String[] replacementList = {
+                player.getName(),
+                channel.name(),
+                Utils.getTime(cooldown),
+                Integer.toString(loc.getBlockX()),
+                Integer.toString(loc.getBlockY()),
+                Integer.toString(loc.getBlockZ())
+        };
         Bukkit.getScheduler().runTask(plugin, () -> {
             for (Action action : actionList) {
                 action.perform(channel, player, searchList, replacementList);
