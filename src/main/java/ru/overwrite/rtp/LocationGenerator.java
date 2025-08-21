@@ -1,5 +1,6 @@
 package ru.overwrite.rtp;
 
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
 import lombok.Getter;
@@ -419,7 +420,11 @@ public class LocationGenerator {
     }
 
     private boolean isInsideRegion(Location loc, Avoidance avoidance) {
-        return avoidance.avoidRegions() && (WGUtils.getApplicableRegions(loc) != null && !WGUtils.getApplicableRegions(loc).getRegions().isEmpty());
+        if (!avoidance.avoidRegions()) {
+            return false;
+        }
+        ApplicableRegionSet regionSet = WGUtils.getApplicableRegions(loc);
+        return regionSet != null && !regionSet.getRegions().isEmpty();
     }
 
     private boolean isInsideTown(Location loc, Avoidance avoidance) {
