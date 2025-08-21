@@ -66,6 +66,7 @@ public final class RtpManager {
     private void registerDefaultActions() {
         actionRegistry.register(new ActionBarActionType());
         actionRegistry.register(new ConsoleActionType());
+        actionRegistry.register(new DelayedActionActionType());
         actionRegistry.register(new EffectActionType());
         actionRegistry.register(new MessageActionType());
         actionRegistry.register(new PlayerActionType());
@@ -389,7 +390,7 @@ public final class RtpManager {
         };
         Bukkit.getScheduler().runTask(plugin, () -> {
             for (Action action : actionList) {
-                action.perform(channel, player, searchList, replacementList);
+                action.perform(player, searchList, replacementList);
             }
         });
     }

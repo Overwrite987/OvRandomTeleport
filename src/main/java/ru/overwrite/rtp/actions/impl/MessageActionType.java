@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.OvRandomTeleport;
 import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.actions.ActionType;
-import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.utils.Utils;
 
 import java.util.ArrayList;
@@ -40,7 +39,7 @@ public final class MessageActionType implements ActionType {
         public static final String[] HOVER_MARKERS = {HOVER_TEXT_PREFIX, CLICK_EVENT_PREFIX};
 
         @Override
-        public void perform(@NotNull Channel channel, @NotNull Player player, @NotNull String[] searchList, @NotNull String[] replacementList) {
+        public void perform(@NotNull Player player, @NotNull String[] searchList, @NotNull String[] replacementList) {
             String messageToPlayer = Utils.replaceEach(message, searchList, replacementList);
             if (Utils.USE_PAPI) {
                 messageToPlayer = Utils.parsePlaceholders(messageToPlayer, player);

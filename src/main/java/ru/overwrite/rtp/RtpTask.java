@@ -65,6 +65,7 @@ public class RtpTask {
             new BukkitRunnable() {
                 final int totalTicks = finalPreTeleportCooldown * 20;
                 int ticksLeft = totalTicks;
+
                 @Override
                 public void run() {
                     if (ticksLeft <= 0) {

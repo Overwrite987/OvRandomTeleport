@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.OvRandomTeleport;
 import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.actions.ActionType;
-import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.utils.Utils;
 
 public final class ActionBarActionType implements ActionType {
@@ -26,7 +25,7 @@ public final class ActionBarActionType implements ActionType {
 
     private record ActionBarAction(@NotNull String message) implements Action {
         @Override
-        public void perform(@NotNull Channel channel, @NotNull Player player, @NotNull String[] searchList, @NotNull String[] replacementList) {
+        public void perform(@NotNull Player player, @NotNull String[] searchList, @NotNull String[] replacementList) {
             player.sendActionBar(Utils.replaceEach(message, searchList, replacementList));
         }
     }

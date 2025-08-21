@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.OvRandomTeleport;
 import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.actions.ActionType;
-import ru.overwrite.rtp.channels.Channel;
 
 import java.util.Locale;
 
@@ -42,7 +41,7 @@ public final class SoundActionType implements ActionType {
             float pitch
     ) implements Action {
         @Override
-        public void perform(@NotNull Channel channel, @NotNull Player player, @NotNull String[] searchList, @NotNull String[] replacementList) {
+        public void perform(@NotNull Player player, @NotNull String[] searchList, @NotNull String[] replacementList) {
             player.playSound(player.getLocation(), sound, volume, pitch);
         }
     }

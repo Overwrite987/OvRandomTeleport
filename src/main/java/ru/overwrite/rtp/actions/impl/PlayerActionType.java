@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.OvRandomTeleport;
 import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.actions.ActionType;
-import ru.overwrite.rtp.channels.Channel;
 
 public final class PlayerActionType implements ActionType {
 
@@ -24,7 +23,7 @@ public final class PlayerActionType implements ActionType {
 
     private record PlayerAction(@NotNull String command) implements Action {
         @Override
-        public void perform(@NotNull Channel channel, @NotNull Player player, @NotNull String[] searchList, @NotNull String[] replacementList) {
+        public void perform(@NotNull Player player, @NotNull String[] searchList, @NotNull String[] replacementList) {
             player.chat("/" + command);
         }
     }

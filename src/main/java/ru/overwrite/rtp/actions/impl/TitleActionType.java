@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.OvRandomTeleport;
 import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.actions.ActionType;
-import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.utils.Utils;
 
 public final class TitleActionType implements ActionType {
@@ -46,7 +45,7 @@ public final class TitleActionType implements ActionType {
             int fadeOut
     ) implements Action {
         @Override
-        public void perform(@NotNull Channel channel, @NotNull Player player, @NotNull String[] searchList, @NotNull String[] replacementList) {
+        public void perform(@NotNull Player player, @NotNull String[] searchList, @NotNull String[] replacementList) {
             String title = Utils.replaceEach(this.title, searchList, replacementList);
             String subtitle = Utils.replaceEach(this.subtitle, searchList, replacementList);
             if (Utils.USE_PAPI) {
