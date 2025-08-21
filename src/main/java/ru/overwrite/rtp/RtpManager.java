@@ -104,7 +104,7 @@ public final class RtpManager {
             boolean teleportToFirstAllowedWorld = channelSection.getBoolean("teleport_to_first_world", false);
             String serverToMove = channelSection.getString("server_to_move", "");
             int minPlayersToUse = channelSection.getInt("min_players_to_use", -1);
-            int invulnerableTicks = channelSection.getInt("invulnerable_after_teleport", 12);
+            int invulnerableTicks = channelSection.getInt("invulnerable_after_teleport", 15);
             boolean allowInCommands = channelSection.getBoolean("allow_in_command", true);
             boolean bypassMaxTeleportLimit = channelsSection.getBoolean("bypass_max_teleport_limit", false);
             Settings baseTemplate = pluginConfig.getChannelTemplates().get(channelSection.getString("template"));
