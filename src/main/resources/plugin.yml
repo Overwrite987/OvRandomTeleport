@@ -5,5 +5,5 @@ main: ru.overwrite.rtp.OvRandomTeleport
 api-version: 1.16
 softdepend: [Vault, WorldGuard, WorldEdit, Towny, PlayerPoints, PlaceholderAPI]
 libraries:
-  - com.github.ben-manes.caffeine:caffeine:3.1.8
+  - com.github.ben-manes.caffeine:caffeine:3.2.2
   - org.apache.commons:commons-math3:3.6.1
