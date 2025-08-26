@@ -27,6 +27,7 @@ import ru.overwrite.rtp.utils.VersionUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.Supplier;
 
 @Getter
@@ -45,7 +46,7 @@ public final class RtpManager {
 
     private final Specifications specifications = new Specifications(new HashSet<>(), new HashMap<>(), new Object2IntOpenHashMap<>(), new HashMap<>());
 
-    private final Map<String, RtpTask> perPlayerActiveRtpTask = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, RtpTask> perPlayerActiveRtpTask = new ConcurrentHashMap<>();
 
     private final LocationGenerator locationGenerator;
 
