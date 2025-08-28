@@ -8,8 +8,11 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.OvRandomTeleport;
 import ru.overwrite.rtp.channels.settings.Particles;
+import ru.overwrite.rtp.color.Colorizer;
+import ru.overwrite.rtp.color.impl.LegacyAdvancedColorizer;
+import ru.overwrite.rtp.color.impl.LegacyColorizer;
+import ru.overwrite.rtp.color.impl.MiniMessageColorizer;
 import ru.overwrite.rtp.configuration.Config;
-import ru.overwrite.rtp.utils.color.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,9 +33,8 @@ public final class Utils {
     public void setupColorizer(ConfigurationSection mainSettings) {
         COLORIZER = switch (mainSettings.getString("serializer", "LEGACY").toUpperCase(Locale.ENGLISH)) {
             case "MINIMESSAGE" -> new MiniMessageColorizer();
-            case "LEGACY" -> new LegacyColorizer();
             case "LEGACY_ADVANCED" -> new LegacyAdvancedColorizer();
-            default -> new VanillaColorizer();
+            default -> new LegacyColorizer();
         };
     }
 

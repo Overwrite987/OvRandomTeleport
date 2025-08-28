@@ -1,5 +1,6 @@
-package ru.overwrite.rtp.utils.color;
+package ru.overwrite.rtp.color.impl;
 
+import ru.overwrite.rtp.color.Colorizer;
 import ru.overwrite.rtp.utils.Utils;
 
 import java.util.regex.Matcher;

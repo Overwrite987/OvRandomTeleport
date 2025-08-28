@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import ru.overwrite.rtp.actions.Action;
-import ru.overwrite.rtp.animations.BasicAnimation;
+import ru.overwrite.rtp.animations.impl.BasicAnimation;
 import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.channels.Settings;
 import ru.overwrite.rtp.channels.settings.Actions;

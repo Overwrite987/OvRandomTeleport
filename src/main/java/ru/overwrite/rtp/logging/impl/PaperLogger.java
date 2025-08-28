@@ -1,7 +1,8 @@
-package ru.overwrite.rtp.utils.logging;
+package ru.overwrite.rtp.logging.impl;
 
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import ru.overwrite.rtp.OvRandomTeleport;
+import ru.overwrite.rtp.logging.Logger;
 
 public class PaperLogger implements Logger {
 

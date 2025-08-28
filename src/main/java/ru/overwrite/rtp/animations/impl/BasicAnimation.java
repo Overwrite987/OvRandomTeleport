@@ -1,9 +1,10 @@
-package ru.overwrite.rtp.animations;
+package ru.overwrite.rtp.animations.impl;
 
 import com.destroystokyo.paper.ParticleBuilder;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import ru.overwrite.rtp.animations.Animation;
 import ru.overwrite.rtp.channels.settings.Particles;
 
 import java.util.Iterator;

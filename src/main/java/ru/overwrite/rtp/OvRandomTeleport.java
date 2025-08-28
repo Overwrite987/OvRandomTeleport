@@ -16,12 +16,12 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import ru.overwrite.rtp.configuration.Config;
+import ru.overwrite.rtp.logging.Logger;
+import ru.overwrite.rtp.logging.impl.BukkitLogger;
+import ru.overwrite.rtp.logging.impl.PaperLogger;
 import ru.overwrite.rtp.utils.PluginMessage;
 import ru.overwrite.rtp.utils.Utils;
 import ru.overwrite.rtp.utils.VersionUtils;
-import ru.overwrite.rtp.utils.logging.BukkitLogger;
-import ru.overwrite.rtp.utils.logging.Logger;
-import ru.overwrite.rtp.utils.logging.PaperLogger;
 import ru.overwrite.rtp.utils.regions.WGUtils;
 
 import java.lang.reflect.Constructor;

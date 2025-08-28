@@ -1,4 +1,4 @@
-package ru.overwrite.rtp.utils.color;
+package ru.overwrite.rtp.color;
 
 public interface Colorizer {
 
