@@ -12,6 +12,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.projectiles.ProjectileSource;
 import ru.overwrite.rtp.channels.Channel;
+import ru.overwrite.rtp.channels.Specifications;
 import ru.overwrite.rtp.channels.settings.Restrictions;
 import ru.overwrite.rtp.utils.Utils;
 import ru.overwrite.rtp.utils.VersionUtils;
@@ -36,7 +37,7 @@ public class RtpListener implements Listener {
             return;
         }
         Player player = e.getPlayer();
-        RtpManager.Specifications specifications = rtpManager.getSpecifications();
+        Specifications specifications = rtpManager.getSpecifications();
         Map<String, List<World>> voidChannels = specifications.voidChannels();
         if (!voidChannels.isEmpty() && e.getFrom().getBlockY() > e.getTo().getBlockY()) {
             for (Map.Entry<String, List<World>> entry : voidChannels.entrySet()) {

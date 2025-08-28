@@ -1,6 +1,9 @@
 package ru.overwrite.rtp;
 
-import it.unimi.dsi.fastutil.objects.*;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntSortedMap;
+import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
+import it.unimi.dsi.fastutil.objects.ReferenceList;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,13 +20,13 @@ import ru.overwrite.rtp.actions.impl.*;
 import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.channels.ChannelType;
 import ru.overwrite.rtp.channels.Settings;
+import ru.overwrite.rtp.channels.Specifications;
 import ru.overwrite.rtp.channels.settings.Cooldown;
 import ru.overwrite.rtp.channels.settings.Costs;
 import ru.overwrite.rtp.channels.settings.Messages;
 import ru.overwrite.rtp.channels.settings.Particles;
 import ru.overwrite.rtp.configuration.Config;
 import ru.overwrite.rtp.utils.Utils;
-import ru.overwrite.rtp.utils.VersionUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,13 +45,13 @@ public final class RtpManager {
 
     private Channel defaultChannel;
 
-    private final Map<String, Channel> namedChannels = new HashMap<>();
+    private final Map<String, Channel> namedChannels;
 
-    private final Specifications specifications = new Specifications(new HashSet<>(), new HashMap<>(), new Object2IntOpenHashMap<>(), new HashMap<>());
-
-    private final ConcurrentMap<String, RtpTask> perPlayerActiveRtpTask = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, RtpTask> perPlayerActiveRtpTask;
 
     private final LocationGenerator locationGenerator;
+
+    private final Specifications specifications;
 
     private Map<String, String> proxyCalls;
 
@@ -59,8 +62,11 @@ public final class RtpManager {
     public RtpManager(OvRandomTeleport plugin) {
         this.plugin = plugin;
         this.pluginConfig = plugin.getPluginConfig();
+        this.namedChannels = new HashMap<>();
+        this.perPlayerActiveRtpTask = new ConcurrentHashMap<>();
         this.actionRegistry = new ActionRegistry(plugin);
         this.locationGenerator = new LocationGenerator(plugin, this);
+        this.specifications = Specifications.create();
         this.registerDefaultActions();
     }
 
@@ -76,7 +82,7 @@ public final class RtpManager {
     }
 
     public void initProxyCalls() {
-        proxyCalls = new HashMap<>();
+        this.proxyCalls = new HashMap<>();
     }
 
     public void setupChannels(FileConfiguration config, PluginManager pluginManager) {
@@ -111,7 +117,7 @@ public final class RtpManager {
             Settings baseTemplate = pluginConfig.getChannelTemplates().get(channelSection.getString("template"));
             Settings channelSettings = Settings.create(plugin, channelSection, pluginConfig, baseTemplate, true);
 
-            Messages messages = setupChannelMessages(channelSection.getConfigurationSection("messages"));
+            Messages messages = Messages.create(channelSection.getConfigurationSection("messages"), pluginConfig);
 
             Channel newChannel = new Channel(channelId,
                     name,
@@ -138,81 +144,8 @@ public final class RtpManager {
         printDebug("Channels setup done in " + (endTime - startTime) + " ms");
     }
 
-    public record Specifications(Set<String> joinChannels,
-                                 Map<String, List<World>> voidChannels,
-                                 Object2IntMap<String> voidLevels,
-                                 Map<String, List<World>> respawnChannels) {
-
-        public void clearAll() {
-            this.joinChannels.clear();
-            this.voidChannels.clear();
-            this.voidLevels.clear();
-            this.respawnChannels.clear();
-        }
-
-        public void assign(Channel newChannel, ConfigurationSection section) {
-            if (section == null) {
-                return;
-            }
-            if (section.getBoolean("teleport_on_first_join", false)) {
-                joinChannels.add(newChannel.id());
-            }
-            List<World> voidWorlds = Utils.getWorldList(section.getStringList("void_worlds"));
-            if (!voidWorlds.isEmpty()) {
-                voidChannels.put(newChannel.id(), voidWorlds);
-            }
-            int voidLevel = section.getInt("voidLevel");
-            if (voidLevel != VersionUtils.VOID_LEVEL && voidChannels.containsKey(newChannel.id())) {
-                voidLevels.put(newChannel.id(), section.getInt("voidLevel"));
-            }
-            List<World> respawnWorlds = Utils.getWorldList(section.getStringList("respawn_worlds"));
-            if (!respawnWorlds.isEmpty()) {
-                respawnChannels.put(newChannel.id(), respawnWorlds);
-            }
-        }
-    }
-
     private void assignChannelToSpecification(ConfigurationSection specificationsSection, Channel newChannel) {
         specifications.assign(newChannel, specificationsSection);
-    }
-
-    private Messages setupChannelMessages(ConfigurationSection messages) {
-        Messages defaultMessages = pluginConfig.getDefaultChannelMessages();
-        if (pluginConfig.isNullSection(messages)) {
-            return defaultMessages;
-        }
-        String prefix = pluginConfig.isConfigValueExist(messages, "prefix") ? messages.getString("prefix") : pluginConfig.getMessagesPrefix();
-        String noPerms = getMessage(messages, "no_perms", defaultMessages.noPerms(), prefix);
-        String invalidWorld = getMessage(messages, "invalid_world", defaultMessages.invalidWorld(), prefix);
-        String notEnoughPlayers = getMessage(messages, "not_enough_players", defaultMessages.notEnoughPlayers(), prefix);
-        String notEnoughMoney = getMessage(messages, "not_enough_money", defaultMessages.notEnoughMoney(), prefix);
-        String notEnoughHunger = getMessage(messages, "not_enough_hunger", defaultMessages.notEnoughHunger(), prefix);
-        String notEnoughExp = getMessage(messages, "not_enough_experience", defaultMessages.notEnoughExp(), prefix);
-        String cooldown = getMessage(messages, "cooldown", defaultMessages.cooldown(), prefix);
-        String movedOnTeleport = getMessage(messages, "moved_on_teleport", defaultMessages.movedOnTeleport(), prefix);
-        String teleportedOnTeleport = getMessage(messages, "teleported_on_teleport", defaultMessages.teleportedOnTeleport(), prefix);
-        String damagedOnTeleport = getMessage(messages, "damaged_on_teleport", defaultMessages.damagedOnTeleport(), prefix);
-        String damagedOtherOnTeleport = getMessage(messages, "damaged_other_on_teleport", defaultMessages.damagedOtherOnTeleport(), prefix);
-        String failToFindLocation = getMessage(messages, "fail_to_find_location", defaultMessages.failToFindLocation(), prefix);
-
-        return new Messages(
-                noPerms,
-                invalidWorld,
-                notEnoughPlayers,
-                notEnoughMoney,
-                notEnoughHunger,
-                notEnoughExp,
-                cooldown,
-                movedOnTeleport,
-                teleportedOnTeleport,
-                damagedOnTeleport,
-                damagedOtherOnTeleport,
-                failToFindLocation
-        );
-    }
-
-    private String getMessage(ConfigurationSection messages, String key, String global, String prefix) {
-        return pluginConfig.isConfigValueExist(messages, key) ? pluginConfig.getPrefixed(messages.getString(key), prefix) : global;
     }
 
     public Channel getChannelById(String channelId) {

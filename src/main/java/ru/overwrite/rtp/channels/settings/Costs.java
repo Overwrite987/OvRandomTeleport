@@ -2,10 +2,16 @@ package ru.overwrite.rtp.channels.settings;
 
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.GameMode;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import ru.overwrite.rtp.OvRandomTeleport;
 import ru.overwrite.rtp.channels.Channel;
+import ru.overwrite.rtp.channels.Settings;
+import ru.overwrite.rtp.configuration.Config;
 import ru.overwrite.rtp.utils.Utils;
 import ru.overwrite.rtp.utils.economy.PlayerPointsUtils;
+
+import java.util.Locale;
 
 public record Costs(
         Economy economy,
@@ -117,5 +123,24 @@ public record Costs(
             player.setTotalExperience(0);
             player.giveExp(expToGive);
         }
+    }
+
+    public static Costs create(OvRandomTeleport plugin, ConfigurationSection channelCosts, Settings template, Config pluginConfig, boolean applyTemplate) {
+        if (pluginConfig.isNullSection(channelCosts) && !applyTemplate) {
+            return null;
+        }
+
+        Costs templateCosts = template != null ? template.costs() : null;
+        boolean hasTemplateCosts = templateCosts != null;
+
+        Costs.MoneyType moneyType = channelCosts.contains("money_type")
+                ? Costs.MoneyType.valueOf(channelCosts.getString("money_type", "VAULT").toUpperCase(Locale.ENGLISH))
+                : (hasTemplateCosts ? templateCosts.moneyType() : null);
+
+        double moneyCost = channelCosts.getDouble("money_cost", hasTemplateCosts ? templateCosts.moneyCost() : -1);
+        int hungerCost = channelCosts.getInt("hunger_cost", hasTemplateCosts ? templateCosts.hungerCost() : -1);
+        int expCost = channelCosts.getInt("experience_cost", hasTemplateCosts ? templateCosts.expCost() : -1);
+
+        return new Costs(plugin.getEconomy(), moneyType, moneyCost, hungerCost, expCost);
     }
 }
