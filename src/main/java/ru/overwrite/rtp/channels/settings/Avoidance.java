@@ -46,11 +46,17 @@ public record Avoidance(
             avoidBiomes = createBiomeSet(biomesSection.getStringList("list"));
         }
 
-        boolean avoidRegions = avoidSection.getBoolean("regions", hasTemplateAvoidance && templateAvoidance.avoidRegions())
-                && Bukkit.getPluginManager().isPluginEnabled("WorldGuard");
+        boolean avoidRegions = parsePluginRelatedAvoidance(
+                avoidSection, "regions",
+                templateAvoidance != null && templateAvoidance.avoidRegions(),
+                "WorldGuard"
+        );
 
-        boolean avoidTowns = avoidSection.getBoolean("towns", hasTemplateAvoidance && templateAvoidance.avoidTowns())
-                && Bukkit.getPluginManager().isPluginEnabled("Towny");
+        boolean avoidTowns = parsePluginRelatedAvoidance(
+                avoidSection, "towns",
+                templateAvoidance != null && templateAvoidance.avoidTowns(),
+                "Towny"
+        );
 
         return new Avoidance(avoidBlocksBlacklist, avoidBlocks, avoidBiomesBlacklist, avoidBiomes, avoidRegions, avoidTowns);
     }
@@ -71,5 +77,9 @@ public record Avoidance(
             biomeSet.add(Biome.valueOf(biome.toUpperCase(Locale.ENGLISH)));
         }
         return biomeSet;
+    }
+
+    private static boolean parsePluginRelatedAvoidance(ConfigurationSection section, String key, boolean templateValue, String pluginName) {
+        return section.getBoolean(key, templateValue) && Bukkit.getPluginManager().isPluginEnabled(pluginName);
     }
 }

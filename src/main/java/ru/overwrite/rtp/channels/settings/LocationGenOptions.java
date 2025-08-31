@@ -37,13 +37,8 @@ public record LocationGenOptions(
         LocationGenOptions templateOptions = template != null ? template.locationGenOptions() : null;
         boolean hasTemplateOptions = templateOptions != null;
 
-        LocationGenOptions.Shape shape = locationGenOptions.contains("shape")
-                ? LocationGenOptions.Shape.valueOf(locationGenOptions.getString("shape", "SQUARE").toUpperCase(Locale.ENGLISH))
-                : (hasTemplateOptions ? templateOptions.shape() : LocationGenOptions.Shape.SQUARE);
-
-        LocationGenOptions.GenFormat genFormat = locationGenOptions.contains("gen_format")
-                ? LocationGenOptions.GenFormat.valueOf(locationGenOptions.getString("gen_format", "RECTANGULAR").toUpperCase(Locale.ENGLISH))
-                : (hasTemplateOptions ? templateOptions.genFormat() : LocationGenOptions.GenFormat.RECTANGULAR);
+        LocationGenOptions.Shape shape = parseShape(locationGenOptions, hasTemplateOptions ? templateOptions.shape() : null, pluginConfig);
+        LocationGenOptions.GenFormat genFormat = parseGenFormat(locationGenOptions, hasTemplateOptions ? templateOptions.genFormat() : null, pluginConfig);
 
         int minX = locationGenOptions.getInt("min_x", hasTemplateOptions ? templateOptions.minX() : 0);
         int maxX = locationGenOptions.getInt("max_x", hasTemplateOptions ? templateOptions.maxX() : 0);
@@ -56,5 +51,19 @@ public record LocationGenOptions(
         int maxLocationAttempts = locationGenOptions.getInt("max_location_attempts", hasTemplateOptions ? templateOptions.maxLocationAttempts() : 50);
 
         return new LocationGenOptions(shape, genFormat, minX, maxX, minZ, maxZ, nearRadiusMin, nearRadiusMax, centerX, centerZ, maxLocationAttempts);
+    }
+
+    private static LocationGenOptions.Shape parseShape(ConfigurationSection section, LocationGenOptions.Shape templateValue, Config pluginConfig) {
+        if (!pluginConfig.isNullSection(section) && section.contains("shape")) {
+            return LocationGenOptions.Shape.valueOf(section.getString("shape", "SQUARE").toUpperCase(Locale.ROOT));
+        }
+        return templateValue != null ? templateValue : LocationGenOptions.Shape.SQUARE;
+    }
+
+    private static LocationGenOptions.GenFormat parseGenFormat(ConfigurationSection section, LocationGenOptions.GenFormat templateValue, Config pluginConfig) {
+        if (!pluginConfig.isNullSection(section) && section.contains("gen_format")) {
+            return LocationGenOptions.GenFormat.valueOf(section.getString("gen_format", "RECTANGULAR").toUpperCase(Locale.ROOT));
+        }
+        return templateValue != null ? templateValue : LocationGenOptions.GenFormat.RECTANGULAR;
     }
 }
