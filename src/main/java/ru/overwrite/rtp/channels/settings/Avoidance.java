@@ -48,13 +48,13 @@ public record Avoidance(
 
         boolean avoidRegions = parsePluginRelatedAvoidance(
                 avoidSection, "regions",
-                templateAvoidance != null && templateAvoidance.avoidRegions(),
+                hasTemplateAvoidance && templateAvoidance.avoidRegions(),
                 "WorldGuard"
         );
 
         boolean avoidTowns = parsePluginRelatedAvoidance(
                 avoidSection, "towns",
-                templateAvoidance != null && templateAvoidance.avoidTowns(),
+                hasTemplateAvoidance && templateAvoidance.avoidTowns(),
                 "Towny"
         );
 
