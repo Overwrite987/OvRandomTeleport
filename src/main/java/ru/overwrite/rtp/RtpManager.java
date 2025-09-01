@@ -1,6 +1,5 @@
 package ru.overwrite.rtp;
 
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntSortedMap;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import it.unimi.dsi.fastutil.objects.ReferenceList;
@@ -28,7 +27,10 @@ import ru.overwrite.rtp.channels.settings.Particles;
 import ru.overwrite.rtp.configuration.Config;
 import ru.overwrite.rtp.utils.Utils;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Supplier;
@@ -132,7 +134,7 @@ public final class RtpManager {
                     channelSettings,
                     messages);
             namedChannels.put(channelId, newChannel);
-            assignChannelToSpecification(channelSection.getConfigurationSection("specifications"), newChannel);
+            specifications.assign(newChannel, channelSection.getConfigurationSection("specifications"));
         }
         this.defaultChannel = getChannelById(config.getString("main_settings.default_channel", ""));
         if (defaultChannel != null) {
@@ -142,10 +144,6 @@ public final class RtpManager {
         }
         long endTime = System.currentTimeMillis();
         printDebug("Channels setup done in " + (endTime - startTime) + " ms");
-    }
-
-    private void assignChannelToSpecification(ConfigurationSection specificationsSection, Channel newChannel) {
-        specifications.assign(newChannel, specificationsSection);
     }
 
     public Channel getChannelById(String channelId) {
