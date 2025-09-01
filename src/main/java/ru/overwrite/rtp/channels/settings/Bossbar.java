@@ -28,15 +28,15 @@ public record Bossbar(
 
         String title = bossbar.contains("title")
                 ? Utils.COLORIZER.colorize(bossbar.getString("title"))
-                : (hasTemplateBossbar ? templateBossbar.bossbarTitle() : null);
+                : hasTemplateBossbar ? templateBossbar.bossbarTitle() : null;
 
         BarColor color = bossbar.contains("color")
                 ? BarColor.valueOf(bossbar.getString("color", "WHITE").toUpperCase(Locale.ENGLISH))
-                : (hasTemplateBossbar ? templateBossbar.bossbarColor() : null);
+                : hasTemplateBossbar ? templateBossbar.bossbarColor() : null;
 
         BarStyle style = bossbar.contains("style")
                 ? BarStyle.valueOf(bossbar.getString("style", "SEGMENTED_12").toUpperCase(Locale.ENGLISH))
-                : (hasTemplateBossbar ? templateBossbar.bossbarStyle() : null);
+                : hasTemplateBossbar ? templateBossbar.bossbarStyle() : null;
 
         boolean smoothProgress = bossbar.getBoolean("smooth_progress", hasTemplateBossbar && templateBossbar.smoothProgress());
 

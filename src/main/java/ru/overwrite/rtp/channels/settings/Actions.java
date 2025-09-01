@@ -31,14 +31,16 @@ public record Actions(
 
         List<Action> preTeleportActions = actionsSection.contains("pre_teleport")
                 ? getActionList(plugin, actionRegistry, actionsSection.getStringList("pre_teleport"))
-                : (hasTemplateActions ? templateActions.preTeleportActions() : List.of());
+                : hasTemplateActions ? templateActions.preTeleportActions() : List.of();
 
         Int2ObjectMap<List<Action>> onCooldownActions = new Int2ObjectOpenHashMap<>();
         if (actionsSection.contains("on_cooldown")) {
             ConfigurationSection cdSection = actionsSection.getConfigurationSection("on_cooldown");
             if (!pluginConfig.isNullSection(cdSection)) {
                 for (String key : cdSection.getKeys(false)) {
-                    if (!Utils.isNumeric(key)) continue;
+                    if (!Utils.isNumeric(key)) {
+                        continue;
+                    }
                     int time = Integer.parseInt(key);
                     List<Action> list = getActionList(plugin, actionRegistry, cdSection.getStringList(key));
                     onCooldownActions.put(time, list);
@@ -50,7 +52,7 @@ public record Actions(
 
         List<Action> afterTeleportActions = actionsSection.contains("after_teleport")
                 ? getActionList(plugin, actionRegistry, actionsSection.getStringList("after_teleport"))
-                : (hasTemplateActions ? templateActions.afterTeleportActions() : List.of());
+                : hasTemplateActions ? templateActions.afterTeleportActions() : List.of();
 
         return new Actions(preTeleportActions, onCooldownActions, afterTeleportActions);
     }

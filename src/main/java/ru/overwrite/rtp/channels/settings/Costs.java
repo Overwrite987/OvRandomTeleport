@@ -135,7 +135,7 @@ public record Costs(
 
         Costs.MoneyType moneyType = channelCosts.contains("money_type")
                 ? Costs.MoneyType.valueOf(channelCosts.getString("money_type", "VAULT").toUpperCase(Locale.ENGLISH))
-                : (hasTemplateCosts ? templateCosts.moneyType() : null);
+                : hasTemplateCosts ? templateCosts.moneyType() : null;
 
         double moneyCost = channelCosts.getDouble("money_cost", hasTemplateCosts ? templateCosts.moneyCost() : -1);
         int hungerCost = channelCosts.getInt("hunger_cost", hasTemplateCosts ? templateCosts.hungerCost() : -1);

@@ -57,7 +57,7 @@ public record Particles(
         double afterTeleportParticleSpeed = hasTemplateParticles ? templateParticles.afterTeleportParticleSpeed() : 0.0;
 
         ConfigurationSection preTeleport = particles.getConfigurationSection("pre_teleport");
-        if (preTeleport != null && !pluginConfig.isNullSection(preTeleport)) {
+        if (!pluginConfig.isNullSection(preTeleport) && !pluginConfig.isNullSection(preTeleport)) {
             preTeleportEnabled = preTeleport.getBoolean("enabled", preTeleportEnabled);
             preTeleportSendOnlyToPlayer = preTeleport.getBoolean("send_only_to_player", preTeleportSendOnlyToPlayer);
 
@@ -79,7 +79,7 @@ public record Particles(
         }
 
         ConfigurationSection afterTeleport = particles.getConfigurationSection("after_teleport");
-        if (afterTeleport != null && !pluginConfig.isNullSection(afterTeleport)) {
+        if (!pluginConfig.isNullSection(afterTeleport) && !pluginConfig.isNullSection(afterTeleport)) {
             afterTeleportParticleEnabled = afterTeleport.getBoolean("enabled", afterTeleportParticleEnabled);
             afterTeleportSendOnlyToPlayer = afterTeleport.getBoolean("send_only_to_player", afterTeleportSendOnlyToPlayer);
 
