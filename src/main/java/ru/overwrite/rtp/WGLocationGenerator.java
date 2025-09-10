@@ -47,11 +47,13 @@ public class WGLocationGenerator {
         List<ProtectedRegion> regionsInRange = new ArrayList<>();
         for (ProtectedRegion region : regionManager.getRegions().values()) {
             if (region.getType() == RegionType.GLOBAL || region.isMember(bukkitPlayer)) {
+                rtpManager.printDebug("Skipping region " + region.getId() + " since it is global or player is a member of it");
                 continue;
             }
 
             boolean flag = Boolean.TRUE.equals(region.getFlag(WGUtils.RTP_IGNORE_FLAG));
             if (flag) {
+                rtpManager.printDebug("Skipping region " + region.getId() + " since it has RTP_IGNORE_FLAG");
                 continue;
             }
 
@@ -60,6 +62,7 @@ public class WGLocationGenerator {
             if (minPoint.getX() >= minX && maxPoint.getX() <= maxX && minPoint.getZ() >= minZ && maxPoint.getZ() <= maxZ) {
                 regionsInRange.add(region);
             }
+            rtpManager.printDebug("Skipping region " + region.getId() + " since it is outside of range");
         }
 
         if (regionsInRange.isEmpty()) {
