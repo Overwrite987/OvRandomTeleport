@@ -17,11 +17,11 @@ public class BasicAnimation extends Animation {
     }
 
     private double angle;
-    private double yOffset = particles.preTeleportInvert() ? 0.0 : 2.0;
+    private double yOffset = particles.preTeleportInvert() ? 0.0D : 2.0D;
     private int tickCounter;
 
     private final double initialRadius = particles.preTeleportRadius();
-    private final double radiusStep = particles.preTeleportMoveNear() ? initialRadius / duration : 0;
+    private final double radiusStep = particles.preTeleportMoveNear() ? initialRadius / duration : 0D;
     private final double rotationSpeed = ((2 * Math.PI * particles.preTeleportSpeed()) / duration)
             * ((particles.preTeleportInvert() && particles.preTeleportJumping()) ? 2 : 1);
     private final double yStep = particles.preTeleportInvert() ? (2.0 / duration) : (-2.0 / duration);
@@ -29,7 +29,7 @@ public class BasicAnimation extends Animation {
 
     private final List<Player> receivers = particles.preTeleportSendOnlyToPlayer() ? List.of(player) : null;
 
-    private Iterator<Particles.ParticleData> preTeleportParticle = particles.preTeleportParticles().iterator();
+    private Iterator<Particles.ParticleData> particleDataIterator;
 
     @Override
     public void run() {
@@ -38,10 +38,10 @@ public class BasicAnimation extends Animation {
             this.cancel();
             return;
         }
-        if (!preTeleportParticle.hasNext()) {
-            preTeleportParticle = particles.preTeleportParticles().iterator();
+        if (particleDataIterator == null || !particleDataIterator.hasNext()) {
+            particleDataIterator = particles.preTeleportParticles().iterator();
         }
-        Particles.ParticleData preTeleportParticleData = preTeleportParticle.next();
+        Particles.ParticleData preTeleportParticleData = particleDataIterator.next();
 
         final Location location = player.getLocation();
         final World world = location.getWorld();
