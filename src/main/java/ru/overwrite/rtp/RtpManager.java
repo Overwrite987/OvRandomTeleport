@@ -229,12 +229,12 @@ public final class RtpManager {
 
     public void teleportPlayer(Player player, Channel channel, Location loc) {
         printDebug("Teleporting player '" + player.getName() + "' with channel '" + channel.id() + "' to location " + Utils.locationToString(loc));
-        if (channel.invulnerableTicks() > 0) {
-            player.setInvulnerable(true);
-            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> player.setInvulnerable(false), channel.invulnerableTicks());
-        }
         this.handlePlayerCooldown(player, channel.settings().cooldown());
         Bukkit.getScheduler().runTask(plugin, () -> {
+            if (channel.invulnerableTicks() > 0) {
+                player.setInvulnerable(true);
+                Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> player.setInvulnerable(false), channel.invulnerableTicks());
+            }
             player.teleport(loc);
             teleportingNow.remove(player.getName());
             this.spawnParticleSphere(player, channel.settings().particles());
