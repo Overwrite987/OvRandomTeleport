@@ -46,8 +46,12 @@ public class WGLocationGenerator {
         BukkitPlayer bukkitPlayer = new BukkitPlayer(WorldGuardPlugin.inst(), player);
         List<ProtectedRegion> regionsInRange = new ArrayList<>();
         for (ProtectedRegion region : regionManager.getRegions().values()) {
-            if (region.getType() == RegionType.GLOBAL || region.isMember(bukkitPlayer)) {
-                rtpManager.printDebug("Skipping region " + region.getId() + " since it is global or player is a member of it");
+            if (region.getType() == RegionType.GLOBAL) {
+                continue;
+            }
+
+            if (region.isMember(bukkitPlayer)) {
+                rtpManager.printDebug("Skipping region " + region.getId() + " since player is a member of it");
                 continue;
             }
 
