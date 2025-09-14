@@ -1,6 +1,5 @@
 package ru.overwrite.rtp.channels;
 
-import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 import ru.overwrite.rtp.channels.settings.Messages;
 

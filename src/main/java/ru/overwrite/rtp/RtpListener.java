@@ -139,9 +139,10 @@ public class RtpListener implements Listener {
     }
 
     private void processTeleport(Player player, Channel channel, boolean force) {
-        if (!channel.activeWorlds().contains(player.getWorld().getName())) {
+        List<World> activeWorlds = Utils.getWorldList(channel.activeWorlds());
+        if (!activeWorlds.contains(player.getWorld())) {
             if (channel.teleportToFirstAllowedWorld()) {
-                rtpManager.preTeleport(player, channel, Bukkit.getWorld(channel.activeWorlds().get(0)), force);
+                rtpManager.preTeleport(player, channel, activeWorlds.get(0), force);
             }
             return;
         }
