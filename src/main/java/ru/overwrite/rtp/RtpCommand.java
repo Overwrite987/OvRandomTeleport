@@ -106,11 +106,11 @@ public class RtpCommand implements TabExecutor {
             rtpManager.printDebug("Take cost for channel " + channel.id() + " didn't pass");
             return;
         }
-        if (!channel.activeWorlds().contains(player.getWorld())) {
+        if (!channel.activeWorlds().contains(player.getWorld().getName())) {
             rtpManager.printDebug("Active worlds for channel " + channel.id() + " does not includes player's world: " + player.getWorld().getName());
             if (channel.teleportToFirstAllowedWorld()) {
-                rtpManager.printDebug("Teleporting to first allowed world: " + channel.activeWorlds().get(0).getName());
-                rtpManager.preTeleport(player, channel, channel.activeWorlds().get(0), false);
+                rtpManager.printDebug("Teleporting to first allowed world: " + channel.activeWorlds().get(0));
+                rtpManager.preTeleport(player, channel, Bukkit.getWorld(channel.activeWorlds().get(0)), false);
                 return;
             }
             Utils.sendMessage(channel.messages().invalidWorld(), player);
@@ -157,9 +157,9 @@ public class RtpCommand implements TabExecutor {
                     sender.sendMessage(commandMessages.incorrectChannel());
                     return;
                 }
-                if (!channel.activeWorlds().contains(targetPlayer.getWorld())) {
+                if (!channel.activeWorlds().contains(targetPlayer.getWorld().getName())) {
                     if (channel.teleportToFirstAllowedWorld()) {
-                        processForceTeleport(args, targetPlayer, channel, channel.activeWorlds().get(0));
+                        processForceTeleport(args, targetPlayer, channel, Bukkit.getWorld(channel.activeWorlds().get(0)));
                         return;
                     }
                     sender.sendMessage(channel.messages().invalidWorld());

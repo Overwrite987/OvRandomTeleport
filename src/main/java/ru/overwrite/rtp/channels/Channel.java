@@ -10,7 +10,7 @@ public record Channel(
         String id,
         String name,
         ChannelType type,
-        List<World> activeWorlds,
+        List<String> activeWorlds,
         boolean teleportToFirstAllowedWorld,
         String serverToMove,
         int minPlayersToUse,

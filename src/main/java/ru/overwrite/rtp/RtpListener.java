@@ -38,9 +38,9 @@ public class RtpListener implements Listener {
         }
         Player player = e.getPlayer();
         Specifications specifications = rtpManager.getSpecifications();
-        Map<String, List<World>> voidChannels = specifications.voidChannels();
+        Map<String, List<String>> voidChannels = specifications.voidChannels();
         if (!voidChannels.isEmpty() && e.getFrom().getBlockY() > e.getTo().getBlockY()) {
-            for (Map.Entry<String, List<World>> entry : voidChannels.entrySet()) {
+            for (Map.Entry<String, List<String>> entry : voidChannels.entrySet()) {
                 String channelId = entry.getKey();
                 Object2IntMap<String> voidLevels = specifications.voidLevels();
                 if (e.getTo().getBlockY() >
@@ -49,8 +49,8 @@ public class RtpListener implements Listener {
                                 : voidLevels.getOrDefault(channelId, VersionUtils.VOID_LEVEL))) {
                     continue;
                 }
-                List<World> worlds = entry.getValue();
-                if (!worlds.contains(player.getWorld())) {
+                List<String> worlds = entry.getValue();
+                if (!worlds.contains(player.getWorld().getName())) {
                     continue;
                 }
                 if (!player.hasPermission("rtp.channel." + channelId)) {
@@ -119,14 +119,14 @@ public class RtpListener implements Listener {
 
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e) {
-        Map<String, List<World>> respawnChannels = rtpManager.getSpecifications().respawnChannels();
+        Map<String, List<String>> respawnChannels = rtpManager.getSpecifications().respawnChannels();
         if (respawnChannels.isEmpty()) {
             return;
         }
         Player player = e.getPlayer();
-        for (Map.Entry<String, List<World>> entry : respawnChannels.entrySet()) {
-            List<World> worlds = entry.getValue();
-            if (!worlds.contains(player.getWorld())) {
+        for (Map.Entry<String, List<String>> entry : respawnChannels.entrySet()) {
+            List<String> worlds = entry.getValue();
+            if (!worlds.contains(player.getWorld().getName())) {
                 continue;
             }
             String channelId = entry.getKey();
@@ -139,9 +139,9 @@ public class RtpListener implements Listener {
     }
 
     private void processTeleport(Player player, Channel channel, boolean force) {
-        if (!channel.activeWorlds().contains(player.getWorld())) {
+        if (!channel.activeWorlds().contains(player.getWorld().getName())) {
             if (channel.teleportToFirstAllowedWorld()) {
-                rtpManager.preTeleport(player, channel, channel.activeWorlds().get(0), force);
+                rtpManager.preTeleport(player, channel, Bukkit.getWorld(channel.activeWorlds().get(0)), force);
             }
             return;
         }
