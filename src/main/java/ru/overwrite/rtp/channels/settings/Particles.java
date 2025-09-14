@@ -30,9 +30,32 @@ public record Particles(
     public record ParticleData(Particle particle, Particle.DustOptions dustOptions) {
     }
 
+    private static final Particles EMPTY_PARTICLES = new Particles(
+            false,
+            false,
+            null,
+            0,
+            0D,
+            0D,
+            0D,
+            false,
+            false,
+            false,
+            false,
+            false,
+            null,
+            0,
+            0D,
+            0D
+    );
+
+
     public static Particles create(ConfigurationSection particles, Settings template, Config pluginConfig, boolean applyTemplate) {
-        if (pluginConfig.isNullSection(particles) && !applyTemplate) {
-            return null;
+        if (pluginConfig.isNullSection(particles)) {
+            if (!applyTemplate) {
+                return null;
+            }
+            return EMPTY_PARTICLES;
         }
 
         Particles templateParticles = template != null ? template.particles() : null;

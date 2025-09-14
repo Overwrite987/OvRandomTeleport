@@ -29,9 +29,26 @@ public record LocationGenOptions(
         RADIAL
     }
 
+    private static final LocationGenOptions EMPTY_LGE = new LocationGenOptions(
+            null,
+            null,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+    );
+
     public static LocationGenOptions create(ConfigurationSection locationGenOptions, Settings template, Config pluginConfig, boolean applyTemplate) {
-        if (pluginConfig.isNullSection(locationGenOptions) && !applyTemplate) {
-            return null;
+        if (pluginConfig.isNullSection(locationGenOptions)) {
+            if (!applyTemplate) {
+                return null;
+            }
+            return EMPTY_LGE;
         }
 
         LocationGenOptions templateOptions = template != null ? template.locationGenOptions() : null;

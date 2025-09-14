@@ -11,9 +11,21 @@ public record Restrictions(
         boolean restrictDamageOthers,
         boolean damageCheckOnlyPlayers) {
 
+    private static final Restrictions EMPTY_RESTRICTIONS = new Restrictions(
+            false,
+            false,
+            false,
+            false,
+            false
+    );
+
+
     public static Restrictions create(ConfigurationSection restrictions, Settings template, Config pluginConfig, boolean applyTemplate) {
-        if (pluginConfig.isNullSection(restrictions) && !applyTemplate) {
-            return null;
+        if (pluginConfig.isNullSection(restrictions)) {
+            if (!applyTemplate) {
+                return null;
+            }
+            return EMPTY_RESTRICTIONS;
         }
 
         Restrictions templateRestrictions = template != null ? template.restrictions() : null;

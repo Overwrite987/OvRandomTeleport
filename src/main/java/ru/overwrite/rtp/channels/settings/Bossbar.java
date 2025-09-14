@@ -16,9 +16,20 @@ public record Bossbar(
         BarStyle bossbarStyle,
         boolean smoothProgress) {
 
+    private static final Bossbar EMPTY_BOSSBAR = new Bossbar(
+            false,
+            null,
+            null,
+            null,
+            false
+    );
+
     public static Bossbar create(ConfigurationSection bossbar, Settings template, Config pluginConfig, boolean applyTemplate) {
-        if (pluginConfig.isNullSection(bossbar) && !applyTemplate) {
-            return null;
+        if (pluginConfig.isNullSection(bossbar)) {
+            if (!applyTemplate) {
+                return null;
+            }
+            return EMPTY_BOSSBAR;
         }
 
         Bossbar templateBossbar = template != null ? template.bossbar() : null;

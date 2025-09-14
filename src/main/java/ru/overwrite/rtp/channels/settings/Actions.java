@@ -19,9 +19,18 @@ public record Actions(
         Int2ObjectMap<List<Action>> onCooldownActions,
         List<Action> afterTeleportActions) {
 
-    public static Actions create(OvRandomTeleport plugin, ConfigurationSection actionsSection, Settings template, Config pluginConfig, boolean applyTemplate) {
-        if (pluginConfig.isNullSection(actionsSection) && !applyTemplate) {
-            return null;
+    private static final Actions EMPTY_ACTIONS = new Actions(
+            null,
+            null,
+            null
+    );
+
+    public static Actions create(OvRandomTeleport plugin, ConfigurationSection actions, Settings template, Config pluginConfig, boolean applyTemplate) {
+        if (pluginConfig.isNullSection(actions)) {
+            if (!applyTemplate) {
+                return null;
+            }
+            return EMPTY_ACTIONS;
         }
 
         Actions templateActions = template != null ? template.actions() : null;
@@ -29,13 +38,13 @@ public record Actions(
 
         ActionRegistry actionRegistry = plugin.getRtpManager().getActionRegistry();
 
-        List<Action> preTeleportActions = actionsSection.contains("pre_teleport")
-                ? getActionList(plugin, actionRegistry, actionsSection.getStringList("pre_teleport"))
+        List<Action> preTeleportActions = actions.contains("pre_teleport")
+                ? getActionList(plugin, actionRegistry, actions.getStringList("pre_teleport"))
                 : hasTemplateActions ? templateActions.preTeleportActions() : List.of();
 
         Int2ObjectMap<List<Action>> onCooldownActions = new Int2ObjectOpenHashMap<>();
-        if (actionsSection.contains("on_cooldown")) {
-            ConfigurationSection cdSection = actionsSection.getConfigurationSection("on_cooldown");
+        if (actions.contains("on_cooldown")) {
+            ConfigurationSection cdSection = actions.getConfigurationSection("on_cooldown");
             if (!pluginConfig.isNullSection(cdSection)) {
                 for (String key : cdSection.getKeys(false)) {
                     if (!Utils.isNumeric(key)) {
@@ -50,8 +59,8 @@ public record Actions(
             onCooldownActions.putAll(templateActions.onCooldownActions());
         }
 
-        List<Action> afterTeleportActions = actionsSection.contains("after_teleport")
-                ? getActionList(plugin, actionRegistry, actionsSection.getStringList("after_teleport"))
+        List<Action> afterTeleportActions = actions.contains("after_teleport")
+                ? getActionList(plugin, actionRegistry, actions.getStringList("after_teleport"))
                 : hasTemplateActions ? templateActions.afterTeleportActions() : List.of();
 
         return new Actions(preTeleportActions, onCooldownActions, afterTeleportActions);

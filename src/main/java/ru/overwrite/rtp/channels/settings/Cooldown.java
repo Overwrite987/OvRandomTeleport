@@ -20,17 +20,20 @@ public record Cooldown(
         int defaultPreTeleportCooldown,
         Object2IntSortedMap<String> preTeleportCooldowns) {
 
-    public boolean hasCooldown(Player player) {
-        return playerCooldowns != null && !playerCooldowns.isEmpty() && playerCooldowns.containsKey(player.getName());
-    }
-
-    public void setCooldown(String name, long cooldownTime) {
-        playerCooldowns.put(name, System.currentTimeMillis(), cooldownTime);
-    }
+    private static final Cooldown EMPTY_COOLDOWN = new Cooldown(
+            0,
+            null,
+            null,
+            0,
+            null
+    );
 
     public static Cooldown create(OvRandomTeleport plugin, ConfigurationSection cooldown, Settings template, Config pluginConfig, boolean applyTemplate) {
-        if (pluginConfig.isNullSection(cooldown) && !applyTemplate) {
-            return null;
+        if (pluginConfig.isNullSection(cooldown)) {
+            if (!applyTemplate) {
+                return null;
+            }
+            return EMPTY_COOLDOWN;
         }
 
         Cooldown templateCooldown = template != null ? template.cooldown() : null;
@@ -79,5 +82,13 @@ public record Cooldown(
             }
         }
         return currentDefault;
+    }
+
+    public boolean hasCooldown(Player player) {
+        return playerCooldowns != null && !playerCooldowns.isEmpty() && playerCooldowns.containsKey(player.getName());
+    }
+
+    public void setCooldown(String name, long cooldownTime) {
+        playerCooldowns.put(name, System.currentTimeMillis(), cooldownTime);
     }
 }

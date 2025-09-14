@@ -25,6 +25,36 @@ public record Costs(
         PLAYERPOINTS
     }
 
+    private static final Costs EMPTY_COSTS = new Costs(
+            null,
+            null,
+            0D,
+            0,
+            0
+    );
+
+    public static Costs create(OvRandomTeleport plugin, ConfigurationSection costs, Settings template, Config pluginConfig, boolean applyTemplate) {
+        if (pluginConfig.isNullSection(costs)) {
+            if (!applyTemplate) {
+                return null;
+            }
+            return EMPTY_COSTS;
+        }
+
+        Costs templateCosts = template != null ? template.costs() : null;
+        boolean hasTemplateCosts = templateCosts != null;
+
+        Costs.MoneyType moneyType = costs.contains("money_type")
+                ? Costs.MoneyType.valueOf(costs.getString("money_type", "VAULT").toUpperCase(Locale.ENGLISH))
+                : hasTemplateCosts ? templateCosts.moneyType() : null;
+
+        double moneyCost = costs.getDouble("money_cost", hasTemplateCosts ? templateCosts.moneyCost() : -1);
+        int hungerCost = costs.getInt("hunger_cost", hasTemplateCosts ? templateCosts.hungerCost() : -1);
+        int expCost = costs.getInt("experience_cost", hasTemplateCosts ? templateCosts.expCost() : -1);
+
+        return new Costs(plugin.getEconomy(), moneyType, moneyCost, hungerCost, expCost);
+    }
+
     public boolean processMoneyCost(Player player, Channel channel) {
         if (moneyCost <= 0) {
             return true;
@@ -123,24 +153,5 @@ public record Costs(
             player.setTotalExperience(0);
             player.giveExp(expToGive);
         }
-    }
-
-    public static Costs create(OvRandomTeleport plugin, ConfigurationSection channelCosts, Settings template, Config pluginConfig, boolean applyTemplate) {
-        if (pluginConfig.isNullSection(channelCosts) && !applyTemplate) {
-            return null;
-        }
-
-        Costs templateCosts = template != null ? template.costs() : null;
-        boolean hasTemplateCosts = templateCosts != null;
-
-        Costs.MoneyType moneyType = channelCosts.contains("money_type")
-                ? Costs.MoneyType.valueOf(channelCosts.getString("money_type", "VAULT").toUpperCase(Locale.ENGLISH))
-                : hasTemplateCosts ? templateCosts.moneyType() : null;
-
-        double moneyCost = channelCosts.getDouble("money_cost", hasTemplateCosts ? templateCosts.moneyCost() : -1);
-        int hungerCost = channelCosts.getInt("hunger_cost", hasTemplateCosts ? templateCosts.hungerCost() : -1);
-        int expCost = channelCosts.getInt("experience_cost", hasTemplateCosts ? templateCosts.expCost() : -1);
-
-        return new Costs(plugin.getEconomy(), moneyType, moneyCost, hungerCost, expCost);
     }
 }

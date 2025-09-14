@@ -18,15 +18,27 @@ public record Avoidance(
         boolean avoidRegions,
         boolean avoidTowns) {
 
-    public static Avoidance create(ConfigurationSection avoidSection, Settings template, Config pluginConfig, boolean applyTemplate) {
-        if (pluginConfig.isNullSection(avoidSection) && !applyTemplate) {
-            return null;
+    private static final Avoidance EMPTY_AVOIDANCE = new Avoidance(
+            false,
+            null,
+            false,
+            null,
+            false,
+            false
+    );
+
+    public static Avoidance create(ConfigurationSection avoidance, Settings template, Config pluginConfig, boolean applyTemplate) {
+        if (pluginConfig.isNullSection(avoidance)) {
+            if (!applyTemplate) {
+                return null;
+            }
+            return EMPTY_AVOIDANCE;
         }
 
         Avoidance templateAvoidance = template != null ? template.avoidance() : null;
         boolean hasTemplateAvoidance = templateAvoidance != null;
 
-        ConfigurationSection blocksSection = avoidSection.getConfigurationSection("blocks");
+        ConfigurationSection blocksSection = avoidance.getConfigurationSection("blocks");
         boolean avoidBlocksBlacklist = pluginConfig.isNullSection(blocksSection)
                 ? hasTemplateAvoidance && templateAvoidance.avoidBlocksBlacklist()
                 : blocksSection.getBoolean("blacklist", hasTemplateAvoidance && templateAvoidance.avoidBlocksBlacklist());
@@ -36,7 +48,7 @@ public record Avoidance(
             avoidBlocks = createMaterialSet(blocksSection.getStringList("list"));
         }
 
-        ConfigurationSection biomesSection = avoidSection.getConfigurationSection("biomes");
+        ConfigurationSection biomesSection = avoidance.getConfigurationSection("biomes");
         boolean avoidBiomesBlacklist = pluginConfig.isNullSection(biomesSection)
                 ? hasTemplateAvoidance && templateAvoidance.avoidBiomesBlacklist()
                 : biomesSection.getBoolean("blacklist", hasTemplateAvoidance && templateAvoidance.avoidBiomesBlacklist());
@@ -47,13 +59,13 @@ public record Avoidance(
         }
 
         boolean avoidRegions = parsePluginRelatedAvoidance(
-                avoidSection, "regions",
+                avoidance, "regions",
                 hasTemplateAvoidance && templateAvoidance.avoidRegions(),
                 "WorldGuard"
         );
 
         boolean avoidTowns = parsePluginRelatedAvoidance(
-                avoidSection, "towns",
+                avoidance, "towns",
                 hasTemplateAvoidance && templateAvoidance.avoidTowns(),
                 "Towny"
         );
