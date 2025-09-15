@@ -8,10 +8,8 @@ import ru.overwrite.rtp.utils.VersionUtils;
 import java.util.*;
 
 public record Specifications(Set<String> joinChannels,
-        /*Map<String, List<World>> voidChannels,*/
                              Map<String, List<String>> voidChannels,
                              Object2IntMap<String> voidLevels,
-        /*Map<String, List<World>> respawnChannels*/
                              Map<String, List<String>> respawnChannels) {
 
     public static Specifications create() {
@@ -32,7 +30,6 @@ public record Specifications(Set<String> joinChannels,
         if (section.getBoolean("teleport_on_first_join", false)) {
             joinChannels.add(newChannel.id());
         }
-        //List<World> voidWorlds = Utils.getWorldList(section.getStringList("void_worlds"));
         List<String> voidWorlds = section.getStringList("void_worlds");
         if (!voidWorlds.isEmpty()) {
             voidChannels.put(newChannel.id(), voidWorlds);
@@ -41,7 +38,6 @@ public record Specifications(Set<String> joinChannels,
         if (voidLevel != VersionUtils.VOID_LEVEL && voidChannels.containsKey(newChannel.id())) {
             voidLevels.put(newChannel.id(), section.getInt("voidLevel"));
         }
-        //List<World> respawnWorlds = Utils.getWorldList(section.getStringList("respawn_worlds"));
         List<String> respawnWorlds = section.getStringList("respawn_worlds");
         if (!respawnWorlds.isEmpty()) {
             respawnChannels.put(newChannel.id(), respawnWorlds);

@@ -109,7 +109,6 @@ public final class RtpManager {
             if (type == ChannelType.NEAR_REGION && !pluginManager.isPluginEnabled("WorldGuard")) {
                 type = ChannelType.DEFAULT;
             }
-            //List<World> activeWorlds = Utils.getWorldList(channelSection.getStringList("active_worlds"));
             List<String> activeWorlds = channelSection.getStringList("active_worlds");
             boolean teleportToFirstAllowedWorld = channelSection.getBoolean("teleport_to_first_world", false);
             String serverToMove = channelSection.getString("server_to_move", "");
