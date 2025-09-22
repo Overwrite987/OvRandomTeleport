@@ -39,7 +39,7 @@ public final class Utils {
     }
 
     public List<World> getWorldList(List<String> worldNames) {
-        if (!worldNames.isEmpty() && worldNames.get(0).equals("*")) {
+        if (worldNames.get(0).equals("*")) {
             return Bukkit.getWorlds();
         }
         final List<World> worldList = new ArrayList<>(worldNames.size());

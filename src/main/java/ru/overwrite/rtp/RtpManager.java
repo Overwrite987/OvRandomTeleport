@@ -110,6 +110,10 @@ public final class RtpManager {
                 type = ChannelType.DEFAULT;
             }
             List<String> activeWorlds = channelSection.getStringList("active_worlds");
+            if (activeWorlds.isEmpty()) {
+                printDebug("Channel does not have active worlds specified. Skipping...");
+                continue;
+            }
             boolean teleportToFirstAllowedWorld = channelSection.getBoolean("teleport_to_first_world", false);
             String serverToMove = channelSection.getString("server_to_move", "");
             int minPlayersToUse = channelSection.getInt("min_players_to_use", -1);
