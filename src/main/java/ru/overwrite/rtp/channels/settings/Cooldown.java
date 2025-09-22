@@ -1,5 +1,6 @@
 package ru.overwrite.rtp.channels.settings;
 
+import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntSortedMap;
 import it.unimi.dsi.fastutil.objects.Object2IntSortedMaps;
 import org.bukkit.configuration.ConfigurationSection;
@@ -47,8 +48,8 @@ public record Cooldown(
         int defaultCooldown = hasTemplateCooldown ? templateCooldown.defaultCooldown() : -1;
         int defaultPreTeleportCooldown = hasTemplateCooldown ? templateCooldown.defaultPreTeleportCooldown() : -1;
 
-        Object2IntSortedMap<String> groupCooldownsMap = hasTemplateCooldown ? templateCooldown.groupCooldowns() : Object2IntSortedMaps.emptyMap();
-        Object2IntSortedMap<String> preTeleportCooldownsMap = hasTemplateCooldown ? templateCooldown.preTeleportCooldowns() : Object2IntSortedMaps.emptyMap();
+        Object2IntSortedMap<String> groupCooldownsMap = hasTemplateCooldown ? templateCooldown.groupCooldowns() : new Object2IntLinkedOpenHashMap<>();
+        Object2IntSortedMap<String> preTeleportCooldownsMap = hasTemplateCooldown ? templateCooldown.preTeleportCooldowns() : new Object2IntLinkedOpenHashMap<>();
 
         boolean useLastGroupCooldown = cooldown.getBoolean("use_last_group_cooldown", false);
 
