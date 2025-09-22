@@ -2,6 +2,7 @@ package ru.overwrite.rtp.channels.settings;
 
 import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import org.bukkit.configuration.ConfigurationSection;
 import ru.overwrite.rtp.OvRandomTeleport;
@@ -20,9 +21,9 @@ public record Actions(
         List<Action> afterTeleportActions) {
 
     private static final Actions EMPTY_ACTIONS = new Actions(
-            null,
-            null,
-            null
+            List.of(),
+            Int2ObjectMaps.emptyMap(),
+            List.of()
     );
 
     public static Actions create(OvRandomTeleport plugin, ConfigurationSection actions, Settings template, Config pluginConfig, boolean applyTemplate) {
