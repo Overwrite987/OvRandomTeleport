@@ -27,40 +27,43 @@ public record Actions(
     );
 
     public static Actions create(OvRandomTeleport plugin, ConfigurationSection actions, Settings template, Config pluginConfig, boolean applyTemplate) {
-        if (pluginConfig.isNullSection(actions)) {
+
+        boolean isNullSection = pluginConfig.isNullSection(actions);
+
+        Actions templateActions = applyTemplate && template != null ? template.actions() : null;
+        boolean hasTemplateActions = templateActions != null;
+
+        if (isNullSection) {
             if (!applyTemplate) {
                 return null;
             }
-            return EMPTY_ACTIONS;
+            if (!hasTemplateActions) {
+                return EMPTY_ACTIONS;
+            }
         }
-
-        Actions templateActions = template != null ? template.actions() : null;
-        boolean hasTemplateActions = templateActions != null;
 
         ActionRegistry actionRegistry = plugin.getRtpManager().getActionRegistry();
 
-        List<Action> preTeleportActions = actions.contains("pre_teleport")
+        List<Action> preTeleportActions = !isNullSection && actions.contains("pre_teleport")
                 ? getActionList(plugin, actionRegistry, actions.getStringList("pre_teleport"))
                 : hasTemplateActions ? templateActions.preTeleportActions() : List.of();
 
         Int2ObjectMap<List<Action>> onCooldownActions = new Int2ObjectOpenHashMap<>();
-        if (actions.contains("on_cooldown")) {
-            ConfigurationSection cdSection = actions.getConfigurationSection("on_cooldown");
-            if (!pluginConfig.isNullSection(cdSection)) {
-                for (String key : cdSection.getKeys(false)) {
-                    if (!Utils.isNumeric(key)) {
-                        continue;
-                    }
-                    int time = Integer.parseInt(key);
-                    List<Action> list = getActionList(plugin, actionRegistry, cdSection.getStringList(key));
-                    onCooldownActions.put(time, list);
+        ConfigurationSection cdSection;
+        if (!isNullSection && !pluginConfig.isNullSection(cdSection = actions.getConfigurationSection("on_cooldown"))) {
+            for (String key : cdSection.getKeys(false)) {
+                if (!Utils.isNumeric(key)) {
+                    continue;
                 }
+                int time = Integer.parseInt(key);
+                List<Action> list = getActionList(plugin, actionRegistry, cdSection.getStringList(key));
+                onCooldownActions.put(time, list);
             }
         } else if (hasTemplateActions) {
             onCooldownActions.putAll(templateActions.onCooldownActions());
         }
 
-        List<Action> afterTeleportActions = actions.contains("after_teleport")
+        List<Action> afterTeleportActions = !isNullSection && actions.contains("after_teleport")
                 ? getActionList(plugin, actionRegistry, actions.getStringList("after_teleport"))
                 : hasTemplateActions ? templateActions.afterTeleportActions() : List.of();
 

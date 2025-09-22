@@ -1,7 +1,7 @@
 package ru.overwrite.rtp.channels.settings;
 
-import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntSortedMap;
+import it.unimi.dsi.fastutil.objects.Object2IntSortedMaps;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import ru.overwrite.rtp.OvRandomTeleport;
@@ -23,52 +23,50 @@ public record Cooldown(
     private static final Cooldown EMPTY_COOLDOWN = new Cooldown(
             0,
             null,
-            null,
+            Object2IntSortedMaps.emptyMap(),
             0,
-            null
+            Object2IntSortedMaps.emptyMap()
     );
 
     public static Cooldown create(OvRandomTeleport plugin, ConfigurationSection cooldown, Settings template, Config pluginConfig, boolean applyTemplate) {
-        if (pluginConfig.isNullSection(cooldown)) {
-            if (!applyTemplate) {
-                return null;
-            }
-            return EMPTY_COOLDOWN;
-        }
+
+        boolean isNullSection = pluginConfig.isNullSection(cooldown);
 
         Cooldown templateCooldown = template != null ? template.cooldown() : null;
         boolean hasTemplateCooldown = templateCooldown != null;
 
-        int defaultCooldown = cooldown.getInt("default_cooldown",
-                hasTemplateCooldown ? templateCooldown.defaultCooldown() : -1);
+        if (isNullSection) {
+            if (!applyTemplate) {
+                return null;
+            }
+            if (!hasTemplateCooldown) {
+                return EMPTY_COOLDOWN;
+            }
+        }
 
-        TimedExpiringMap<String, Long> playerCooldowns =
-                defaultCooldown > 0 ? new TimedExpiringMap<>(TimeUnit.SECONDS) : null;
+        int defaultCooldown = hasTemplateCooldown ? templateCooldown.defaultCooldown() : -1;
+        int defaultPreTeleportCooldown = hasTemplateCooldown ? templateCooldown.defaultPreTeleportCooldown() : -1;
 
-        Object2IntSortedMap<String> groupCooldownsMap = new Object2IntLinkedOpenHashMap<>();
-        Object2IntSortedMap<String> preTeleportCooldownsMap = new Object2IntLinkedOpenHashMap<>();
+        Object2IntSortedMap<String> groupCooldownsMap = hasTemplateCooldown ? templateCooldown.groupCooldowns() : Object2IntSortedMaps.emptyMap();
+        Object2IntSortedMap<String> preTeleportCooldownsMap = hasTemplateCooldown ? templateCooldown.preTeleportCooldowns() : Object2IntSortedMaps.emptyMap();
 
         boolean useLastGroupCooldown = cooldown.getBoolean("use_last_group_cooldown", false);
 
-        ConfigurationSection groupCooldowns = cooldown.getConfigurationSection("group_cooldowns");
-        if (!pluginConfig.isNullSection(groupCooldowns)) {
-            defaultCooldown = processCooldownSection(plugin, groupCooldowns, groupCooldownsMap, useLastGroupCooldown, defaultCooldown);
-        } else if (hasTemplateCooldown) {
-            groupCooldownsMap = templateCooldown.groupCooldowns();
+        if (!isNullSection) {
+            ConfigurationSection groupCooldownsSection = cooldown.getConfigurationSection("group_cooldowns");
+            if (!pluginConfig.isNullSection(groupCooldownsSection)) {
+                defaultCooldown = processCooldownSection(plugin, groupCooldownsSection, groupCooldownsMap, useLastGroupCooldown, defaultCooldown);
+            }
+
+            ConfigurationSection preTeleportGroupCooldownsSection = cooldown.getConfigurationSection("pre_teleport_group_cooldowns");
+            if (!pluginConfig.isNullSection(preTeleportGroupCooldownsSection)) {
+                defaultPreTeleportCooldown = processCooldownSection(plugin, preTeleportGroupCooldownsSection, preTeleportCooldownsMap, useLastGroupCooldown, defaultPreTeleportCooldown);
+            }
         }
 
-        int defaultPreTeleportCooldown = cooldown.getInt("default_pre_teleport_cooldown",
-                hasTemplateCooldown ? templateCooldown.defaultPreTeleportCooldown() : -1);
+        TimedExpiringMap<String, Long> playerCooldowns = defaultCooldown > 0 ? new TimedExpiringMap<>(TimeUnit.SECONDS) : null;
 
-        ConfigurationSection preTeleportGroupCooldowns = cooldown.getConfigurationSection("pre_teleport_group_cooldowns");
-        if (!pluginConfig.isNullSection(preTeleportGroupCooldowns)) {
-            defaultPreTeleportCooldown = processCooldownSection(plugin, preTeleportGroupCooldowns, preTeleportCooldownsMap, useLastGroupCooldown, defaultPreTeleportCooldown);
-        } else if (hasTemplateCooldown) {
-            preTeleportCooldownsMap = templateCooldown.preTeleportCooldowns();
-        }
-
-        return new Cooldown(defaultCooldown, playerCooldowns,
-                groupCooldownsMap, defaultPreTeleportCooldown, preTeleportCooldownsMap);
+        return new Cooldown(defaultCooldown, playerCooldowns, groupCooldownsMap, defaultPreTeleportCooldown, preTeleportCooldownsMap);
     }
 
     private static int processCooldownSection(OvRandomTeleport plugin, ConfigurationSection section, Object2IntSortedMap<String> map, boolean useLastGroup, int currentDefault) {

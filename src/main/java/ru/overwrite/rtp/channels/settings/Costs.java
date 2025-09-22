@@ -34,23 +34,32 @@ public record Costs(
     );
 
     public static Costs create(OvRandomTeleport plugin, ConfigurationSection costs, Settings template, Config pluginConfig, boolean applyTemplate) {
-        if (pluginConfig.isNullSection(costs)) {
-            if (!applyTemplate) {
-                return null;
-            }
-            return EMPTY_COSTS;
-        }
+
+        boolean isNullSection = pluginConfig.isNullSection(costs);
 
         Costs templateCosts = template != null ? template.costs() : null;
         boolean hasTemplateCosts = templateCosts != null;
 
-        Costs.MoneyType moneyType = costs.contains("money_type")
-                ? Costs.MoneyType.valueOf(costs.getString("money_type", "VAULT").toUpperCase(Locale.ENGLISH))
-                : hasTemplateCosts ? templateCosts.moneyType() : null;
+        if (isNullSection) {
+            if (!applyTemplate) {
+                return null;
+            }
+            if (!hasTemplateCosts) {
+                return EMPTY_COSTS;
+            }
+        }
 
-        double moneyCost = costs.getDouble("money_cost", hasTemplateCosts ? templateCosts.moneyCost() : -1);
-        int hungerCost = costs.getInt("hunger_cost", hasTemplateCosts ? templateCosts.hungerCost() : -1);
-        int expCost = costs.getInt("experience_cost", hasTemplateCosts ? templateCosts.expCost() : -1);
+        Costs.MoneyType moneyType = hasTemplateCosts ? templateCosts.moneyType() : Costs.MoneyType.VAULT;
+        double moneyCost = hasTemplateCosts ? templateCosts.moneyCost() : -1;
+        int hungerCost = hasTemplateCosts ? templateCosts.hungerCost() : -1;
+        int expCost = hasTemplateCosts ? templateCosts.expCost() : -1;
+
+        if (!isNullSection) {
+            moneyType = Costs.MoneyType.valueOf(costs.getString("money_type", "VAULT").toUpperCase(Locale.ENGLISH));
+            moneyCost = costs.getDouble("money_cost", moneyCost);
+            hungerCost = costs.getInt("hunger_cost", hungerCost);
+            expCost = costs.getInt("experience_cost", expCost);
+        }
 
         return new Costs(plugin.getEconomy(), moneyType, moneyCost, hungerCost, expCost);
     }

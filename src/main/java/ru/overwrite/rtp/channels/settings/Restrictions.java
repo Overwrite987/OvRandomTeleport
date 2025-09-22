@@ -21,21 +21,34 @@ public record Restrictions(
 
 
     public static Restrictions create(ConfigurationSection restrictions, Settings template, Config pluginConfig, boolean applyTemplate) {
-        if (pluginConfig.isNullSection(restrictions)) {
-            if (!applyTemplate) {
-                return null;
-            }
-            return EMPTY_RESTRICTIONS;
-        }
+
+        boolean isNullSection = pluginConfig.isNullSection(restrictions);
 
         Restrictions templateRestrictions = template != null ? template.restrictions() : null;
         boolean hasTemplateRestrictions = templateRestrictions != null;
 
-        boolean restrictMove = restrictions.getBoolean("move", hasTemplateRestrictions && templateRestrictions.restrictMove());
-        boolean restrictTeleport = restrictions.getBoolean("teleport", hasTemplateRestrictions && templateRestrictions.restrictTeleport());
-        boolean restrictDamage = restrictions.getBoolean("damage", hasTemplateRestrictions && templateRestrictions.restrictDamage());
-        boolean restrictDamageOthers = restrictions.getBoolean("damage_others", hasTemplateRestrictions && templateRestrictions.restrictDamageOthers());
-        boolean damageCheckOnlyPlayers = restrictions.getBoolean("damage_check_only_players", hasTemplateRestrictions && templateRestrictions.damageCheckOnlyPlayers());
+        if (isNullSection) {
+            if (!applyTemplate) {
+                return null;
+            }
+            if (!hasTemplateRestrictions) {
+                return EMPTY_RESTRICTIONS;
+            }
+        }
+
+        boolean restrictMove = hasTemplateRestrictions && templateRestrictions.restrictMove();
+        boolean restrictTeleport = hasTemplateRestrictions && templateRestrictions.restrictTeleport();
+        boolean restrictDamage = hasTemplateRestrictions && templateRestrictions.restrictDamage();
+        boolean restrictDamageOthers = hasTemplateRestrictions && templateRestrictions.restrictDamageOthers();
+        boolean damageCheckOnlyPlayers = hasTemplateRestrictions && templateRestrictions.damageCheckOnlyPlayers();
+
+        if (!isNullSection) {
+            restrictMove = restrictions.getBoolean("move", restrictMove);
+            restrictTeleport = restrictions.getBoolean("teleport", restrictTeleport);
+            restrictDamage = restrictions.getBoolean("damage", restrictDamage);
+            restrictDamageOthers = restrictions.getBoolean("damage_others", restrictDamageOthers);
+            damageCheckOnlyPlayers = restrictions.getBoolean("damage_check_only_players", damageCheckOnlyPlayers);
+        }
 
         return new Restrictions(
                 restrictMove,

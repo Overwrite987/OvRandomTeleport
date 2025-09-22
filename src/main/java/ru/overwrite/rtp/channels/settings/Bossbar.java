@@ -25,31 +25,34 @@ public record Bossbar(
     );
 
     public static Bossbar create(ConfigurationSection bossbar, Settings template, Config pluginConfig, boolean applyTemplate) {
-        if (pluginConfig.isNullSection(bossbar)) {
+
+        boolean isNullSection = pluginConfig.isNullSection(bossbar);
+
+        Bossbar templateBossbar = applyTemplate && template != null ? template.bossbar() : null;
+        boolean hasTemplateBossbar = templateBossbar != null;
+
+        if (isNullSection) {
             if (!applyTemplate) {
                 return null;
             }
-            return EMPTY_BOSSBAR;
+            if (!hasTemplateBossbar) {
+                return EMPTY_BOSSBAR;
+            }
         }
 
-        Bossbar templateBossbar = template != null ? template.bossbar() : null;
-        boolean hasTemplateBossbar = templateBossbar != null;
+        boolean enabled = hasTemplateBossbar && templateBossbar.bossbarEnabled();
+        String title = hasTemplateBossbar ? templateBossbar.bossbarTitle() : null;
+        BarColor color = hasTemplateBossbar ? templateBossbar.bossbarColor() : BarColor.WHITE;
+        BarStyle style = hasTemplateBossbar ? templateBossbar.bossbarStyle() : BarStyle.SEGMENTED_12;
+        boolean smoothProgress = hasTemplateBossbar && templateBossbar.smoothProgress();
 
-        boolean enabled = bossbar.getBoolean("enabled", hasTemplateBossbar && templateBossbar.bossbarEnabled());
-
-        String title = bossbar.contains("title")
-                ? Utils.COLORIZER.colorize(bossbar.getString("title"))
-                : hasTemplateBossbar ? templateBossbar.bossbarTitle() : null;
-
-        BarColor color = bossbar.contains("color")
-                ? BarColor.valueOf(bossbar.getString("color", "WHITE").toUpperCase(Locale.ENGLISH))
-                : hasTemplateBossbar ? templateBossbar.bossbarColor() : null;
-
-        BarStyle style = bossbar.contains("style")
-                ? BarStyle.valueOf(bossbar.getString("style", "SEGMENTED_12").toUpperCase(Locale.ENGLISH))
-                : hasTemplateBossbar ? templateBossbar.bossbarStyle() : null;
-
-        boolean smoothProgress = bossbar.getBoolean("smooth_progress", hasTemplateBossbar && templateBossbar.smoothProgress());
+        if (!isNullSection) {
+            enabled = bossbar.getBoolean("enabled", enabled);
+            title = Utils.COLORIZER.colorize(bossbar.getString("title"));
+            color = BarColor.valueOf(bossbar.getString("color", "WHITE").toUpperCase(Locale.ENGLISH));
+            style = BarStyle.valueOf(bossbar.getString("style", "SEGMENTED_12").toUpperCase(Locale.ENGLISH));
+            smoothProgress = bossbar.getBoolean("smooth_progress", smoothProgress);
+        }
 
         return new Bossbar(enabled, title, color, style, smoothProgress);
     }
