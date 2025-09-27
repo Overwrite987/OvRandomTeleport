@@ -37,28 +37,8 @@ public class RtpListener implements Listener {
             return;
         }
         Player player = e.getPlayer();
-        Specifications specifications = rtpManager.getSpecifications();
-        Map<String, List<String>> voidChannels = specifications.voidChannels();
-        if (!voidChannels.isEmpty() && e.getFrom().getBlockY() > e.getTo().getBlockY()) {
-            for (Map.Entry<String, List<String>> entry : voidChannels.entrySet()) {
-                String channelId = entry.getKey();
-                Object2IntMap<String> voidLevels = specifications.voidLevels();
-                if (e.getTo().getBlockY() >
-                        (voidLevels.isEmpty()
-                                ? VersionUtils.VOID_LEVEL
-                                : voidLevels.getOrDefault(channelId, VersionUtils.VOID_LEVEL))) {
-                    continue;
-                }
-                List<String> worlds = entry.getValue();
-                if (!worlds.contains(player.getWorld().getName())) {
-                    continue;
-                }
-                if (!player.hasPermission("rtp.channel." + channelId)) {
-                    continue;
-                }
-                this.processTeleport(player, rtpManager.getChannelById(channelId), true);
-                return;
-            }
+        if (processVoid(e, player)) {
+            return;
         }
         String playerName = player.getName();
         if (rtpManager.hasActiveTasks(playerName)) {
@@ -68,6 +48,34 @@ public class RtpListener implements Listener {
                 this.cancelTeleportation(playerName);
             }
         }
+    }
+
+    private boolean processVoid(PlayerMoveEvent e, Player player) {
+        Specifications specifications = rtpManager.getSpecifications();
+        Map<String, List<String>> voidChannels = specifications.voidChannels();
+        if (voidChannels.isEmpty() || e.getFrom().getBlockY() <= e.getTo().getBlockY()) {
+            return false;
+        }
+        for (Map.Entry<String, List<String>> entry : voidChannels.entrySet()) {
+            String channelId = entry.getKey();
+            Object2IntMap<String> voidLevels = specifications.voidLevels();
+            if (e.getTo().getBlockY() >
+                    (voidLevels.isEmpty()
+                            ? VersionUtils.VOID_LEVEL
+                            : voidLevels.getOrDefault(channelId, VersionUtils.VOID_LEVEL))) {
+                continue;
+            }
+            List<String> worlds = entry.getValue();
+            if (!worlds.contains(player.getWorld().getName())) {
+                continue;
+            }
+            if (!player.hasPermission("rtp.channel." + channelId)) {
+                continue;
+            }
+            this.processTeleport(player, rtpManager.getChannelById(channelId), true);
+            return true;
+        }
+        return false;
     }
 
     @EventHandler(ignoreCancelled = true)
