@@ -10,7 +10,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.*;
-import org.bukkit.projectiles.ProjectileSource;
 import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.channels.Specifications;
 import ru.overwrite.rtp.channels.settings.Restrictions;
@@ -229,28 +228,13 @@ public class RtpListener implements Listener {
     }
 
     private Player getDamager(Entity damagerEntity) {
-        if (damagerEntity instanceof Player player) {
-            return player;
-        }
-        if (damagerEntity instanceof Projectile projectile) {
-            ProjectileSource source = projectile.getShooter();
-            if (source instanceof Player player) {
-                return player;
-            }
-        }
-        if (damagerEntity instanceof AreaEffectCloud areaEffectCloud) {
-            ProjectileSource source = areaEffectCloud.getSource();
-            if (source instanceof Player player) {
-                return player;
-            }
-        }
-        if (damagerEntity instanceof TNTPrimed tntPrimed) {
-            Entity source = tntPrimed.getSource();
-            if (source instanceof Player player) {
-                return player;
-            }
-        }
-        return null;
+        return switch (damagerEntity) {
+            case Player player -> player;
+            case Projectile projectile when projectile.getShooter() instanceof Player player -> player;
+            case AreaEffectCloud areaEffectCloud when areaEffectCloud.getSource() instanceof Player player -> player;
+            case TNTPrimed tntPrimed when tntPrimed.getSource() instanceof Player player -> player;
+            default -> null;
+        };
     }
 
     @EventHandler(ignoreCancelled = true)
