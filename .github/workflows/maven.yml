@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        build-java-version: [ 16, 17, 21 ]
+        build-java-version: [ 21 ]
 
     steps:
       - uses: actions/checkout@v4
