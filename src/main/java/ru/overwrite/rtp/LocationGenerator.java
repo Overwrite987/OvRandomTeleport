@@ -6,6 +6,7 @@ import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import ru.overwrite.rtp.channels.Settings;
 import ru.overwrite.rtp.channels.settings.Avoidance;
@@ -372,11 +373,12 @@ public class LocationGenerator {
             rtpManager.printDebug(() -> "Location " + Utils.locationToString(location) + " is inside blocks.");
             return true;
         }
-        if (isDisallowedBlock(location, avoidance)) {
+        Block block = location.getBlock();
+        if (isDisallowedBlock(block, avoidance)) {
             rtpManager.printDebug(() -> "Location " + Utils.locationToString(location) + " contains a disallowed block.");
             return true;
         }
-        if (isDisallowedBiome(location, avoidance)) {
+        if (isDisallowedBiome(block, avoidance)) {
             rtpManager.printDebug(() -> "Location " + Utils.locationToString(location) + " is in a disallowed biome.");
             return true;
         }
@@ -391,8 +393,8 @@ public class LocationGenerator {
         return false;
     }
 
-    private boolean isOutsideWorldBorder(Location loc) {
-        return !loc.getWorld().getWorldBorder().isInside(loc);
+    private boolean isOutsideWorldBorder(Location location) {
+        return !location.getWorld().getWorldBorder().isInside(location);
     }
 
     private boolean isInsideBlocks(Location location, boolean onlyCheckOneBlockUp) {
@@ -403,18 +405,18 @@ public class LocationGenerator {
         return !onlyCheckOneBlockUp && !aboveLocation.subtract(0, 1, 0).getBlock().getType().isAir();
     }
 
-    private boolean isDisallowedBlock(Location loc, Avoidance avoidance) {
+    private boolean isDisallowedBlock(Block block, Avoidance avoidance) {
         if (avoidance.avoidBlocks().isEmpty()) {
             return false;
         }
-        return avoidance.avoidBlocksBlacklist() == avoidance.avoidBlocks().contains(loc.getBlock().getType());
+        return avoidance.avoidBlocksBlacklist() == avoidance.avoidBlocks().contains(block.getType());
     }
 
-    private boolean isDisallowedBiome(Location loc, Avoidance avoidance) {
+    private boolean isDisallowedBiome(Block block, Avoidance avoidance) {
         if (avoidance.avoidBiomes().isEmpty()) {
             return false;
         }
-        return avoidance.avoidBiomesBlacklist() == avoidance.avoidBiomes().contains(loc.getBlock().getBiome());
+        return avoidance.avoidBiomesBlacklist() == avoidance.avoidBiomes().contains(block.getBiome());
     }
 
     private boolean isInsideRegion(Location loc, Avoidance avoidance) {
