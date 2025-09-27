@@ -18,6 +18,7 @@ import ru.overwrite.rtp.utils.regions.WGUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 public class WGLocationGenerator {
@@ -34,7 +35,8 @@ public class WGLocationGenerator {
         RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer()
                 .get(BukkitAdapter.adapt(world));
 
-        if (regionManager == null || regionManager.getRegions().isEmpty()) {
+        Map<String, ProtectedRegion> regions;
+        if (regionManager == null || (regions = regionManager.getRegions()).isEmpty()) {
             return null;
         }
 
@@ -45,7 +47,7 @@ public class WGLocationGenerator {
 
         BukkitPlayer bukkitPlayer = new BukkitPlayer(WorldGuardPlugin.inst(), player);
         List<ProtectedRegion> regionsInRange = new ArrayList<>();
-        for (ProtectedRegion region : regionManager.getRegions().values()) {
+        for (ProtectedRegion region : regions.values()) {
             if (region.getType() == RegionType.GLOBAL) {
                 continue;
             }
