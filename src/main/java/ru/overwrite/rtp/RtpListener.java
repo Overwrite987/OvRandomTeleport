@@ -97,16 +97,7 @@ public class RtpListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
-        if (rtpManager.getProxyCalls() != null && !rtpManager.getProxyCalls().isEmpty()) {
-            String data = rtpManager.getProxyCalls().get(player.getName());
-            if (data == null) {
-                return;
-            }
-            int separatorIndex = data.indexOf(';');
-            Channel channel = rtpManager.getChannelById(data.substring(0, separatorIndex));
-            World world = Bukkit.getWorld(data.substring(separatorIndex + 1));
-            rtpManager.preTeleport(player, channel, world, false);
-            rtpManager.getProxyCalls().remove(player.getName());
+        if (processProxy(player)) {
             return;
         }
         if (player.hasPlayedBefore()) {
@@ -123,6 +114,22 @@ public class RtpListener implements Listener {
             this.processTeleport(player, rtpManager.getChannelById(channelId), false);
             return;
         }
+    }
+
+    private boolean processProxy(Player player) {
+        if (rtpManager.getProxyCalls() != null && !rtpManager.getProxyCalls().isEmpty()) {
+            String data = rtpManager.getProxyCalls().get(player.getName());
+            if (data == null) {
+                return false;
+            }
+            int separatorIndex = data.indexOf(';');
+            Channel channel = rtpManager.getChannelById(data.substring(0, separatorIndex));
+            World world = Bukkit.getWorld(data.substring(separatorIndex + 1));
+            rtpManager.preTeleport(player, channel, world, false);
+            rtpManager.getProxyCalls().remove(player.getName());
+            return true;
+        }
+        return false;
     }
 
     @EventHandler
