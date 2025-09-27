@@ -21,6 +21,7 @@ public final class PluginMessage implements PluginMessageListener {
         this.serverId = serverId;
     }
 
+    @Override
     public void onPluginMessageReceived(String channel, @NotNull Player player, byte[] message) {
         if (!channel.equals("BungeeCord")) {
             return;
