@@ -1,41 +1,23 @@
-package ru.overwrite.rtp;
+package ru.overwrite.rtp.locationgenerator.impl;
 
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
-import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
-import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import ru.overwrite.rtp.RtpManager;
 import ru.overwrite.rtp.channels.Settings;
-import ru.overwrite.rtp.channels.settings.Avoidance;
 import ru.overwrite.rtp.channels.settings.LocationGenOptions;
-import ru.overwrite.rtp.utils.Utils;
-import ru.overwrite.rtp.utils.regions.TownyUtils;
-import ru.overwrite.rtp.utils.regions.WGUtils;
+import ru.overwrite.rtp.locationgenerator.AbstractLocationGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class LocationGenerator {
+public class BasicLocationGenerator extends AbstractLocationGenerator {
 
-    private final RtpManager rtpManager;
-
-    @Getter
-    private final XoRoShiRo128PlusRandom random = new XoRoShiRo128PlusRandom();
-
-    @Getter
-    private final Reference2IntOpenHashMap<String> iterationsPerPlayer = new Reference2IntOpenHashMap<>();
-
-    @Getter
-    private final WGLocationGenerator wgLocationGenerator;
-
-    public LocationGenerator(OvRandomTeleport plugin, RtpManager rtpManager) {
-        this.rtpManager = rtpManager;
-        this.wgLocationGenerator = plugin.hasWorldGuard() ? new WGLocationGenerator(rtpManager, this) : null;
+    public BasicLocationGenerator(RtpManager rtpManager) {
+        super(rtpManager);
     }
 
+    @Override
     public Location generateRandomLocation(Player player, Settings settings, World world) {
         LocationGenOptions locationGenOptions = settings.locationGenOptions();
         if (hasReachedMaxIterations(player.getName(), locationGenOptions)) {
@@ -57,6 +39,7 @@ public class LocationGenerator {
         return location;
     }
 
+    @Override
     public Location generateRandomLocationNearPlayer(Player player, Settings settings, World world) {
         LocationGenOptions locationGenOptions = settings.locationGenOptions();
         if (hasReachedMaxIterations(player.getName(), locationGenOptions)) {
@@ -120,17 +103,6 @@ public class LocationGenerator {
 
     private boolean isVanished(Player player) {
         return player.hasMetadata("vanished") && player.getMetadata("vanished").get(0).asBoolean();
-    }
-
-    public boolean hasReachedMaxIterations(String playerName, LocationGenOptions locationGenOptions) {
-        int iterations = iterationsPerPlayer.getInt(playerName);
-        rtpManager.printDebug("Iterations for player '" + playerName + "': " + iterations);
-        if (iterations >= locationGenOptions.maxLocationAttempts()) {
-            iterationsPerPlayer.removeInt(playerName);
-            rtpManager.printDebug("Max iterations reached for player " + playerName);
-            return true;
-        }
-        return false;
     }
 
     public Location generateRandomSquareLocation(Player player, Settings settings, World world) {
@@ -325,109 +297,8 @@ public class LocationGenerator {
         return location;
     }
 
-    private int findSafeYPoint(World world, int x, int z) {
-        return world.getEnvironment() != World.Environment.NETHER ? world.getHighestBlockYAt(x, z) : findSafeNetherYPoint(world, x, z);
-    }
-
-    private int findSafeNetherYPoint(World world, int x, int z) {
-        for (int y = 32; y < 90; y++) {
-            Location location = new Location(world, x, y, z);
-
-            if (location.getBlock().getType().isSolid() && !isInsideBlocks(location, false)) {
-                return location.getBlockY();
-            }
-        }
-        return -1;
-    }
-
-    public boolean isInsideRadiusSquare(int x, int z, int minX, int minZ, int maxX, int maxZ, int centerX, int centerZ) {
-        int realMinX = centerX + minX;
-        int realMinZ = centerZ + minZ;
-        int realMaxX = centerX + maxX;
-        int realMaxZ = centerZ + maxZ;
-
-        return (x >= realMinX && x <= realMaxX && z >= realMinZ && z <= realMaxZ);
-    }
-
-    public boolean isInsideRadiusCircle(int x, int z, int minX, int minZ, int maxX, int maxZ, int centerX, int centerZ) {
-        int deltaX = x - centerX;
-        int deltaZ = z - centerZ;
-
-        double maxDistanceRatioX = (double) deltaX / maxX;
-        double maxDistanceRatioZ = (double) deltaZ / maxZ;
-        double maxDistance = maxDistanceRatioX * maxDistanceRatioX + maxDistanceRatioZ * maxDistanceRatioZ;
-
-        double minDistanceRatioX = (double) deltaX / minX;
-        double minDistanceRatioZ = (double) deltaZ / minZ;
-        double minDistance = minDistanceRatioX * minDistanceRatioX + minDistanceRatioZ * minDistanceRatioZ;
-
-        return maxDistance <= 1 && minDistance >= 2;
-    }
-
-    private boolean isLocationRestricted(Location location, Avoidance avoidance) {
-        if (isOutsideWorldBorder(location)) {
-            rtpManager.printDebug(() -> "Location " + Utils.locationToString(location) + " is outside the world border.");
-            return true;
-        }
-        if (location.getWorld().getEnvironment() != World.Environment.NETHER && isInsideBlocks(location, true)) {
-            rtpManager.printDebug(() -> "Location " + Utils.locationToString(location) + " is inside blocks.");
-            return true;
-        }
-        Block block = location.getBlock();
-        if (isDisallowedBlock(block, avoidance)) {
-            rtpManager.printDebug(() -> "Location " + Utils.locationToString(location) + " contains a disallowed block.");
-            return true;
-        }
-        if (isDisallowedBiome(block, avoidance)) {
-            rtpManager.printDebug(() -> "Location " + Utils.locationToString(location) + " is in a disallowed biome.");
-            return true;
-        }
-        if (isInsideRegion(location, avoidance)) {
-            rtpManager.printDebug(() -> "Location " + Utils.locationToString(location) + " is inside a disallowed region.");
-            return true;
-        }
-        if (isInsideTown(location, avoidance)) {
-            rtpManager.printDebug(() -> "Location " + Utils.locationToString(location) + " is inside a disallowed town.");
-            return true;
-        }
-        return false;
-    }
-
-    private boolean isOutsideWorldBorder(Location location) {
-        return !location.getWorld().getWorldBorder().isInside(location);
-    }
-
-    private boolean isInsideBlocks(Location location, boolean onlyCheckOneBlockUp) {
-        Location aboveLocation = location.clone().add(0, 2, 0);
-        if (!aboveLocation.getBlock().getType().isAir()) {
-            return true;
-        }
-        return !onlyCheckOneBlockUp && !aboveLocation.subtract(0, 1, 0).getBlock().getType().isAir();
-    }
-
-    private boolean isDisallowedBlock(Block block, Avoidance avoidance) {
-        if (avoidance.avoidBlocks().isEmpty()) {
-            return false;
-        }
-        return avoidance.avoidBlocksBlacklist() == avoidance.avoidBlocks().contains(block.getType());
-    }
-
-    private boolean isDisallowedBiome(Block block, Avoidance avoidance) {
-        if (avoidance.avoidBiomes().isEmpty()) {
-            return false;
-        }
-        return avoidance.avoidBiomesBlacklist() == avoidance.avoidBiomes().contains(block.getBiome());
-    }
-
-    private boolean isInsideRegion(Location loc, Avoidance avoidance) {
-        if (!avoidance.avoidRegions()) {
-            return false;
-        }
-        ApplicableRegionSet regionSet = WGUtils.getApplicableRegions(loc);
-        return regionSet != null && !regionSet.getRegions().isEmpty();
-    }
-
-    private boolean isInsideTown(Location loc, Avoidance avoidance) {
-        return avoidance.avoidTowns() && TownyUtils.getTownByLocation(loc) != null;
+    @Override
+    public Location generateRandomLocationNearRandomRegion(Player player, Settings settings, World world) {
+        return generateRandomLocation(player, settings, world);
     }
 }
