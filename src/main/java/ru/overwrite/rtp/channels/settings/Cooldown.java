@@ -54,11 +54,13 @@ public record Cooldown(
         boolean useLastGroupCooldown = cooldown.getBoolean("use_last_group_cooldown", false);
 
         if (!isNullSection) {
+            defaultCooldown = cooldown.getInt("default_cooldown", defaultCooldown);
             ConfigurationSection groupCooldownsSection = cooldown.getConfigurationSection("group_cooldowns");
             if (!pluginConfig.isNullSection(groupCooldownsSection)) {
                 defaultCooldown = processCooldownSection(plugin, groupCooldownsSection, groupCooldownsMap, useLastGroupCooldown, defaultCooldown);
             }
 
+            defaultPreTeleportCooldown = cooldown.getInt("default_pre_teleport_cooldown", defaultPreTeleportCooldown);
             ConfigurationSection preTeleportGroupCooldownsSection = cooldown.getConfigurationSection("pre_teleport_group_cooldowns");
             if (!pluginConfig.isNullSection(preTeleportGroupCooldownsSection)) {
                 defaultPreTeleportCooldown = processCooldownSection(plugin, preTeleportGroupCooldownsSection, preTeleportCooldownsMap, useLastGroupCooldown, defaultPreTeleportCooldown);
