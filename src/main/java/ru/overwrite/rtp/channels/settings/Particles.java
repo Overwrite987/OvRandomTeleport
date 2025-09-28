@@ -3,8 +3,6 @@ package ru.overwrite.rtp.channels.settings;
 import com.google.common.collect.ImmutableList;
 import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
-import ru.overwrite.rtp.channels.Settings;
-import ru.overwrite.rtp.configuration.Config;
 import ru.overwrite.rtp.utils.Utils;
 
 import java.util.List;
@@ -25,7 +23,8 @@ public record Particles(
         ParticleData afterTeleportParticle,
         int afterTeleportCount,
         double afterTeleportRadius,
-        double afterTeleportParticleSpeed) {
+        double afterTeleportParticleSpeed
+) {
 
     public record ParticleData(Particle particle, Particle.DustOptions dustOptions) {
     }
@@ -50,73 +49,63 @@ public record Particles(
     );
 
 
-    public static Particles create(ConfigurationSection particles, Settings template, Config pluginConfig, boolean applyTemplate) {
+    public static Particles create(ConfigurationSection particles) {
 
-        boolean isNullSection = pluginConfig.isNullSection(particles);
-
-        Particles templateParticles = template != null ? template.particles() : null;
-        boolean hasTemplateParticles = templateParticles != null;
-
-        if (isNullSection) {
-            if (!applyTemplate) return null;
-            if (!hasTemplateParticles) return EMPTY_PARTICLES;
+        if (particles == null) {
+            return EMPTY_PARTICLES;
         }
 
-        boolean preTeleportEnabled = hasTemplateParticles && templateParticles.preTeleportEnabled();
-        boolean preTeleportSendOnlyToPlayer = hasTemplateParticles && templateParticles.preTeleportSendOnlyToPlayer();
-        List<Particles.ParticleData> preTeleportParticles = hasTemplateParticles ? templateParticles.preTeleportParticles() : null;
-        int preTeleportDots = hasTemplateParticles ? templateParticles.preTeleportDots() : 0;
-        double preTeleportRadius = hasTemplateParticles ? templateParticles.preTeleportRadius() : 0.0;
-        double preTeleportParticleSpeed = hasTemplateParticles ? templateParticles.preTeleportParticleSpeed() : 0.0;
-        double preTeleportSpeed = hasTemplateParticles ? templateParticles.preTeleportSpeed() : 0.0;
-        boolean preTeleportInvert = hasTemplateParticles && templateParticles.preTeleportInvert();
-        boolean preTeleportJumping = hasTemplateParticles && templateParticles.preTeleportJumping();
-        boolean preTeleportMoveNear = hasTemplateParticles && templateParticles.preTeleportMoveNear();
+        boolean preTeleportEnabled = false;
+        boolean preTeleportSendOnlyToPlayer = false;
+        List<Particles.ParticleData> preTeleportParticles = null;
+        int preTeleportDots = 0;
+        double preTeleportRadius = 0.0D;
+        double preTeleportParticleSpeed = 0.0D;
+        double preTeleportSpeed = 0.0D;
+        boolean preTeleportInvert = false;
+        boolean preTeleportJumping = false;
+        boolean preTeleportMoveNear = false;
 
-        boolean afterTeleportParticleEnabled = hasTemplateParticles && templateParticles.afterTeleportEnabled();
-        boolean afterTeleportSendOnlyToPlayer = hasTemplateParticles && templateParticles.afterTeleportSendOnlyToPlayer();
-        Particles.ParticleData afterTeleportParticle = hasTemplateParticles ? templateParticles.afterTeleportParticle() : null;
-        int afterTeleportCount = hasTemplateParticles ? templateParticles.afterTeleportCount() : 0;
-        double afterTeleportRadius = hasTemplateParticles ? templateParticles.afterTeleportRadius() : 0.0;
-        double afterTeleportParticleSpeed = hasTemplateParticles ? templateParticles.afterTeleportParticleSpeed() : 0.0;
+        boolean afterTeleportParticleEnabled = false;
+        boolean afterTeleportSendOnlyToPlayer = false;
+        Particles.ParticleData afterTeleportParticle = null;
+        int afterTeleportCount = 0;
+        double afterTeleportRadius = 0.0D;
+        double afterTeleportParticleSpeed = 0.0D;
 
-        if (!isNullSection) {
-            ConfigurationSection preTeleport = particles.getConfigurationSection("pre_teleport");
-            boolean isNullPreTeleportSection = pluginConfig.isNullSection(preTeleport);
+        ConfigurationSection preTeleport = particles.getConfigurationSection("pre_teleport");
 
-            if (!isNullPreTeleportSection) {
-                preTeleportEnabled = preTeleport.getBoolean("enabled", preTeleportEnabled);
-                preTeleportSendOnlyToPlayer = preTeleport.getBoolean("send_only_to_player", preTeleportSendOnlyToPlayer);
-                preTeleportDots = preTeleport.getInt("dots", preTeleportDots);
-                preTeleportRadius = preTeleport.getDouble("radius", preTeleportRadius);
-                preTeleportParticleSpeed = preTeleport.getDouble("particle_speed", preTeleportParticleSpeed);
-                preTeleportSpeed = preTeleport.getDouble("speed", preTeleportSpeed);
-                preTeleportInvert = preTeleport.getBoolean("invert", preTeleportInvert);
-                preTeleportJumping = preTeleport.getBoolean("jumping", preTeleportJumping);
-                preTeleportMoveNear = preTeleport.getBoolean("move_near", preTeleportMoveNear);
+        if (preTeleport != null) {
+            preTeleportEnabled = preTeleport.getBoolean("enabled", false);
+            preTeleportSendOnlyToPlayer = preTeleport.getBoolean("send_only_to_player", false);
+            preTeleportDots = preTeleport.getInt("dots", 0);
+            preTeleportRadius = preTeleport.getDouble("radius", 0.0D);
+            preTeleportParticleSpeed = preTeleport.getDouble("particle_speed", 0.0D);
+            preTeleportSpeed = preTeleport.getDouble("speed", 0.0D);
+            preTeleportInvert = preTeleport.getBoolean("invert", false);
+            preTeleportJumping = preTeleport.getBoolean("jumping", false);
+            preTeleportMoveNear = preTeleport.getBoolean("move_near", false);
 
-                if (preTeleport.contains("id")) {
-                    ImmutableList.Builder<Particles.ParticleData> builder = ImmutableList.builder();
-                    for (String id : pluginConfig.getStringListInAnyCase(preTeleport.get("id"))) {
-                        builder.add(Utils.createParticleData(id));
-                    }
-                    preTeleportParticles = builder.build();
+            if (preTeleport.contains("id")) {
+                ImmutableList.Builder<Particles.ParticleData> builder = ImmutableList.builder();
+                for (String id : preTeleport.getStringList("id")) {
+                    builder.add(Utils.createParticleData(id));
                 }
+                preTeleportParticles = builder.build();
             }
+        }
 
-            ConfigurationSection afterTeleport = particles.getConfigurationSection("after_teleport");
-            boolean isNullAfterTeleportSection = pluginConfig.isNullSection(afterTeleport);
+        ConfigurationSection afterTeleport = particles.getConfigurationSection("after_teleport");
 
-            if (!isNullAfterTeleportSection) {
-                afterTeleportParticleEnabled = afterTeleport.getBoolean("enabled", afterTeleportParticleEnabled);
-                afterTeleportSendOnlyToPlayer = afterTeleport.getBoolean("send_only_to_player", afterTeleportSendOnlyToPlayer);
-                afterTeleportCount = afterTeleport.getInt("count", afterTeleportCount);
-                afterTeleportRadius = afterTeleport.getDouble("radius", afterTeleportRadius);
-                afterTeleportParticleSpeed = afterTeleport.getDouble("particle_speed", afterTeleportParticleSpeed);
+        if (afterTeleport != null) {
+            afterTeleportParticleEnabled = afterTeleport.getBoolean("enabled", false);
+            afterTeleportSendOnlyToPlayer = afterTeleport.getBoolean("send_only_to_player", false);
+            afterTeleportCount = afterTeleport.getInt("count", 0);
+            afterTeleportRadius = afterTeleport.getDouble("radius", 0.0D);
+            afterTeleportParticleSpeed = afterTeleport.getDouble("particle_speed", 0.0D);
 
-                if (afterTeleport.contains("id")) {
-                    afterTeleportParticle = Utils.createParticleData(afterTeleport.getString("id"));
-                }
+            if (afterTeleport.contains("id")) {
+                afterTeleportParticle = Utils.createParticleData(afterTeleport.getString("id", "CLOUD"));
             }
         }
 
