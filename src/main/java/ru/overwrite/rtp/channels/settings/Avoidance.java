@@ -20,9 +20,9 @@ public record Avoidance(
 
     private static final Avoidance EMPTY_AVOIDANCE = new Avoidance(
             false,
-            null,
+            Set.of(),
             false,
-            null,
+            Set.of(),
             false,
             false
     );
