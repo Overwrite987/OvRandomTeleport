@@ -117,6 +117,8 @@ particles:
   pre_teleport:
     # Включены ли партиклы
     enabled: false
+    # Анимация на выбор: basic, cage
+    animation: basic
     # Нужно ли отправлять партиклы только игроку, который телепортируется?
     send_only_to_player: true
     # Какие будут партиклы в анимации

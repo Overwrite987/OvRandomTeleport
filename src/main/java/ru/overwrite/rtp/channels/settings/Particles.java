@@ -11,6 +11,7 @@ import java.util.List;
 
 public record Particles(
         boolean preTeleportEnabled,
+        String preTeleportAnimation,
         boolean preTeleportSendOnlyToPlayer,
         List<ParticleData> preTeleportParticles,
         int preTeleportDots,
@@ -32,6 +33,7 @@ public record Particles(
 
     private static final Particles EMPTY_PARTICLES = new Particles(
             false,
+            "basic",
             false,
             null,
             0,
@@ -63,6 +65,7 @@ public record Particles(
         }
 
         boolean preTeleportEnabled = hasTemplateParticles && templateParticles.preTeleportEnabled();
+        String preTeleportAnimation = hasTemplateParticles ? templateParticles.preTeleportAnimation() : "basic";
         boolean preTeleportSendOnlyToPlayer = hasTemplateParticles && templateParticles.preTeleportSendOnlyToPlayer();
         List<Particles.ParticleData> preTeleportParticles = hasTemplateParticles ? templateParticles.preTeleportParticles() : null;
         int preTeleportDots = hasTemplateParticles ? templateParticles.preTeleportDots() : 0;
@@ -85,6 +88,7 @@ public record Particles(
 
             if (preTeleport != null) {
                 preTeleportEnabled = preTeleport.getBoolean("enabled", preTeleportEnabled);
+                preTeleportAnimation = preTeleport.getString("animation", preTeleportAnimation).toLowerCase();
                 preTeleportSendOnlyToPlayer = preTeleport.getBoolean("send_only_to_player", preTeleportSendOnlyToPlayer);
                 preTeleportDots = preTeleport.getInt("dots", preTeleportDots);
                 preTeleportRadius = preTeleport.getDouble("radius", preTeleportRadius);
@@ -120,6 +124,7 @@ public record Particles(
 
         return new Particles(
                 preTeleportEnabled,
+                preTeleportAnimation,
                 preTeleportSendOnlyToPlayer,
                 preTeleportParticles,
                 preTeleportDots,
