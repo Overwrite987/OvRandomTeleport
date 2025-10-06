@@ -82,9 +82,8 @@ public record Particles(
 
         if (!isNullSection) {
             ConfigurationSection preTeleport = particles.getConfigurationSection("pre_teleport");
-            boolean isNullPreTeleportSection = pluginConfig.isNullSection(preTeleport);
 
-            if (!isNullPreTeleportSection) {
+            if (preTeleport != null) {
                 preTeleportEnabled = preTeleport.getBoolean("enabled", preTeleportEnabled);
                 preTeleportSendOnlyToPlayer = preTeleport.getBoolean("send_only_to_player", preTeleportSendOnlyToPlayer);
                 preTeleportDots = preTeleport.getInt("dots", preTeleportDots);
@@ -105,9 +104,8 @@ public record Particles(
             }
 
             ConfigurationSection afterTeleport = particles.getConfigurationSection("after_teleport");
-            boolean isNullAfterTeleportSection = pluginConfig.isNullSection(afterTeleport);
 
-            if (!isNullAfterTeleportSection) {
+            if (afterTeleport != null) {
                 afterTeleportParticleEnabled = afterTeleport.getBoolean("enabled", afterTeleportParticleEnabled);
                 afterTeleportSendOnlyToPlayer = afterTeleport.getBoolean("send_only_to_player", afterTeleportSendOnlyToPlayer);
                 afterTeleportCount = afterTeleport.getInt("count", afterTeleportCount);
@@ -115,7 +113,7 @@ public record Particles(
                 afterTeleportParticleSpeed = afterTeleport.getDouble("particle_speed", afterTeleportParticleSpeed);
 
                 if (afterTeleport.contains("id")) {
-                    afterTeleportParticle = Utils.createParticleData(afterTeleport.getString("id"));
+                    afterTeleportParticle = Utils.createParticleData(afterTeleport.getString("id", "FLAME"));
                 }
             }
         }

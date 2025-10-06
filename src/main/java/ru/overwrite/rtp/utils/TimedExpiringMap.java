@@ -2,17 +2,18 @@ package ru.overwrite.rtp.utils;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Expiry;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
 
 public class TimedExpiringMap<K, V> {
 
-    private final Cache<K, ExpiringValue<V>> cache;
+    private final Cache<@NotNull K, ExpiringValue<V>> cache;
     private final TimeUnit unit;
 
     public TimedExpiringMap(TimeUnit unit) {
         this.unit = unit;
-        this.cache = CaffeineFactory.newBuilder().expireAfter(new Expiry<K, ExpiringValue<V>>() {
+        this.cache = CaffeineFactory.newBuilder().expireAfter(new Expiry<@NotNull K, @NotNull ExpiringValue<V>>() {
             @Override
             public long expireAfterCreate(K key, ExpiringValue<V> value, long currentTime) {
                 return value.expiryDuration();

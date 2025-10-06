@@ -61,4 +61,3 @@ public final class PluginMessage implements PluginMessageListener {
         player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
     }
 }
-

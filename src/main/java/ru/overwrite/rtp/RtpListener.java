@@ -72,7 +72,11 @@ public class RtpListener implements Listener {
             if (!player.hasPermission("rtp.channel." + channelId)) {
                 continue;
             }
-            this.processTeleport(player, rtpManager.getChannelById(channelId), true);
+
+            Channel channel = rtpManager.getChannelById(channelId);
+            if (channel == null) continue;
+
+            this.processTeleport(player, channel, true);
             return true;
         }
         return false;
@@ -111,7 +115,11 @@ public class RtpListener implements Listener {
             if (!player.hasPermission("rtp.channel." + channelId)) {
                 continue;
             }
-            this.processTeleport(player, rtpManager.getChannelById(channelId), false);
+
+            Channel channel = rtpManager.getChannelById(channelId);
+            if (channel == null) continue;
+
+            this.processTeleport(player, channel, false);
             return;
         }
     }
@@ -148,7 +156,11 @@ public class RtpListener implements Listener {
             if (!player.hasPermission("rtp.channel." + channelId)) {
                 continue;
             }
-            this.processTeleport(player, rtpManager.getChannelById(channelId), false);
+
+            Channel channel = rtpManager.getChannelById(channelId);
+            if (channel == null) continue;
+
+            this.processTeleport(player, channel, false);
             return;
         }
     }
