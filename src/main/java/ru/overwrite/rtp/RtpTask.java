@@ -41,10 +41,10 @@ public class RtpTask {
             this.setupBossBar(settings.bossbar());
         }
         if (settings.particles().preTeleportEnabled()) {
-            // later with switch-case
-            this.animationTask = settings.particles().preTeleportAnimation().equals("cage") ?
-                    new CageAnimation(this.player, preTeleportCooldown * 20, settings.particles()).runTaskTimerAsynchronously(plugin, 0, 1) :
-                    new BasicAnimation(this.player, preTeleportCooldown * 20, settings.particles()).runTaskTimerAsynchronously(plugin, 0, 1);
+            this.animationTask = switch (settings.particles().preTeleportAnimation()) {
+                case CAGE -> new CageAnimation(this.player, preTeleportCooldown * 20, settings.particles()).runTaskTimerAsynchronously(plugin, 0, 2);
+                case BASIC -> new BasicAnimation(this.player, preTeleportCooldown * 20, settings.particles()).runTaskTimerAsynchronously(plugin, 0, 1);
+            };
         }
         this.countdownTask = new BukkitRunnable() {
             @Override
