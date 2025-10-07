@@ -317,7 +317,8 @@ public class RtpCommand implements TabExecutor {
             return completions;
         }
         final List<String> result = new ArrayList<>();
-        for (String c : completions) {
+        for (int i = 0; i < completions.size(); i++) {
+            String c = completions.get(i);
             if (StringUtil.startsWithIgnoreCase(c, args[args.length - 1])) {
                 result.add(c);
             }

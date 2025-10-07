@@ -3,7 +3,6 @@
 package ru.overwrite.rtp.utils;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
@@ -15,7 +14,7 @@ public final class CaffeineFactory {
 
     private static final ForkJoinPool loaderPool = new ForkJoinPool();
 
-    public static Caffeine<@NotNull Object, @NotNull Object> newBuilder() {
+    public static Caffeine<Object, Object> newBuilder() {
         return Caffeine.newBuilder().executor(loaderPool);
     }
 

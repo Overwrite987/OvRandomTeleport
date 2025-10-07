@@ -90,60 +90,55 @@ public final class RtpManager {
     public void setupChannels(FileConfiguration config, PluginManager pluginManager) {
         long startTime = System.currentTimeMillis();
         ConfigurationSection channelsSection = config.getConfigurationSection("channels");
-        if (channelsSection != null) {
-            for (String channelId : channelsSection.getKeys(false)) {
-                printDebug("Id: " + channelId);
-                if (channelId.equalsIgnoreCase("admin")) {
-                    plugin.getPluginLogger().warn("Channel ID cannot be 'admin'. Skipping...");
-                    continue;
-                }
-                ConfigurationSection channelSection = channelsSection.getConfigurationSection(channelId);
-                if (channelSection == null) {
-                    continue;
-                }
-                if (!channelSection.getString("file", "").isEmpty()) {
-                    channelSection = pluginConfig.getChannelFile(plugin.getDataFolder().getAbsolutePath() + "/channels", channelSection.getString("file"));
-                    if (channelSection == null) {
-                        printDebug("Unable to get channel settings. Skipping...");
-                        continue;
-                    }
-                }
-                String name = channelSection.getString("name", "");
-                ChannelType type = ChannelType.valueOf(channelSection.getString("type", "DEFAULT").toUpperCase(Locale.ENGLISH));
-                if (type == ChannelType.NEAR_REGION && !pluginManager.isPluginEnabled("WorldGuard")) {
-                    type = ChannelType.DEFAULT;
-                }
-                List<String> activeWorlds = channelSection.getStringList("active_worlds");
-                if (activeWorlds.isEmpty()) {
-                    printDebug("Channel does not have active worlds specified. Skipping...");
-                    continue;
-                }
-                boolean teleportToFirstAllowedWorld = channelSection.getBoolean("teleport_to_first_world", false);
-                String serverToMove = channelSection.getString("server_to_move", "");
-                int minPlayersToUse = channelSection.getInt("min_players_to_use", -1);
-                int invulnerableTicks = channelSection.getInt("invulnerable_after_teleport", 15);
-                boolean allowInCommands = channelSection.getBoolean("allow_in_command", true);
-                boolean bypassMaxTeleportLimit = channelsSection.getBoolean("bypass_max_teleport_limit", false);
-                Settings baseTemplate = pluginConfig.getChannelTemplates().get(channelSection.getString("template"));
-                Settings channelSettings = Settings.create(plugin, channelSection, pluginConfig, baseTemplate, true);
-
-                Messages messages = Messages.create(channelSection.getConfigurationSection("messages"), pluginConfig);
-
-                Channel newChannel = new Channel(channelId,
-                        name,
-                        type,
-                        activeWorlds,
-                        teleportToFirstAllowedWorld,
-                        serverToMove,
-                        minPlayersToUse,
-                        invulnerableTicks,
-                        allowInCommands,
-                        bypassMaxTeleportLimit,
-                        channelSettings,
-                        messages);
-                namedChannels.put(channelId, newChannel);
-                specifications.assign(newChannel, channelSection.getConfigurationSection("specifications"));
+        for (String channelId : channelsSection.getKeys(false)) {
+            printDebug("Id: " + channelId);
+            if (channelId.equalsIgnoreCase("admin")) {
+                plugin.getPluginLogger().warn("Channel ID cannot be 'admin'. Skipping...");
+                continue;
             }
+            ConfigurationSection channelSection = channelsSection.getConfigurationSection(channelId);
+            if (!channelSection.getString("file", "").isEmpty()) {
+                channelSection = pluginConfig.getChannelFile(plugin.getDataFolder().getAbsolutePath() + "/channels", channelSection.getString("file"));
+                if (channelSection == null) {
+                    printDebug("Unable to get channel settings. Skipping...");
+                    continue;
+                }
+            }
+            String name = channelSection.getString("name", "");
+            ChannelType type = ChannelType.valueOf(channelSection.getString("type", "DEFAULT").toUpperCase(Locale.ENGLISH));
+            if (type == ChannelType.NEAR_REGION && !pluginManager.isPluginEnabled("WorldGuard")) {
+                type = ChannelType.DEFAULT;
+            }
+            List<String> activeWorlds = channelSection.getStringList("active_worlds");
+            if (activeWorlds.isEmpty()) {
+                printDebug("Channel does not have active worlds specified. Skipping...");
+                continue;
+            }
+            boolean teleportToFirstAllowedWorld = channelSection.getBoolean("teleport_to_first_world", false);
+            String serverToMove = channelSection.getString("server_to_move", "");
+            int minPlayersToUse = channelSection.getInt("min_players_to_use", -1);
+            int invulnerableTicks = channelSection.getInt("invulnerable_after_teleport", 15);
+            boolean allowInCommands = channelSection.getBoolean("allow_in_command", true);
+            boolean bypassMaxTeleportLimit = channelsSection.getBoolean("bypass_max_teleport_limit", false);
+            Settings baseTemplate = pluginConfig.getChannelTemplates().get(channelSection.getString("template"));
+            Settings channelSettings = Settings.create(plugin, channelSection, pluginConfig, baseTemplate, true);
+
+            Messages messages = Messages.create(channelSection.getConfigurationSection("messages"), pluginConfig);
+
+            Channel newChannel = new Channel(channelId,
+                    name,
+                    type,
+                    activeWorlds,
+                    teleportToFirstAllowedWorld,
+                    serverToMove,
+                    minPlayersToUse,
+                    invulnerableTicks,
+                    allowInCommands,
+                    bypassMaxTeleportLimit,
+                    channelSettings,
+                    messages);
+            namedChannels.put(channelId, newChannel);
+            specifications.assign(newChannel, channelSection.getConfigurationSection("specifications"));
         }
         this.defaultChannel = getChannelById(config.getString("main_settings.default_channel", ""));
         if (defaultChannel != null) {

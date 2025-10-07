@@ -96,7 +96,8 @@ public class LocationGenerator {
         List<Player> worldPlayers = world.getPlayers();
         rtpManager.printDebug(() -> "Players in world " + world.getName() + ": " + worldPlayers.stream().map(Player::getName).toList());
         worldPlayers.remove(player);
-        for (Player worldPlayer : worldPlayers) {
+        for (int i = 0; i < worldPlayers.size(); i++) {
+            Player worldPlayer = worldPlayers.get(i);
             String debugMsg = "Player " + worldPlayer.getName() + " excluded because: ";
             if (worldPlayer.hasPermission("rtp.near.bypass")) {
                 rtpManager.printDebug(debugMsg + "has bypass permission");
