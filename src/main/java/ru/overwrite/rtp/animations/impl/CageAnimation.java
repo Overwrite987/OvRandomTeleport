@@ -77,11 +77,9 @@ public class CageAnimation extends Animation {
                 builder.clone().location(location.clone().add(x, yOffset, z)).spawn();
 
                 // only one time per circle
-                if (circle == 0) {
-                    if (i % (DOTS_PER_LINE) == 0) {
-                        for (double y = last; y <= first; y += LINE_OFFSET) {
-                            builder.clone().data(new Particle.DustOptions(Color.RED, 0.5f)).location(location.clone().add(x, y, z)).spawn();
-                        }
+                if (circle == 0 && i % (DOTS_PER_LINE) == 0) {
+                    for (double y = last; y <= first; y += LINE_OFFSET) {
+                        builder.clone().data(new Particle.DustOptions(Color.RED, 0.5f)).location(location.clone().add(x, y, z)).spawn();
                     }
                 }
 
