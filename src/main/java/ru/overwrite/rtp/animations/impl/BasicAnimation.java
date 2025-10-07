@@ -11,10 +11,6 @@ import java.util.Iterator;
 
 public class BasicAnimation extends Animation {
 
-    public BasicAnimation(Player player, int duration, Particles particles) {
-        super(player, duration, particles);
-    }
-
     private double angle;
     private double yOffset = particles.preTeleportInvert() ? 0.0D : 2.0D;
 
@@ -26,6 +22,10 @@ public class BasicAnimation extends Animation {
     private final double verticalRotationSpeed = 2 * Math.PI * 2 / duration;
 
     private Iterator<Particles.ParticleData> particleDataIterator;
+
+    public BasicAnimation(Player player, int duration, Particles particles) {
+        super(player, duration, particles);
+    }
 
     @Override
     public void run() {
