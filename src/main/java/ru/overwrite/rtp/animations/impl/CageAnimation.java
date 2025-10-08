@@ -1,6 +1,8 @@
 package ru.overwrite.rtp.animations.impl;
 
 import com.destroystokyo.paper.ParticleBuilder;
+import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
+import it.unimi.dsi.fastutil.doubles.DoubleList;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -8,13 +10,11 @@ import org.bukkit.entity.Player;
 import ru.overwrite.rtp.animations.Animation;
 import ru.overwrite.rtp.channels.settings.Particles;
 
-import java.util.List;
+import java.util.Iterator;
 
 public class CageAnimation extends Animation {
 
     private static final double C = 2 * Math.PI;
-
-    private final double RADIUS;
 
     // must have more settings in the config
     private static final int MAX_DOTS = 32; // DOTS | LINES
@@ -25,22 +25,14 @@ public class CageAnimation extends Animation {
 
     private static final double CIRCLE_OFFSET = C / MAX_DOTS;
 
-    private static final List<Double> CIRCLES = List.of(2.0, 1.0, 0.0); // circle y offsets (do not use the same values)
+    private static final DoubleList CIRCLES = new DoubleArrayList(new double[]{2.0D, 0.0D}); ; // circle y offsets (do not use the same values)
 
-    private final double first = CIRCLES.getFirst();
-    private final double last = CIRCLES.getLast();
+    private final double first = CIRCLES.getDouble(0);
+    private final double last = CIRCLES.getDouble(0);
 
     private final double LINE_OFFSET = (first - last) / COUNT_PER_LINE;
 
-    private final ParticleBuilder builder = Particle.DUST.builder()
-            .particle()
-            .builder()
-            .count(1)
-            .offset(0.0, 0.0, 0.0)
-            .extra(particles.preTeleportParticleSpeed())
-            .data(new Particle.DustOptions(Color.WHITE, 0.5f)) // must have another settings in the config
-            .receivers(receivers)
-            .source(player);
+    private Iterator<Particles.ParticleData> particleDataIterator;
 
     private final int DOT_PER_TICKS = (int) Math.floor((double) Math.max((duration), MAX_DOTS) / Math.min(duration, MAX_DOTS));
 
@@ -48,8 +40,6 @@ public class CageAnimation extends Animation {
 
     public CageAnimation(Player player, int duration, Particles particles) {
         super(player, duration, particles);
-
-        this.RADIUS = particles.preTeleportRadius();
     }
 
     @Override
@@ -59,7 +49,21 @@ public class CageAnimation extends Animation {
             this.cancel();
             return;
         }
+        if (particleDataIterator == null || !particleDataIterator.hasNext()) {
+            particleDataIterator = particles.preTeleportParticles().iterator();
+        }
+        Particles.ParticleData preTeleportParticleData = particleDataIterator.next();
 
+
+        final ParticleBuilder builder = preTeleportParticleData
+                .particle()
+                .builder()
+                .count(1)
+                .offset(0.0, 0.0, 0.0)
+                .extra(particles.preTeleportParticleSpeed())
+                .data(preTeleportParticleData.dustOptions())
+                .receivers(receivers)
+                .source(player);
         final Location location = player.getLocation();
 
         if (tickCounter % DOT_PER_TICKS == 0 && currentDots < MAX_DOTS) {
@@ -69,10 +73,10 @@ public class CageAnimation extends Animation {
         for (int circle = 0; circle < CIRCLES.size(); circle++) {
             double angle = 0;
 
-            Double yOffset = CIRCLES.get(circle);
+            double yOffset = CIRCLES.getDouble(circle);
             for (int i = 0; i < currentDots; i++) {
-                double x = Math.cos(angle) * RADIUS;
-                double z = Math.sin(angle) * RADIUS;
+                double x = Math.cos(angle) * particles.preTeleportRadius();
+                double z = Math.sin(angle) * particles.preTeleportRadius();
 
                 builder.clone().location(location.clone().add(x, yOffset, z)).spawn();
 
