@@ -8,9 +8,11 @@ import ru.overwrite.rtp.configuration.Config;
 import ru.overwrite.rtp.utils.Utils;
 
 import java.util.List;
+import java.util.Locale;
 
 public record Particles(
         boolean preTeleportEnabled,
+        AnimationType preTeleportAnimation,
         boolean preTeleportSendOnlyToPlayer,
         List<ParticleData> preTeleportParticles,
         int preTeleportDots,
@@ -30,8 +32,14 @@ public record Particles(
     public record ParticleData(Particle particle, Particle.DustOptions dustOptions) {
     }
 
+    public enum AnimationType {
+        BASIC,
+        CAGE
+    }
+
     private static final Particles EMPTY_PARTICLES = new Particles(
             false,
+            null,
             false,
             null,
             0,
@@ -63,6 +71,7 @@ public record Particles(
         }
 
         boolean preTeleportEnabled = hasTemplateParticles && templateParticles.preTeleportEnabled();
+        AnimationType preTeleportAnimation = hasTemplateParticles ? templateParticles.preTeleportAnimation() : AnimationType.BASIC;
         boolean preTeleportSendOnlyToPlayer = hasTemplateParticles && templateParticles.preTeleportSendOnlyToPlayer();
         List<Particles.ParticleData> preTeleportParticles = hasTemplateParticles ? templateParticles.preTeleportParticles() : null;
         int preTeleportDots = hasTemplateParticles ? templateParticles.preTeleportDots() : 0;
@@ -86,6 +95,7 @@ public record Particles(
 
             if (!isNullPreTeleportSection) {
                 preTeleportEnabled = preTeleport.getBoolean("enabled", preTeleportEnabled);
+                preTeleportAnimation = AnimationType.valueOf(preTeleport.getString("animation", "BASIC").toUpperCase(Locale.ENGLISH));
                 preTeleportSendOnlyToPlayer = preTeleport.getBoolean("send_only_to_player", preTeleportSendOnlyToPlayer);
                 preTeleportDots = preTeleport.getInt("dots", preTeleportDots);
                 preTeleportRadius = preTeleport.getDouble("radius", preTeleportRadius);
@@ -122,6 +132,7 @@ public record Particles(
 
         return new Particles(
                 preTeleportEnabled,
+                preTeleportAnimation,
                 preTeleportSendOnlyToPlayer,
                 preTeleportParticles,
                 preTeleportDots,

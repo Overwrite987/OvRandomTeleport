@@ -8,17 +8,11 @@ import ru.overwrite.rtp.animations.Animation;
 import ru.overwrite.rtp.channels.settings.Particles;
 
 import java.util.Iterator;
-import java.util.List;
 
 public class BasicAnimation extends Animation {
 
-    public BasicAnimation(Player player, int duration, Particles particles) {
-        super(player, duration, particles);
-    }
-
     private double angle;
     private double yOffset = particles.preTeleportInvert() ? 0.0D : 2.0D;
-    private int tickCounter;
 
     private final double initialRadius = particles.preTeleportRadius();
     private final double radiusStep = particles.preTeleportMoveNear() ? initialRadius / duration : 0D;
@@ -27,9 +21,11 @@ public class BasicAnimation extends Animation {
     private final double yStep = particles.preTeleportInvert() ? (2.0 / duration) : (-2.0 / duration);
     private final double verticalRotationSpeed = 2 * Math.PI * 2 / duration;
 
-    private final List<Player> receivers = particles.preTeleportSendOnlyToPlayer() ? List.of(player) : null;
-
     private Iterator<Particles.ParticleData> particleDataIterator;
+
+    public BasicAnimation(Player player, int duration, Particles particles) {
+        super(player, duration, particles);
+    }
 
     @Override
     public void run() {
