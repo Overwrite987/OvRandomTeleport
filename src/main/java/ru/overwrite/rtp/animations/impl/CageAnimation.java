@@ -78,12 +78,12 @@ public class CageAnimation extends Animation {
                 double x = Math.cos(angle) * particles.preTeleportRadius();
                 double z = Math.sin(angle) * particles.preTeleportRadius();
 
-                builder.clone().location(location.clone().add(x, yOffset, z)).spawn();
+                builder.location(location.clone().add(x, yOffset, z)).spawn();
 
                 // only one time per circle
                 if (circle == 0 && i % (DOTS_PER_LINE) == 0) {
                     for (double y = last; y <= first; y += LINE_OFFSET) {
-                        builder.clone().data(new Particle.DustOptions(Color.RED, 0.5f)).location(location.clone().add(x, y, z)).spawn();
+                        builder.data(new Particle.DustOptions(Color.RED, 0.5f)).location(location.clone().add(x, y, z)).spawn();
                     }
                 }
 
