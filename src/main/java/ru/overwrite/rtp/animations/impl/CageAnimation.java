@@ -3,9 +3,7 @@ package ru.overwrite.rtp.animations.impl;
 import com.destroystokyo.paper.ParticleBuilder;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
-import org.bukkit.Color;
 import org.bukkit.Location;
-import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import ru.overwrite.rtp.animations.Animation;
 import ru.overwrite.rtp.channels.settings.Particles;
@@ -25,12 +23,15 @@ public class CageAnimation extends Animation {
 
     private static final double CIRCLE_OFFSET = C / MAX_DOTS;
 
-    private static final DoubleList CIRCLES = new DoubleArrayList(new double[]{2.0D, 0.0D}); ; // circle y offsets (do not use the same values)
+    private static final DoubleList CIRCLES = new DoubleArrayList(new double[]{2.0D, 0.0D}); // circle y offsets (do not use the same values)
 
-    private final double first = CIRCLES.getDouble(0);
-    private final double last = CIRCLES.getDouble(0);
+    private final double first = CIRCLES.getDouble(0); // maximal value
+    private final double last = CIRCLES.getDouble(CIRCLES.size() - 1); // minimal value
 
     private final double LINE_OFFSET = (first - last) / COUNT_PER_LINE;
+
+    private final double extra = Math.max(0, particles.preTeleportParticleSpeed());
+    private final double radius = Math.max(1, particles.preTeleportRadius());
 
     private Iterator<Particles.ParticleData> particleDataIterator;
 
@@ -60,7 +61,7 @@ public class CageAnimation extends Animation {
                 .builder()
                 .count(1)
                 .offset(0.0, 0.0, 0.0)
-                .extra(particles.preTeleportParticleSpeed())
+                .extra(extra)
                 .data(preTeleportParticleData.dustOptions())
                 .receivers(receivers)
                 .source(player);
@@ -75,8 +76,8 @@ public class CageAnimation extends Animation {
 
             double yOffset = CIRCLES.getDouble(circle);
             for (int i = 0; i < currentDots; i++) {
-                double x = Math.cos(angle) * particles.preTeleportRadius();
-                double z = Math.sin(angle) * particles.preTeleportRadius();
+                double x = Math.cos(angle) * radius;
+                double z = Math.sin(angle) * radius;
 
                 builder.location(location.clone().add(x, yOffset, z)).spawn();
 
