@@ -68,6 +68,7 @@ public class WGLocationGenerator extends BasicLocationGenerator {
             BlockVector3 maxPoint = region.getMaximumPoint();
             if (minPoint.getX() >= minX && maxPoint.getX() <= maxX && minPoint.getZ() >= minZ && maxPoint.getZ() <= maxZ) {
                 regionsInRange.add(region);
+                continue;
             }
             rtpManager.printDebug("Skipping region " + region.getId() + " since it is outside of range");
         }
