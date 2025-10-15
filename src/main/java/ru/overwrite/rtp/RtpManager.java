@@ -247,7 +247,7 @@ public final class RtpManager {
     }
 
     public void spawnParticleSphere(Player player, Particles particles) {
-        if (!particles.afterTeleportEnabled()) {
+        if (!particles.afterTeleport().enabled()) {
             return;
         }
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
@@ -257,15 +257,15 @@ public final class RtpManager {
 
             final double goldenAngle = Math.PI * (3 - Math.sqrt(5));
 
-            final List<Player> receivers = particles.afterTeleportSendOnlyToPlayer() ? List.of(player) : null;
+            final List<Player> receivers = particles.afterTeleport().sendOnlyToPlayer() ? List.of(player) : null;
 
-            for (int i = 0; i < particles.afterTeleportCount(); i++) {
-                double yOffset = 1 - (2.0 * i) / (particles.afterTeleportCount() - 1);
+            for (int i = 0; i < particles.afterTeleport().count(); i++) {
+                double yOffset = 1 - (2.0 * i) / (particles.afterTeleport().count() - 1);
                 double radiusAtHeight = Math.sqrt(1 - yOffset * yOffset);
 
                 double theta = goldenAngle * i;
 
-                double afterTeleportRadius = particles.afterTeleportRadius();
+                double afterTeleportRadius = particles.afterTeleport().radius();
 
                 double xOffset = afterTeleportRadius * radiusAtHeight * Math.cos(theta);
                 double zOffset = afterTeleportRadius * radiusAtHeight * Math.sin(theta);
@@ -273,7 +273,7 @@ public final class RtpManager {
                 Location particleLocation = loc.clone().add(xOffset, yOffset * afterTeleportRadius, zOffset);
 
                 world.spawnParticle(
-                        particles.afterTeleportParticle().particle(),
+                        particles.afterTeleport().particle().particle(),
                         receivers,
                         player,
                         particleLocation.getX(),
@@ -283,8 +283,8 @@ public final class RtpManager {
                         0,
                         0,
                         0,
-                        particles.afterTeleportParticleSpeed(),
-                        particles.afterTeleportParticle().dustOptions());
+                        particles.afterTeleport().particleSpeed(),
+                        particles.afterTeleport().particle().dustOptions());
             }
         }, 1L);
     }

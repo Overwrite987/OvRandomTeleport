@@ -10,6 +10,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.animations.impl.BasicAnimation;
+import ru.overwrite.rtp.animations.impl.CageAnimation;
 import ru.overwrite.rtp.channels.Channel;
 import ru.overwrite.rtp.channels.Settings;
 import ru.overwrite.rtp.channels.settings.Actions;
@@ -40,7 +41,13 @@ public class RtpTask {
             this.setupBossBar(settings.bossbar());
         }
         if (settings.particles().preTeleportEnabled()) {
-            this.animationTask = new BasicAnimation(this.player, preTeleportCooldown * 20, settings.particles()).runTaskTimerAsynchronously(plugin, 0, 1);
+            this.animationTask = switch (settings.particles().preTeleportAnimation()) {
+                // improve period handling cuz issues with duration calc
+                case CAGE ->
+                        new CageAnimation(this.player, preTeleportCooldown * 20, settings.particles()).runTaskTimerAsynchronously(plugin, 0, 1);
+                case BASIC ->
+                        new BasicAnimation(this.player, preTeleportCooldown * 20, settings.particles()).runTaskTimerAsynchronously(plugin, 0, 1);
+            };
         }
         this.countdownTask = new BukkitRunnable() {
             @Override

@@ -8,28 +8,25 @@ import ru.overwrite.rtp.animations.Animation;
 import ru.overwrite.rtp.channels.settings.Particles;
 
 import java.util.Iterator;
-import java.util.List;
 
 public class BasicAnimation extends Animation {
+
+    private double angle;
+    private double yOffset = particles.preTeleport().invert() ? 0.0D : 2.0D;
+
+    private final double speed = Math.max(0, particles.preTeleport().particleSpeed());
+    private final double radius = Math.max(0.1, particles.preTeleport().radius());
+    private final double radiusStep = particles.preTeleport().moveNear() ? radius / duration : 0D;
+    private final double rotationSpeed = ((2 * Math.PI * particles.preTeleport().speed()) / duration)
+            * ((particles.preTeleport().invert() && particles.preTeleport().jumping()) ? 2 : 1);
+    private final double yStep = particles.preTeleport().invert() ? (2.0 / duration) : (-2.0 / duration);
+    private final double verticalRotationSpeed = 2 * Math.PI * 2 / duration;
+
+    private Iterator<Particles.ParticleData> particleDataIterator;
 
     public BasicAnimation(Player player, int duration, Particles particles) {
         super(player, duration, particles);
     }
-
-    private double angle;
-    private double yOffset = particles.preTeleportInvert() ? 0.0D : 2.0D;
-    private int tickCounter;
-
-    private final double initialRadius = particles.preTeleportRadius();
-    private final double radiusStep = particles.preTeleportMoveNear() ? initialRadius / duration : 0D;
-    private final double rotationSpeed = ((2 * Math.PI * particles.preTeleportSpeed()) / duration)
-            * ((particles.preTeleportInvert() && particles.preTeleportJumping()) ? 2 : 1);
-    private final double yStep = particles.preTeleportInvert() ? (2.0 / duration) : (-2.0 / duration);
-    private final double verticalRotationSpeed = 2 * Math.PI * 2 / duration;
-
-    private final List<Player> receivers = particles.preTeleportSendOnlyToPlayer() ? List.of(player) : null;
-
-    private Iterator<Particles.ParticleData> particleDataIterator;
 
     @Override
     public void run() {
@@ -39,7 +36,7 @@ public class BasicAnimation extends Animation {
             return;
         }
         if (particleDataIterator == null || !particleDataIterator.hasNext()) {
-            particleDataIterator = particles.preTeleportParticles().iterator();
+            particleDataIterator = particles.preTeleport().particles().iterator();
         }
         Particles.ParticleData preTeleportParticleData = particleDataIterator.next();
 
@@ -50,7 +47,7 @@ public class BasicAnimation extends Animation {
         final double baseZ = location.getZ();
 
         final double yRingOffset = Math.sin((Math.PI * tickCounter) / duration) * 2.0;
-        final double currentRadius = particles.preTeleportMoveNear() ? initialRadius - (radiusStep * tickCounter) : initialRadius;
+        final double currentRadius = particles.preTeleport().moveNear() ? radius - (radiusStep * tickCounter) : radius;
 
         final double cosRotation = Math.cos(verticalRotationSpeed * tickCounter);
         final double sinRotation = Math.sin(verticalRotationSpeed * tickCounter);
@@ -60,14 +57,14 @@ public class BasicAnimation extends Animation {
                 .builder()
                 .count(1)
                 .offset(0.0, 0.0, 0.0)
-                .extra(particles.preTeleportParticleSpeed())
+                .extra(speed)
                 .data(preTeleportParticleData.dustOptions())
                 .receivers(receivers)
                 .source(player);
 
-        final double twoPiOverDots = 2.0 * Math.PI / particles.preTeleportDots();
+        final double twoPiOverDots = 2.0 * Math.PI / particles.preTeleport().dots();
 
-        for (int i = 0; i < particles.preTeleportDots(); i++) {
+        for (int i = 0; i < particles.preTeleport().dots(); i++) {
             double phaseOffset = i * twoPiOverDots;
             double ang = angle + phaseOffset;
 
@@ -75,7 +72,7 @@ public class BasicAnimation extends Animation {
             double z = Math.sin(ang) * currentRadius;
             double y;
 
-            if (particles.preTeleportJumping()) {
+            if (particles.preTeleport().jumping()) {
                 y = yRingOffset;
 
                 double rotatedX = x * cosRotation - z * sinRotation;
@@ -93,9 +90,9 @@ public class BasicAnimation extends Animation {
             builder.location(world, px, py, pz).spawn();
         }
 
-        angle += particles.preTeleportInvert() ? -rotationSpeed : rotationSpeed;
+        angle += particles.preTeleport().invert() ? -rotationSpeed : rotationSpeed;
 
-        if (!particles.preTeleportJumping()) {
+        if (!particles.preTeleport().jumping()) {
             yOffset += yStep;
         }
     }
