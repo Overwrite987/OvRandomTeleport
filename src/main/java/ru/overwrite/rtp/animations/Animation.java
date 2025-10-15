@@ -21,7 +21,7 @@ public abstract class Animation extends BukkitRunnable {
         this.duration = duration;
         this.particles = particles;
 
-        this.receivers = particles.preTeleportSendOnlyToPlayer() ? List.of(player) : null;
+        this.receivers = particles.preTeleport().sendOnlyToPlayer() ? List.of(player) : null;
     }
 
 }

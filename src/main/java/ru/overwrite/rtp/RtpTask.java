@@ -43,8 +43,10 @@ public class RtpTask {
         if (settings.particles().preTeleportEnabled()) {
             this.animationTask = switch (settings.particles().preTeleportAnimation()) {
                 // improve period handling cuz issues with duration calc
-                case CAGE -> new CageAnimation(this.player, preTeleportCooldown * 20, settings.particles()).runTaskTimerAsynchronously(plugin, 0, 1);
-                case BASIC -> new BasicAnimation(this.player, preTeleportCooldown * 20, settings.particles()).runTaskTimerAsynchronously(plugin, 0, 1);
+                case CAGE ->
+                        new CageAnimation(this.player, preTeleportCooldown * 20, settings.particles()).runTaskTimerAsynchronously(plugin, 0, 1);
+                case BASIC ->
+                        new BasicAnimation(this.player, preTeleportCooldown * 20, settings.particles()).runTaskTimerAsynchronously(plugin, 0, 1);
             };
         }
         this.countdownTask = new BukkitRunnable() {

@@ -180,7 +180,8 @@ public final class Utils {
             return false;
         }
         for (int i = 0, length = cs.length(); i < length; ++i) {
-            if (!Character.isDigit(cs.charAt(i))) {
+            char c = cs.charAt(i);
+            if (!Character.isDigit(c) && c != '.') {
                 return false;
             }
         }
