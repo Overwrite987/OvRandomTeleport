@@ -1,4 +1,4 @@
-package ru.overwrite.rtp;
+package ru.overwrite.rtp.locationgenerator.impl;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -8,10 +8,10 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionType;
-import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import ru.overwrite.rtp.RtpManager;
 import ru.overwrite.rtp.channels.Settings;
 import ru.overwrite.rtp.channels.settings.LocationGenOptions;
 import ru.overwrite.rtp.utils.regions.WGUtils;
@@ -20,15 +20,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@RequiredArgsConstructor
-public class WGLocationGenerator {
+public class WGLocationGenerator extends BasicLocationGenerator {
 
-    private final RtpManager rtpManager;
-    private final LocationGenerator locationGenerator;
+    public WGLocationGenerator(RtpManager rtpManager) {
+        super(rtpManager);
+    }
 
+    @Override
     public Location generateRandomLocationNearRandomRegion(Player player, Settings settings, World world) {
         LocationGenOptions locationGenOptions = settings.locationGenOptions();
-        if (locationGenerator.hasReachedMaxIterations(player.getName(), locationGenOptions)) {
+        if (hasReachedMaxIterations(player.getName(), locationGenOptions)) {
             return null;
         }
 
@@ -76,20 +77,20 @@ public class WGLocationGenerator {
             return null;
         }
 
-        ProtectedRegion randomRegion = regionsInRange.get(locationGenerator.getRandom().nextInt(regionsInRange.size()));
+        ProtectedRegion randomRegion = regionsInRange.get(random.nextInt(regionsInRange.size()));
 
         int centerX = (randomRegion.getMinimumPoint().getX() + randomRegion.getMaximumPoint().getX()) / 2;
         int centerZ = (randomRegion.getMinimumPoint().getZ() + randomRegion.getMaximumPoint().getZ()) / 2;
 
         LocationGenOptions.Shape shape = locationGenOptions.shape();
-        Location location = locationGenerator.generateRandomLocationNearPoint(shape, player, centerX, centerZ, settings, world);
+        Location location = generateRandomLocationNearPoint(shape, player, centerX, centerZ, settings, world);
 
         if (location == null) {
-            locationGenerator.getIterationsPerPlayer().addTo(player.getName(), 1);
+            getIterationsPerPlayer().addTo(player.getName(), 1);
             return generateRandomLocationNearRandomRegion(player, settings, world);
         }
-        rtpManager.printDebug(() -> "Location for player '" + player.getName() + "' found in " + locationGenerator.getIterationsPerPlayer().getInt(player.getName()) + " iterations");
-        locationGenerator.getIterationsPerPlayer().removeInt(player.getName());
+        rtpManager.printDebug(() -> "Location for player '" + player.getName() + "' found in " + getIterationsPerPlayer().getInt(player.getName()) + " iterations");
+        getIterationsPerPlayer().removeInt(player.getName());
         return location;
     }
 }

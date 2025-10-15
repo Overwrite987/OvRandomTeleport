@@ -25,6 +25,9 @@ import ru.overwrite.rtp.channels.settings.Costs;
 import ru.overwrite.rtp.channels.settings.Messages;
 import ru.overwrite.rtp.channels.settings.Particles;
 import ru.overwrite.rtp.configuration.Config;
+import ru.overwrite.rtp.locationgenerator.LocationGenerator;
+import ru.overwrite.rtp.locationgenerator.impl.BasicLocationGenerator;
+import ru.overwrite.rtp.locationgenerator.impl.WGLocationGenerator;
 import ru.overwrite.rtp.utils.Utils;
 
 import java.util.HashMap;
@@ -67,7 +70,7 @@ public final class RtpManager {
         this.namedChannels = new HashMap<>();
         this.perPlayerActiveRtpTask = new ConcurrentHashMap<>();
         this.actionRegistry = new ActionRegistry(plugin);
-        this.locationGenerator = new LocationGenerator(plugin, this);
+        this.locationGenerator = plugin.hasWorldGuard() ? new WGLocationGenerator(this) : new BasicLocationGenerator(this);
         this.specifications = Specifications.create();
         this.registerDefaultActions();
     }
@@ -190,9 +193,7 @@ public final class RtpManager {
             Location loc = switch (channel.type()) {
                 case DEFAULT -> locationGenerator.generateRandomLocation(player, settings, world);
                 case NEAR_PLAYER -> locationGenerator.generateRandomLocationNearPlayer(player, settings, world);
-                case NEAR_REGION -> locationGenerator.getWgLocationGenerator() != null ?
-                        locationGenerator.getWgLocationGenerator().generateRandomLocationNearRandomRegion(player, settings, world) :
-                        locationGenerator.generateRandomLocation(player, settings, world);
+                case NEAR_REGION -> locationGenerator.generateRandomLocationNearRandomRegion(player, settings, world);
             };
             long endTime = System.currentTimeMillis();
             long locationFound = endTime - startTime;
