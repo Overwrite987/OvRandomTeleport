@@ -40,9 +40,8 @@ public class RtpTask {
         if (settings.bossbar().bossbarEnabled()) {
             this.setupBossBar(settings.bossbar());
         }
-        if (settings.particles().preTeleportEnabled()) {
-            this.animationTask = switch (settings.particles().preTeleportAnimation()) {
-                // improve period handling cuz issues with duration calc
+        if (settings.particles().preTeleport().enabled()) {
+            this.animationTask = switch (settings.particles().preTeleport().animation()) {
                 case CAGE ->
                         new CageAnimation(this.player, preTeleportCooldown * 20, settings.particles()).runTaskTimerAsynchronously(plugin, 0, 1);
                 case BASIC ->
