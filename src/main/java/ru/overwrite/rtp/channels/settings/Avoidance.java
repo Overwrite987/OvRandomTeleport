@@ -4,8 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Biome;
 import org.bukkit.configuration.ConfigurationSection;
-import ru.overwrite.rtp.channels.Settings;
-import ru.overwrite.rtp.configuration.Config;
 import ru.overwrite.rtp.utils.VersionUtils;
 
 import java.util.*;
@@ -16,7 +14,8 @@ public record Avoidance(
         boolean avoidBiomesBlacklist,
         Set<Biome> avoidBiomes,
         boolean avoidRegions,
-        boolean avoidTowns) {
+        boolean avoidTowns
+) {
 
     private static final Avoidance EMPTY_AVOIDANCE = new Avoidance(
             false,
@@ -27,51 +26,37 @@ public record Avoidance(
             false
     );
 
-    public static Avoidance create(ConfigurationSection avoidance, Settings template, Config pluginConfig, boolean applyTemplate) {
+    public static Avoidance create(ConfigurationSection avoidance) {
+        if (avoidance == null) {
+            return EMPTY_AVOIDANCE;
+        }
 
-        boolean isNullSection = pluginConfig.isNullSection(avoidance);
+        boolean avoidBlocksBlacklist = false;
+        Set<Material> avoidBlocks = Set.of();
 
-        Avoidance templateAvoidance = applyTemplate && template != null ? template.avoidance() : null;
-        boolean hasTemplateAvoidance = templateAvoidance != null;
+        boolean avoidBiomesBlacklist = false;
+        Set<Biome> avoidBiomes = Set.of();
 
-        if (isNullSection) {
-            if (!applyTemplate) {
-                return null;
+
+        ConfigurationSection blocksSection = avoidance.getConfigurationSection("blocks");
+        boolean isNullBlocksSection = blocksSection == null;
+        if (!isNullBlocksSection) {
+            avoidBlocksBlacklist = blocksSection.getBoolean("blacklist", false);
+            if (blocksSection.contains("list")) {
+                avoidBlocks = createMaterialSet(blocksSection.getStringList("list"));
             }
-            if (!hasTemplateAvoidance) {
-                return EMPTY_AVOIDANCE;
+        }
+        ConfigurationSection biomesSection = avoidance.getConfigurationSection("biomes");
+        boolean isNullBiomesSection = biomesSection == null;
+        if (!isNullBiomesSection) {
+            avoidBiomesBlacklist = biomesSection.getBoolean("blacklist", false);
+            if (biomesSection.contains("list")) {
+                avoidBiomes = createBiomeSet(biomesSection.getStringList("list"));
             }
         }
 
-        boolean avoidBlocksBlacklist = hasTemplateAvoidance && templateAvoidance.avoidBlocksBlacklist();
-        Set<Material> avoidBlocks = hasTemplateAvoidance ? templateAvoidance.avoidBlocks() : Set.of();
-
-        boolean avoidBiomesBlacklist = hasTemplateAvoidance && templateAvoidance.avoidBiomesBlacklist();
-        Set<Biome> avoidBiomes = hasTemplateAvoidance ? templateAvoidance.avoidBiomes() : Set.of();
-
-        boolean avoidRegions = hasTemplateAvoidance && templateAvoidance.avoidRegions();
-        boolean avoidTowns = hasTemplateAvoidance && templateAvoidance.avoidTowns();
-
-        if (!isNullSection) {
-            ConfigurationSection blocksSection = avoidance.getConfigurationSection("blocks");
-            boolean isNullBlocksSection = pluginConfig.isNullSection(blocksSection);
-            if (!isNullBlocksSection) {
-                avoidBlocksBlacklist = blocksSection.getBoolean("blacklist", avoidBlocksBlacklist);
-                if (blocksSection.contains("list")) {
-                    avoidBlocks = createMaterialSet(blocksSection.getStringList("list"));
-                }
-            }
-            ConfigurationSection biomesSection = avoidance.getConfigurationSection("biomes");
-            boolean isNullBiomesSection = pluginConfig.isNullSection(biomesSection);
-            if (!isNullBiomesSection) {
-                avoidBiomesBlacklist = biomesSection.getBoolean("blacklist", avoidBiomesBlacklist);
-                if (biomesSection.contains("list")) {
-                    avoidBiomes = createBiomeSet(biomesSection.getStringList("list"));
-                }
-            }
-            avoidRegions = parsePluginRelatedAvoidance(avoidance, "regions", avoidRegions, "WorldGuard", isNullSection);
-            avoidTowns = parsePluginRelatedAvoidance(avoidance, "towns", avoidTowns, "Towny", isNullSection);
-        }
+        boolean avoidRegions = parsePluginRelatedAvoidance(avoidance, "regions", "WorldGuard");
+        boolean avoidTowns = parsePluginRelatedAvoidance(avoidance, "towns", "Towny");
 
         return new Avoidance(avoidBlocksBlacklist, avoidBlocks, avoidBiomesBlacklist, avoidBiomes, avoidRegions, avoidTowns);
     }
@@ -92,9 +77,7 @@ public record Avoidance(
         return biomeSet;
     }
 
-    private static boolean parsePluginRelatedAvoidance(ConfigurationSection section, String key, boolean templateValue, String pluginName, boolean isNullSection) {
-        return Bukkit.getPluginManager().isPluginEnabled(pluginName) && !isNullSection
-                ? section.getBoolean(key, templateValue)
-                : templateValue;
+    private static boolean parsePluginRelatedAvoidance(ConfigurationSection section, String key, String pluginName) {
+        return Bukkit.getPluginManager().isPluginEnabled(pluginName) && section.getBoolean(key, false);
     }
 }

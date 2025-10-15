@@ -6,8 +6,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import ru.overwrite.rtp.OvRandomTeleport;
 import ru.overwrite.rtp.channels.Channel;
-import ru.overwrite.rtp.channels.Settings;
-import ru.overwrite.rtp.configuration.Config;
 import ru.overwrite.rtp.utils.Utils;
 import ru.overwrite.rtp.utils.economy.PlayerPointsUtils;
 
@@ -18,7 +16,8 @@ public record Costs(
         MoneyType moneyType,
         double moneyCost,
         int hungerCost,
-        int expCost) {
+        int expCost
+) {
 
     public enum MoneyType {
         VAULT,
@@ -33,33 +32,15 @@ public record Costs(
             0
     );
 
-    public static Costs create(OvRandomTeleport plugin, ConfigurationSection costs, Settings template, Config pluginConfig, boolean applyTemplate) {
-
-        boolean isNullSection = pluginConfig.isNullSection(costs);
-
-        Costs templateCosts = template != null ? template.costs() : null;
-        boolean hasTemplateCosts = templateCosts != null;
-
-        if (isNullSection) {
-            if (!applyTemplate) {
-                return null;
-            }
-            if (!hasTemplateCosts) {
-                return EMPTY_COSTS;
-            }
+    public static Costs create(OvRandomTeleport plugin, ConfigurationSection costs) {
+        if (costs == null) {
+            return EMPTY_COSTS;
         }
 
-        Costs.MoneyType moneyType = hasTemplateCosts ? templateCosts.moneyType() : Costs.MoneyType.VAULT;
-        double moneyCost = hasTemplateCosts ? templateCosts.moneyCost() : -1;
-        int hungerCost = hasTemplateCosts ? templateCosts.hungerCost() : -1;
-        int expCost = hasTemplateCosts ? templateCosts.expCost() : -1;
-
-        if (!isNullSection) {
-            moneyType = Costs.MoneyType.valueOf(costs.getString("money_type", "VAULT").toUpperCase(Locale.ENGLISH));
-            moneyCost = costs.getDouble("money_cost", moneyCost);
-            hungerCost = costs.getInt("hunger_cost", hungerCost);
-            expCost = costs.getInt("experience_cost", expCost);
-        }
+        Costs.MoneyType moneyType = Costs.MoneyType.valueOf(costs.getString("money_type", "VAULT").toUpperCase(Locale.ENGLISH));
+        double moneyCost = costs.getDouble("money_cost", -1D);
+        int hungerCost = costs.getInt("hunger_cost", -1);
+        int expCost = costs.getInt("experience_cost", -1);
 
         return new Costs(plugin.getEconomy(), moneyType, moneyCost, hungerCost, expCost);
     }

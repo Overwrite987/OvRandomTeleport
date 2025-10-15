@@ -7,7 +7,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import ru.overwrite.rtp.OvRandomTeleport;
 import ru.overwrite.rtp.RtpManager;
-import ru.overwrite.rtp.channels.Settings;
 import ru.overwrite.rtp.channels.settings.Messages;
 import ru.overwrite.rtp.configuration.data.CommandMessages;
 import ru.overwrite.rtp.configuration.data.PlaceholderMessages;
@@ -15,7 +14,9 @@ import ru.overwrite.rtp.utils.Utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 @Getter
 public class Config {
@@ -40,7 +41,7 @@ public class Config {
 
     public static String timeHours, timeMinutes, timeSeconds;
 
-    private final Map<String, Settings> channelTemplates = new HashMap<>();
+    private final Map<String, ConfigurationSection> channelTemplates = new HashMap<>();
 
     public void setupMessages(FileConfiguration config) {
         final ConfigurationSection messages = config.getConfigurationSection("messages");
@@ -87,10 +88,7 @@ public class Config {
     }
 
     public String getPrefixed(String message, String prefix) {
-        if (message == null || prefix == null) {
-            return message;
-        }
-        return Utils.COLORIZER.colorize(message.replace("%prefix%", prefix));
+        return message != null ? Utils.COLORIZER.colorize(message.replace("%prefix%", prefix)) : null;
     }
 
     public void setupTemplates() {
@@ -100,32 +98,8 @@ public class Config {
             return;
         }
         for (String templateID : keys) {
-            final ConfigurationSection templateSection = templatesConfig.getConfigurationSection(templateID);
-            Settings newTemplate = Settings.create(plugin, templateSection, this, null, false);
-            channelTemplates.put(templateID, newTemplate);
+            channelTemplates.put(templateID, templatesConfig.getConfigurationSection(templateID));
         }
-    }
-
-    public boolean isConfigValueExist(ConfigurationSection section, String key) {
-        return section.getString(key) != null;
-    }
-
-    public boolean isNullSection(ConfigurationSection section) {
-        return section == null;
-    }
-
-    public List<String> getStringListInAnyCase(Object raw) {
-        List<String> stringList = new ArrayList<>();
-        if (raw instanceof String singleId) {
-            stringList.add(singleId);
-        } else if (raw instanceof List<?> listIds) {
-            for (Object obj : listIds) {
-                if (obj instanceof String id) {
-                    stringList.add(id);
-                }
-            }
-        }
-        return stringList;
     }
 
     public FileConfiguration getChannelFile(String path, String fileName) {

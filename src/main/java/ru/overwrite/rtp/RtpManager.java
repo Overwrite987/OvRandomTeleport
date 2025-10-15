@@ -107,9 +107,13 @@ public final class RtpManager {
                     continue;
                 }
             }
+            ConfigurationSection template = pluginConfig.getChannelTemplates().get(channelSection.getString("template", ""));
+            if (template != null) {
+                mergeSectionsRecursive(channelSection, template);
+            }
             String name = channelSection.getString("name", "");
             ChannelType type = ChannelType.valueOf(channelSection.getString("type", "DEFAULT").toUpperCase(Locale.ENGLISH));
-            if (type == ChannelType.NEAR_REGION && !pluginManager.isPluginEnabled("WorldGuard")) {
+            if (type == ChannelType.NEAR_REGION && !plugin.hasWorldGuard()) {
                 type = ChannelType.DEFAULT;
             }
             List<String> activeWorlds = channelSection.getStringList("active_worlds");
@@ -123,8 +127,7 @@ public final class RtpManager {
             int invulnerableTicks = channelSection.getInt("invulnerable_after_teleport", 15);
             boolean allowInCommands = channelSection.getBoolean("allow_in_command", true);
             boolean bypassMaxTeleportLimit = channelsSection.getBoolean("bypass_max_teleport_limit", false);
-            Settings baseTemplate = pluginConfig.getChannelTemplates().get(channelSection.getString("template"));
-            Settings channelSettings = Settings.create(plugin, channelSection, pluginConfig, baseTemplate, true);
+            Settings channelSettings = Settings.create(plugin, channelSection);
 
             Messages messages = Messages.create(channelSection.getConfigurationSection("messages"), pluginConfig);
 
@@ -151,6 +154,32 @@ public final class RtpManager {
         }
         long endTime = System.currentTimeMillis();
         printDebug("Channels setup done in " + (endTime - startTime) + " ms");
+    }
+
+    private void mergeSectionsRecursive(ConfigurationSection source, ConfigurationSection target) {
+        for (String key : source.getKeys(false)) {
+            if (source.isConfigurationSection(key)) {
+                ConfigurationSection sourceSubSection = source.getConfigurationSection(key);
+
+                if (target.isConfigurationSection(key)) {
+                    ConfigurationSection targetSubSection = target.getConfigurationSection(key);
+                    mergeSectionsRecursive(sourceSubSection, targetSubSection);
+                } else if (!target.contains(key)) {
+                    ConfigurationSection newSection = target.createSection(key);
+                    copySection(sourceSubSection, newSection);
+                }
+            } else {
+                if (!target.contains(key)) {
+                    target.addDefault(key, source.get(key));
+                }
+            }
+        }
+    }
+
+    private void copySection(ConfigurationSection source, ConfigurationSection target) {
+        for (String key : source.getKeys(true)) {
+            target.set(key, source.get(key));
+        }
     }
 
     public Channel getChannelById(String channelId) {
