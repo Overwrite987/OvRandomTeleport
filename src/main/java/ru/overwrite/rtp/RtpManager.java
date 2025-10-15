@@ -25,7 +25,7 @@ import ru.overwrite.rtp.channels.settings.Costs;
 import ru.overwrite.rtp.channels.settings.Messages;
 import ru.overwrite.rtp.channels.settings.Particles;
 import ru.overwrite.rtp.configuration.Config;
-import ru.overwrite.rtp.locationgenerator.LocationGenerator;
+import ru.overwrite.rtp.locationgenerator.AbstractLocationGenerator;
 import ru.overwrite.rtp.locationgenerator.impl.BasicLocationGenerator;
 import ru.overwrite.rtp.locationgenerator.impl.WGLocationGenerator;
 import ru.overwrite.rtp.utils.Utils;
@@ -54,7 +54,7 @@ public final class RtpManager {
 
     private final ConcurrentMap<String, RtpTask> perPlayerActiveRtpTask;
 
-    private final LocationGenerator locationGenerator;
+    private final AbstractLocationGenerator locationGenerator;
 
     private final Specifications specifications;
 
