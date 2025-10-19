@@ -119,22 +119,23 @@ public record Particles(
             preTeleportJumping = preTeleportSection.getBoolean("jumping", false);
             preTeleportMoveNear = preTeleportSection.getBoolean("move_near", false);
 
-            if (preTeleportSection.contains("id")) {
+            List<String> particleDataList = preTeleportSection.getStringList("id");
+            if (!particleDataList.isEmpty()) {
                 ImmutableList.Builder<ParticleData> builder = ImmutableList.builder();
-                for (String id : preTeleportSection.getStringList("id")) {
+                for (String id : particleDataList) {
                     builder.add(Utils.createParticleData(id));
                 }
                 preTeleportParticles = builder.build();
             }
 
-            if (preTeleportSection.contains("circles_offset")) {
-                List<String> offsetStrings = preTeleportSection.getStringList("circles_offset");
+            List<?> offsetStrings = preTeleportSection.getList("circles_offset");
+            if (offsetStrings != null && !offsetStrings.isEmpty()) {
                 preTeleportCirclesOffset = new DoubleArrayList();
-                for (String offsetStr : offsetStrings) {
-                    if (!Utils.isNumeric(offsetStr)) {
+                for (Object offsetStr : offsetStrings) {
+                    if (!(offsetStr instanceof Double d)) {
                         continue;
                     }
-                    preTeleportCirclesOffset.add(Double.parseDouble(offsetStr));
+                    preTeleportCirclesOffset.add(d.doubleValue());
                 }
             }
         }
@@ -147,8 +148,9 @@ public record Particles(
             afterTeleportRadius = afterTeleportSection.getDouble("radius", 0.0D);
             afterTeleportParticleSpeed = afterTeleportSection.getDouble("particle_speed", 0.0D);
 
-            if (afterTeleportSection.contains("id")) {
-                afterTeleportParticle = Utils.createParticleData(afterTeleportSection.getString("id"));
+            String particleDataString = afterTeleportSection.getString("id");
+            if (particleDataString != null) {
+                afterTeleportParticle = Utils.createParticleData(particleDataString);
             }
         }
 

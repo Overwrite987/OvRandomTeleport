@@ -37,21 +37,20 @@ public record Avoidance(
         boolean avoidBiomesBlacklist = false;
         Set<Biome> avoidBiomes = Set.of();
 
-
         ConfigurationSection blocksSection = avoidance.getConfigurationSection("blocks");
-        boolean isNullBlocksSection = blocksSection == null;
-        if (!isNullBlocksSection) {
+        if (blocksSection != null) {
             avoidBlocksBlacklist = blocksSection.getBoolean("blacklist", false);
-            if (blocksSection.contains("list")) {
-                avoidBlocks = createMaterialSet(blocksSection.getStringList("list"));
+            List<String> avoidBlockList = blocksSection.getStringList("list");
+            if (!avoidBlockList.isEmpty()) {
+                avoidBlocks = createMaterialSet(avoidBlockList);
             }
         }
         ConfigurationSection biomesSection = avoidance.getConfigurationSection("biomes");
-        boolean isNullBiomesSection = biomesSection == null;
-        if (!isNullBiomesSection) {
+        if (biomesSection != null) {
             avoidBiomesBlacklist = biomesSection.getBoolean("blacklist", false);
-            if (biomesSection.contains("list")) {
-                avoidBiomes = createBiomeSet(biomesSection.getStringList("list"));
+            List<String> avoidBiomesList = biomesSection.getStringList("list");
+            if (!avoidBiomesList.isEmpty()) {
+                avoidBiomes = createBiomeSet(avoidBiomesList);
             }
         }
 

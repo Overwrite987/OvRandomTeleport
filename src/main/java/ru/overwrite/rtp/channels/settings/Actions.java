@@ -32,9 +32,7 @@ public record Actions(
 
         ActionRegistry actionRegistry = plugin.getRtpManager().getActionRegistry();
 
-        List<Action> preTeleportActions = actions.contains("pre_teleport")
-                ? getActionList(plugin, actionRegistry, actions.getStringList("pre_teleport"))
-                : List.of();
+        List<Action> preTeleportActions = getActionList(plugin, actionRegistry, actions.getStringList("pre_teleport"));
 
         Int2ObjectMap<List<Action>> onCooldownActions = new Int2ObjectOpenHashMap<>();
         ConfigurationSection cdSection = actions.getConfigurationSection("on_cooldown");
@@ -49,14 +47,15 @@ public record Actions(
             }
         }
 
-        List<Action> afterTeleportActions = actions.contains("after_teleport")
-                ? getActionList(plugin, actionRegistry, actions.getStringList("after_teleport"))
-                : List.of();
+        List<Action> afterTeleportActions = getActionList(plugin, actionRegistry, actions.getStringList("after_teleport"));
 
         return new Actions(preTeleportActions, onCooldownActions, afterTeleportActions);
     }
 
-    private static ImmutableList<Action> getActionList(OvRandomTeleport plugin, ActionRegistry actionRegistry, List<String> actionStrings) {
+    private static List<Action> getActionList(OvRandomTeleport plugin, ActionRegistry actionRegistry, List<String> actionStrings) {
+        if (actionStrings.isEmpty()) {
+            return List.of();
+        }
         ImmutableList.Builder<Action> builder = ImmutableList.builder();
         for (String actionStr : actionStrings) {
             try {

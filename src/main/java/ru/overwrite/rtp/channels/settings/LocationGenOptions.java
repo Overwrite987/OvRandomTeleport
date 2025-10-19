@@ -47,8 +47,8 @@ public record LocationGenOptions(
             return EMPTY_LGE;
         }
 
-        LocationGenOptions.Shape shape = parseShape(locationGenOptions);
-        LocationGenOptions.GenFormat genFormat = parseGenFormat(locationGenOptions);
+        LocationGenOptions.Shape shape = LocationGenOptions.Shape.valueOf(locationGenOptions.getString("shape", "SQUARE").toUpperCase(Locale.ROOT));
+        LocationGenOptions.GenFormat genFormat = LocationGenOptions.GenFormat.valueOf(locationGenOptions.getString("gen_format", "RECTANGULAR").toUpperCase(Locale.ROOT));
 
         int minX = locationGenOptions.getInt("min_x", 0);
         int maxX = locationGenOptions.getInt("max_x", 0);
@@ -61,19 +61,5 @@ public record LocationGenOptions(
         int maxLocationAttempts = locationGenOptions.getInt("max_location_attempts", 50);
 
         return new LocationGenOptions(shape, genFormat, minX, maxX, minZ, maxZ, nearRadiusMin, nearRadiusMax, centerX, centerZ, maxLocationAttempts);
-    }
-
-    private static LocationGenOptions.Shape parseShape(ConfigurationSection section) {
-        if (section.contains("shape")) {
-            return LocationGenOptions.Shape.valueOf(section.getString("shape", "SQUARE").toUpperCase(Locale.ROOT));
-        }
-        return LocationGenOptions.Shape.SQUARE;
-    }
-
-    private static LocationGenOptions.GenFormat parseGenFormat(ConfigurationSection section) {
-        if (section.contains("gen_format")) {
-            return LocationGenOptions.GenFormat.valueOf(section.getString("gen_format", "RECTANGULAR").toUpperCase(Locale.ROOT));
-        }
-        return LocationGenOptions.GenFormat.RECTANGULAR;
     }
 }
