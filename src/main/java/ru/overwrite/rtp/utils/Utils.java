@@ -176,7 +176,7 @@ public final class Utils {
     }
 
     public boolean isNumeric(CharSequence cs) {
-        if (cs == null || cs.isEmpty()) {
+        if (cs.isEmpty()) {
             return false;
         }
         for (int i = 0, length = cs.length(); i < length; ++i) {
