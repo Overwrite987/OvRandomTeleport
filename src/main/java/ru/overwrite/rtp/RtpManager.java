@@ -12,7 +12,6 @@ import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginManager;
 import ru.overwrite.rtp.actions.Action;
 import ru.overwrite.rtp.actions.ActionRegistry;
 import ru.overwrite.rtp.actions.impl.*;
@@ -90,7 +89,7 @@ public final class RtpManager {
         this.proxyCalls = new HashMap<>();
     }
 
-    public void setupChannels(FileConfiguration config, PluginManager pluginManager) {
+    public void setupChannels(FileConfiguration config) {
         long startTime = System.currentTimeMillis();
         ConfigurationSection channelsSection = config.getConfigurationSection("channels");
         for (String channelId : channelsSection.getKeys(false)) {

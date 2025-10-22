@@ -139,7 +139,7 @@ public class RtpCommand implements TabExecutor {
                 pluginConfig.setupTemplates();
                 rtpManager.getNamedChannels().clear();
                 rtpManager.getSpecifications().clearAll();
-                rtpManager.setupChannels(config, Bukkit.getPluginManager());
+                rtpManager.setupChannels(config);
                 sender.sendMessage(commandMessages.reload());
                 return;
             }

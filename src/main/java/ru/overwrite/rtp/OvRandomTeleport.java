@@ -94,7 +94,7 @@ public final class OvRandomTeleport extends JavaPlugin {
         setupProxy(mainSettings);
         pluginManager.registerEvents(new RtpListener(this), this);
         checkForUpdates(mainSettings);
-        server.getScheduler().runTaskAsynchronously(this, () -> rtpManager.setupChannels(config, pluginManager));
+        server.getScheduler().runTaskAsynchronously(this, () -> rtpManager.setupChannels(config));
     }
 
     public void checkForUpdates(ConfigurationSection mainSettings) {
