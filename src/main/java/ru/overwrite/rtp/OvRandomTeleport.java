@@ -48,7 +48,8 @@ public final class OvRandomTeleport extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        if (server.getPluginManager().isPluginEnabled("PlugManX") || server.getPluginManager().isPluginEnabled("PlugMan")) {
+        PluginManager pluginManager = server.getPluginManager();
+        if (pluginManager.isPluginEnabled("PlugManX") || pluginManager.isPluginEnabled("PlugMan")) {
             return;
         }
         if (hasWorldGuard()) {
